@@ -134,5 +134,9 @@ python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü>
 
 Hesap yöntemleri ve kabuller henüz bağımsız bir doğrulamadan geçmemiştir. Sonuçlar, proje kararlarında mühendislik değerlendirmesiyle birlikte kullanılmalıdır.
 
+## Lisans
+
+[MIT Lisansı](LICENSE) ile yayımlanmıştır. Program serbestçe kullanılabilir, değiştirilebilir ve dağıtılabilir; kopyalarda telif ve lisans metninin korunması gerekir. Program hiçbir garanti olmaksızın sunulur; hesap sonuçlarının sorumluluğu kullanana aittir.
+
 ---
 Hazırlayan: ulroz
