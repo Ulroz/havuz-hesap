@@ -26,7 +26,7 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 | Su yüzey alanı | m² |
 | Ortalama derinlik | m |
 | Hedef su sıcaklığı | °C |
-| Taze su tamamlama debisi | lt/sn |
+| Ek taze su debisi (ters yıkama, sıçrama vb.; buharlaşan su ayrıca otomatik eklenir) | lt/sn |
 | Kullanım şekli (rapor açıklaması) | – |
 
 **Açık havuz**
@@ -41,7 +41,7 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 | Çevre rüzgar koruması / kapalılık oranı | % |
 | Gece izin verilen su soğuması | °C |
 | Güneş radyasyonu etkinliği (açık / parçalı / kapalı / sıfır) | – |
-| Gece havuz örtüsü (var / yok) | – |
+| Gece havuz örtüsü (yok / hava kabarcıklı / köpük yalıtımlı) | – |
 
 **Kapalı havuz**
 
@@ -95,6 +95,12 @@ Verilerin yeniden üretilmesi:
 ```
 python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü>
 ```
+
+## Hesap kabulleri
+
+- **Zemin sıcaklığı (açık havuz):** İlin yıllık ortalama hava sıcaklığıdır (rakım düzeltmeli). Taban ve duvar iletimi bu sıcaklığa göre hesaplanır. Kapalı havuzda 15 °C alınır.
+- **Tamamlama suyu:** Buharlaşan su, ek taze su debisiyle birlikte şebeke sıcaklığından havuz sıcaklığına ısıtılır. Açık havuzda şebeke suyu zemin sıcaklığında kabul edilir; kapalı havuzda "Doldurma / Şebeke Suyu" girdisi kullanılır.
+- **Gece havuz örtüsü:** Buharlaşmanın %85'ini keser. Taşınım ve ışınım, örtünün ısıl direncinden geçer: hava kabarcıklı örtü için R = 0,10 m²K/W, köpük yalıtımlı örtü için R = 0,30 m²K/W kabul edilir. Örtünün dış yüzey sıcaklığı enerji dengesinden bulunur.
 
 ## Not
 

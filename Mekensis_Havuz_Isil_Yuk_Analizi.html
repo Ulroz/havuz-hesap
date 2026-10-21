@@ -490,10 +490,10 @@
           <div class="input-hint">Dizayn su sıcaklığı</div>
         </div>
         <div class="input-group">
-          <label>Taze Su Tamamlama</label>
+          <label>Ek Taze Su (Ters Yıkama vb.)</label>
           <input type="number" id="freshFlow" value="0.05" min="0" max="20" step="0.05" oninput="syncPrintValues(); calculate();" class="hide-in-print">
           <div class="print-only-val" id="freshFlow_txt">0.05 lt/sn</div>
-          <div class="input-hint">0.05 lt/sn tamamlama</div>
+          <div class="input-hint">Buharlaşan su ayrıca eklenir</div>
         </div>
         <div class="input-group">
           <label>Kullanım Şekli</label>
@@ -689,10 +689,11 @@
           <label>Gece Havuz Örtüsü</label>
           <select id="poolCover" onchange="syncPrintValues(); calculate();">
             <option value="no" selected>Yok (Açık Yüzey)</option>
-            <option value="yes">Var (%85 Buharlaşma Kilidi)</option>
+            <option value="bubble">Hava Kabarcıklı Örtü (R = 0,10 m²K/W)</option>
+            <option value="foam">Köpük Yalıtımlı Örtü (R = 0,30 m²K/W)</option>
           </select>
           <div class="print-only-val" id="poolCover_txt">Yok (Açık Yüzey)</div>
-          <div class="input-hint">Termal battaniye</div>
+          <div class="input-hint">Buharlaşmayı %85 keser</div>
         </div>
         <div class="input-group">
           <label>Aerodinamik Rüzgar Katsayısı</label>
@@ -935,6 +936,34 @@
       const td = getDewPointFromVapor(getVaporPressureAt(tAirC, pVapor)) / 100.0;
       const epsSky = Math.min(1.0, 0.711 + 0.56 * td + 0.73 * td * td);
       return (tAirC + 273.15) * Math.pow(epsSky, 0.25) - 273.15;
+    }
+
+    // Gece havuz örtüsü: buharlaşmanın %85'ini keser; taşınım ve ışınım örtünün ısıl direncinden geçer
+    const COVER_EVAP_FACTOR = 0.15;
+    const COVER_R = { bubble: 0.10, foam: 0.30 }; // m²K/W (kabul)
+
+    // Örtülü yüzeyde taşınım ve ışınım (kW). Örtü dış yüzey sıcaklığı T_s, enerji dengesinden
+    // (T_su − T_s)/R = h_c·(T_s − T_hava) + ε·σ·(T_s⁴ − T_gök⁴) ikiye bölme yöntemiyle bulunur.
+    function getCoveredConvRadKw(area, v, tWater, tAir, pVapor, rCover) {
+      const hc = 2.8 + 3.0 * v;
+      const tSky = getSkyTemp(tAir, pVapor) + 273.15;
+      const outflow = ts => hc * (ts - tAir) + WATER_EMISSIVITY * STEFAN_BOLTZMANN * (Math.pow(ts + 273.15, 4) - Math.pow(tSky, 4));
+      let lo = Math.min(tAir, tSky - 273.15) - 10.0, hi = tWater;
+      for (let i = 0; i < 60; i++) {
+        const mid = (lo + hi) / 2.0;
+        if ((tWater - mid) / rCover > outflow(mid)) lo = mid; else hi = mid;
+      }
+      const ts = (lo + hi) / 2.0;
+      return {
+        conv: (hc * (ts - tAir) * area) / 1000.0,
+        rad: (WATER_EMISSIVITY * STEFAN_BOLTZMANN * (Math.pow(ts + 273.15, 4) - Math.pow(tSky, 4)) * area) / 1000.0
+      };
+    }
+
+    // Tamamlama suyu ısıtması (kW): buharlaşan su + ek taze su, şebeke sıcaklığından havuz sıcaklığına
+    function getMakeupHeatKw(evapKw, extraLps, tWater, tMains) {
+      const kgPerS = evapKwToKgPerHour(evapKw) / 3600.0 + extraLps;
+      return kgPerS * 4.186 * Math.max(0, tWater - tMains);
     }
 
     // Ayın temsili günü (Klein, 1977) ve astronomik gün uzunluğu (saat)
@@ -1266,8 +1295,8 @@
       const aWet = area + (4.0 * Math.sqrt(area) * depth);
       const qCond = (0.85 * aWet * Math.max(0, tWater - 15.0)) / 1000.0;
 
-      // Taze Su Tamamlama Isıtması
-      const qFresh = freshFlow * 4.186 * Math.max(0, tWater - tFresh);
+      // Tamamlama Suyu Isıtması (buharlaşan su + ek taze su)
+      const qFresh = getMakeupHeatKw(qEvap, freshFlow, tWater, tFresh);
 
       // Toplam Sürekli İşletme (Rejim) Yükü
       const totalSteady = qEvap + qConvRad + qCond + qFresh;
@@ -1464,7 +1493,7 @@
         { name: "Buharlaşma Isı Kaybı (Gizli Isı - Latent)", kw: qEvap, note: "Havuzdan salon havasına buharlaşma" },
         { name: "Konveksiyon ve Radyasyon Isı Kaybı", kw: qConvRad, note: "Sudan mahal havasına ısı transferi" },
         { name: "Taban ve Duvar İletimi (Kondüksiyon)", kw: qCond, note: "Toprak / zemin yapısına ısı geçişi" },
-        { name: "Taze Su Tamamlama Isıtması", kw: qFresh, note: `Eksilen suyun ${tFresh.toFixed(1)}°C'den ısıtılması` }
+        { name: "Tamamlama Suyu Isıtması", kw: qFresh, note: `Buharlaşan ve ek taze suyun ${tFresh.toFixed(1)}°C'den ısıtılması` }
       ];
 
       let html = '';
@@ -1506,7 +1535,8 @@
 
       const nightTol = readNum('nightTolerance', 0.0);
       const solarEff = parseFloat(document.getElementById('solarEfficiency').value);
-      const hasCover = document.getElementById('poolCover').value === 'yes';
+      const coverType = document.getElementById('poolCover').value;
+      const hasCover = coverType !== 'no';
 
       const targetAlt = readNum('altitude', city.refAlt);
       const deltaAlt = targetAlt - city.refAlt;
@@ -1534,11 +1564,12 @@
       document.getElementById('vEffVal').value = `${effWindLive.toFixed(2)} m/s`;
       document.getElementById('vEffVal_txt').innerText = `${effWindLive.toFixed(2)} m/s`;
 
-      const tFresh = 15.0;
+      // Zemin sıcaklığı: ilin yıllık ortalama hava sıcaklığı (rakım düzeltmeli). Şebeke suyu da bu sıcaklıkta kabul edilir.
+      const tGround = city.months.reduce((sum, mo) => sum + (mo.tDay + mo.tNight) / 2.0, 0) / 12.0 + deltaT;
+      const tFresh = tGround;
       const pWs = getSatVaporPressure(tWater);
       const aWet = area + (4.0 * Math.sqrt(area) * depth);
-      const qCond = (0.85 * aWet * (tWater - 15.0)) / 1000.0;
-      const qFresh = freshFlow * 4.186 * (tWater - tFresh);
+      const qCond = (0.85 * aWet * Math.max(0, tWater - tGround)) / 1000.0;
 
       let peakTheoryKw = 0;
       let peakOptimizedKw = 0;
@@ -1576,20 +1607,29 @@
         const dpNight = Math.max(0, (pWs - pWaNight) / 10.0);
         const evapTheory = getEvapHeatKw(0.09, 0.09, baseWind, dpNight, area);
         const convTheory = getOutdoorConvKw(area, baseWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
-        const totalTheoryNight = Math.max(0, evapTheory + convTheory + qCond + qFresh);
+        const freshTheory = getMakeupHeatKw(evapTheory, freshFlow, tWater, tFresh);
+        const totalTheoryNight = Math.max(0, evapTheory + convTheory + qCond + freshTheory);
 
         // 2. Saha Gerçekliği Gece Kaybı (Hibrit rüzgar katsayısı + örtü)
         let evapRealNight = getEvapHeatKw(0.09, 0.09, effWind, dpNight, area);
-        if (hasCover) evapRealNight *= 0.15;
-        const convRealNight = getOutdoorConvKw(area, effWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
-        const totalRealNight = Math.max(0, evapRealNight + convRealNight + qCond + qFresh);
+        let convRealNight;
+        if (hasCover) {
+          evapRealNight *= COVER_EVAP_FACTOR;
+          const cov = getCoveredConvRadKw(area, effWind, tWater, tNight, pVapor, COVER_R[coverType]);
+          convRealNight = cov.conv + cov.rad;
+        } else {
+          convRealNight = getOutdoorConvKw(area, effWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
+        }
+        const freshNight = getMakeupHeatKw(evapRealNight, freshFlow, tWater, tFresh);
+        const totalRealNight = Math.max(0, evapRealNight + convRealNight + qCond + freshNight);
 
         // 3. Gündüz Kaybı ve Güneş Kazancı
         const pWaDay = getVaporPressureAt(tDay, pVapor);
         const dpDay = Math.max(0, (pWs - pWaDay) / 10.0);
         const evapDay = getEvapHeatKw(0.09, 0.09, effWind, dpDay, area);
         const convDay = getOutdoorConvKw(area, effWind, tWater, tDay) + getSkyRadiationKw(area, tWater, tDay, pVapor);
-        const totalDayLoss = Math.max(0, evapDay + convDay + qCond + qFresh);
+        const freshDay = getMakeupHeatKw(evapDay, freshFlow, tWater, tFresh);
+        const totalDayLoss = Math.max(0, evapDay + convDay + qCond + freshDay);
 
         // Günlük ışınım (kWh/m²·gün) gündüz süresine yayılarak ortalama güneş kazancına (kW) çevrilir
         const solarGain = (area * solarGHI * 0.85 * solarEff) / dayH;
@@ -1669,7 +1709,7 @@
       const pWa2 = getVaporPressureAt(curTNight, curVapor);
       const qEvD = getEvapHeatKw(0.09, 0.09, curWind, Math.max(0, pWs - pWa1) / 10.0, area);
       let qEvN = getEvapHeatKw(0.09, 0.09, curWind, Math.max(0, pWs - pWa2) / 10.0, area);
-      if (hasCover) qEvN *= 0.15;
+      if (hasCover) qEvN *= COVER_EVAP_FACTOR;
       const dailyEvapKg = (evapKwToKgPerHour(qEvD) * activeDayH) + (evapKwToKgPerHour(qEvN) * activeNightH);
 
       document.getElementById('sec3Title').innerText = "Günlük Buharlaşan Su";
@@ -1685,16 +1725,23 @@
       drawSeasonChart(seasonResults);
 
       const qCvD = getOutdoorConvKw(area, curWind, tWater, curTDay);
-      const qCvN = getOutdoorConvKw(area, curWind, tWater, curTNight);
       const qRadD = getSkyRadiationKw(area, tWater, curTDay, curVapor);
-      const qRadN = getSkyRadiationKw(area, tWater, curTNight, curVapor);
+      let qCvN = getOutdoorConvKw(area, curWind, tWater, curTNight);
+      let qRadN = getSkyRadiationKw(area, tWater, curTNight, curVapor);
+      if (hasCover) {
+        const cov = getCoveredConvRadKw(area, curWind, tWater, curTNight, curVapor, COVER_R[coverType]);
+        qCvN = cov.conv;
+        qRadN = cov.rad;
+      }
+      const qFrD = getMakeupHeatKw(qEvD, freshFlow, tWater, tFresh);
+      const qFrN = getMakeupHeatKw(qEvN, freshFlow, tWater, tFresh);
 
       renderOutdoorLossTable([
         { name: "Buharlaşma Isı Kaybı", day: qEvD, night: qEvN },
         { name: "Konveksiyon (Rüzgarla Taşınım)", day: qCvD, night: qCvN },
         { name: "Gökyüzüne Işınım (Açık Gök)", day: qRadD, night: qRadN },
-        { name: "Taban ve Duvar İletimi", day: qCond, night: qCond },
-        { name: "Taze Su Besleme Isıtması", day: qFresh, night: qFresh },
+        { name: `Taban ve Duvar İletimi (zemin ${tGround.toFixed(1)} °C)`, day: qCond, night: qCond },
+        { name: `Tamamlama Suyu Isıtması (buharlaşan + ek, ${tFresh.toFixed(1)} °C'den)`, day: qFrD, night: qFrN },
         { name: "☀️ Güneş Işınımı Kazancı (Gündüz)", day: -solKw, night: 0, isGain: true },
         // Tampon gece kullanılır, gündüz geri yüklenir: günlük enerji dengesine etkisi yoktur
         { name: "🛡️ Termal Kütle Tamponu (Gece)", day: 0, night: -bufKw, isGain: true, noDaily: true }
