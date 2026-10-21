@@ -71,6 +71,27 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 - 24 / 48 / 72 / 96 saat ve seçilen süre için ilk ısıtma güç karşılaştırma tablosu ve grafiği
 - Kayıp kalemlerinin kW, kcal/h ve yüzde dağılımı
 
+## İklim verisi
+
+81 ilin her biri için ayrı aylık veri bulunur. Veriler `tools/iklim_verisi_guncelle.py` betiğiyle kaynaklardan çekilir ve HTML dosyasındaki `CITIES` tablosuna yazılır; tablo elle düzenlenmez.
+
+| Değer | Kaynak |
+|---|---|
+| İstasyon konumu ve rakımı (`refAlt`) | MGM il merkez istasyonu (servis.mgm.gov.tr). MGM kaydında rakımı 0 görünen Kahramanmaraş, Kocaeli, Rize ve Sinop için PVGIS'in arazi modeli (DEM) rakımı kullanılır. |
+| Gündüz / gece dış sıcaklığı | MGM İllere Ait Mevsim Normalleri (1991-2020): ortalama en yüksek / ortalama en düşük sıcaklık. İstanbul için normal tablosu yayımlanmadığından MGM genel istatistik verisi (1950-2025) kullanılır. |
+| Güneş ışınımı | PVGIS 5.3, PVGIS-SARAH3 uydu verisi (2005-2023), yatay düzlem günlük ortalama ışınımı. Programdaki W/m² değeri = günlük ışınım / 14 saat. |
+| Rüzgar (10 m) ve bağıl nem | PVGIS 5.3 tipik meteorolojik yıl (TMY, ERA5 yeniden analiz verisi, 2005-2023), aylık ortalama. İstanbul ve Tekirdağ'ın TMY verisindeki bozuk Aralık bölümleri dışarıda bırakılır. |
+
+İl seçildiğinde saha rakımı ilin istasyon rakımına getirilir. Farklı bir rakım girildiğinde sıcaklıklar 0,65 °C/100 m ile düzeltilir.
+
+Rüzgar ve nem, istasyon ölçümü değil ~25 km çözünürlüklü yeniden analiz (ERA5) verisidir. Özellikle kıyı illerinde istasyon değerlerinden sapabilir. Kesin değer gereken projelerde referans ay girdileri, MGM istasyon verisiyle elle düzeltilmelidir.
+
+Verilerin yeniden üretilmesi:
+
+```
+python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü>
+```
+
 ## Not
 
 Hesap yöntemleri ve kabuller henüz bağımsız bir doğrulamadan geçmemiştir. Sonuçlar, proje kararlarında mühendislik değerlendirmesiyle birlikte kullanılmalıdır.
