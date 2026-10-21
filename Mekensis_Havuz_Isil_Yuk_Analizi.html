@@ -908,6 +908,12 @@
       return qKw * 3600.0 / LATENT_HEAT;
     }
 
+    // Sayısal girdi okuma: alan boş veya geçersizse varsayılan döner; 0 geçerli bir değerdir
+    function readNum(id, fallback) {
+      const v = parseFloat(document.getElementById(id).value);
+      return Number.isFinite(v) ? v : fallback;
+    }
+
     function getSatVaporPressure(tC) {
       return 6.112 * Math.exp((17.67 * tC) / (tC + 243.5));
     }
@@ -969,7 +975,7 @@
     }
 
     function onShelterPctInput() {
-      const sVal = parseFloat(document.getElementById('shelterPct').value) || 0;
+      const sVal = readNum('shelterPct', 0);
       const k = getWindCoeff(sVal);
       document.getElementById('kWindVal').value = `k = ${k.toFixed(3)}`;
       document.getElementById('kWindVal_txt').innerText = `k = ${k.toFixed(3)}`;
@@ -1020,44 +1026,44 @@
         }
       });
 
-      const area = parseFloat(document.getElementById('area').value) || 0;
+      const area = readNum('area', 0);
       document.getElementById('area_txt').innerText = area.toLocaleString('tr-TR') + " m²";
 
-      const depth = parseFloat(document.getElementById('depth').value) || 0;
+      const depth = readNum('depth', 0);
       document.getElementById('depth_txt').innerText = depth.toFixed(2) + " m";
 
       const vol = area * depth;
       document.getElementById('volDisplay_txt').innerText = vol.toLocaleString('tr-TR', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " m³";
 
-      const tWater = parseFloat(document.getElementById('tWater').value) || 28;
+      const tWater = readNum('tWater', 28);
       document.getElementById('tWater_txt').innerText = tWater.toFixed(1) + " °C";
 
-      const freshFlow = parseFloat(document.getElementById('freshFlow').value) || 0;
+      const freshFlow = readNum('freshFlow', 0);
       document.getElementById('freshFlow_txt').innerText = freshFlow.toFixed(2) + " lt/sn";
 
-      const alt = parseFloat(document.getElementById('altitude').value) || 0;
+      const alt = readNum('altitude', 0);
       document.getElementById('altitude_txt').innerText = alt + " m";
 
-      const curTDay = parseFloat(document.getElementById('curTDay').value) || 0;
+      const curTDay = readNum('curTDay', 0);
       document.getElementById('curTDay_txt').innerText = curTDay.toFixed(1) + " °C";
 
-      const curTNight = parseFloat(document.getElementById('curTNight').value) || 0;
+      const curTNight = readNum('curTNight', 0);
       document.getElementById('curTNight_txt').innerText = curTNight.toFixed(1) + " °C";
 
-      const curSolar = parseFloat(document.getElementById('curSolar').value) || 0;
+      const curSolar = readNum('curSolar', 0);
       document.getElementById('curSolar_txt').innerText = curSolar.toFixed(2) + " kWh/m²·gün";
 
-      const curWind = parseFloat(document.getElementById('curWind').value) || 0;
+      const curWind = readNum('curWind', 0);
       document.getElementById('curWind_txt').innerText = curWind.toFixed(1) + " m/s";
 
-      const curRh = parseFloat(document.getElementById('curRh').value) || 0;
+      const curRh = readNum('curRh', 0);
       document.getElementById('curRh_txt').innerText = "%" + curRh;
 
-      const shelterPct = parseFloat(document.getElementById('shelterPct').value) || 0;
+      const shelterPct = readNum('shelterPct', 0);
       const kWind = getWindCoeff(shelterPct);
       document.getElementById('shelterPct_txt').innerText = `%${shelterPct} Kapalılık (k = ${kWind.toFixed(3)})`;
 
-      const nTol = parseFloat(document.getElementById('nightTolerance').value) || 0;
+      const nTol = readNum('nightTolerance', 0);
       document.getElementById('nightTolerance_txt').innerText = nTol.toFixed(1) + " °C";
 
       const uDesc = document.getElementById('usageDesc').value || 'Yüzme / Rekreasyon';
@@ -1067,19 +1073,19 @@
       document.getElementById('inertiaDesc_txt').innerText = iDesc;
 
       // Kapalı havuz girdileri
-      const inAir = parseFloat(document.getElementById('indoorTAir').value) || 20;
+      const inAir = readNum('indoorTAir', 20);
       document.getElementById('indoorTAir_txt').innerText = inAir.toFixed(1) + " °C";
 
-      const inRh = parseFloat(document.getElementById('indoorRh').value) || 60;
+      const inRh = readNum('indoorRh', 60);
       document.getElementById('indoorRh_txt').innerText = "%" + inRh;
 
-      const inWind = parseFloat(document.getElementById('indoorWind').value) || 0.15;
+      const inWind = readNum('indoorWind', 0.15);
       document.getElementById('indoorWind_txt').innerText = inWind.toFixed(2) + " m/s";
 
-      const inFresh = parseFloat(document.getElementById('indoorTFresh').value) || 15;
+      const inFresh = readNum('indoorTFresh', 15);
       document.getElementById('indoorTFresh_txt').innerText = inFresh.toFixed(1) + " °C";
 
-      const wHours = parseFloat(document.getElementById('warmupHours').value) || 48;
+      const wHours = Math.max(1, readNum('warmupHours', 48));
       document.getElementById('warmupHours_txt').innerText = wHours + " Saat";
 
       const wRate = Math.max(0, (tWater - inFresh) / wHours);
@@ -1109,6 +1115,13 @@
       }
     }
 
+    // Rapor kodu ve tarihi raporun hazırlandığı güne göre üretilir
+    function updateReportFooter(prefix) {
+      const d = new Date();
+      const code = `MEK-${prefix}-${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('footerCode').innerText = `Rapor Kodu: ${code} | Tarih: ${d.toLocaleDateString('tr-TR')}`;
+    }
+
     function onPoolTypeChange() {
       const pType = document.getElementById('poolType').value;
       if (pType === 'indoor') {
@@ -1122,7 +1135,7 @@
 
         document.getElementById('detailTitle').innerText = '5. KAPALI HAVUZ DETAYLI TERMODİNAMİK KAYIP DAĞILIMI (SÜREKLİ REJİM)';
         document.getElementById('mainReportSub').innerText = 'VDI 2089 / ASHRAE Kapalı Mahal Termodinamik & İlk Isıtma Simülasyonu';
-        document.getElementById('footerCode').innerText = 'Rapor Kodu: MEK-KH-2026/08 | Tarih: 18.09.2026';
+        updateReportFooter('KH');
       } else {
         document.getElementById('outdoorLocationCard').style.display = 'block';
         document.getElementById('dynamicFactorsCard').style.display = 'block';
@@ -1134,7 +1147,7 @@
 
         document.getElementById('detailTitle').innerText = '5. REFERANS AYI DETAYLI TERMODİNAMİK KAYIP VE KAZANÇ DAĞILIMI';
         document.getElementById('mainReportSub').innerText = 'VDI 2089 / ASHRAE Termodinamik & Sezonluk İklim Simülasyonu';
-        document.getElementById('footerCode').innerText = 'Rapor Kodu: MEK-HY-2026/08 | Tarih: 18.09.2026';
+        updateReportFooter('HY');
       }
       syncPrintValues();
       calculate();
@@ -1185,12 +1198,12 @@
     function onActiveMonthChange() {
       const code = document.getElementById('citySelect').value || 'antalya';
       const city = CITIES[code];
-      const targetAlt = parseFloat(document.getElementById('altitude').value) || (city ? city.refAlt : 0);
+      const targetAlt = readNum('altitude', (city ? city.refAlt : 0));
       const deltaAlt = targetAlt - (city ? city.refAlt : 0);
       const deltaT = -0.0065 * deltaAlt;
       const solarBoost = 1.0 + (0.08 * (targetAlt / 1000.0));
 
-      const activeIdx = parseInt(document.getElementById('activeMonthSelect').value) || 3;
+      const activeIdx = readNum('activeMonthSelect', 3);
       if (city && city.months[activeIdx]) {
         const m = city.months[activeIdx];
         document.getElementById('curTDay').value = (m.tDay + deltaT).toFixed(1);
@@ -1205,15 +1218,15 @@
 
     function calculate() {
       const pType = document.getElementById('poolType').value;
-      const area = parseFloat(document.getElementById('area').value) || 0;
-      const depth = parseFloat(document.getElementById('depth').value) || 0;
+      const area = readNum('area', 0);
+      const depth = readNum('depth', 0);
       const vol = area * depth;
       document.getElementById('volDisplay').value = vol.toFixed(1) + " m³";
       document.getElementById('inertiaDesc').value = `Yüksek (${Math.round(vol).toLocaleString('tr-TR')} Ton Su)`;
       document.getElementById('inertiaDesc_txt').innerText = `Yüksek (${Math.round(vol).toLocaleString('tr-TR')} Ton Su)`;
 
-      const tWater = parseFloat(document.getElementById('tWater').value) || 28;
-      const freshFlow = parseFloat(document.getElementById('freshFlow').value) || 0;
+      const tWater = readNum('tWater', 28);
+      const freshFlow = readNum('freshFlow', 0);
 
       if (pType === 'indoor') {
         calculateIndoor(area, depth, vol, tWater, freshFlow);
@@ -1223,11 +1236,11 @@
     }
 
     function calculateIndoor(area, depth, vol, tWater, freshFlow) {
-      const tAir = parseFloat(document.getElementById('indoorTAir').value) || 20;
-      const rh = parseFloat(document.getElementById('indoorRh').value) || 60;
-      const vAir = parseFloat(document.getElementById('indoorWind').value) || 0.15;
-      const tFresh = parseFloat(document.getElementById('indoorTFresh').value) || 15.0;
-      const warmupHours = parseFloat(document.getElementById('warmupHours').value) || 48;
+      const tAir = readNum('indoorTAir', 20);
+      const rh = readNum('indoorRh', 60);
+      const vAir = readNum('indoorWind', 0.15);
+      const tFresh = readNum('indoorTFresh', 15.0);
+      const warmupHours = Math.max(1, readNum('warmupHours', 48));
 
       // Buharlaşma hesabı (VDI 2089 / ASHRAE standart iç mahal formülü)
       const pWs = getSatVaporPressure(tWater);
@@ -1269,7 +1282,7 @@
       document.getElementById('res2Title').innerText = "İLK ISITMA (WARM-UP) KAPASİTESİ";
       document.getElementById('outOptKw').innerText = finalWarmup.toLocaleString('tr-TR') + " kW";
       document.getElementById('outOptKcal').innerText = Math.round(finalWarmup * 860).toLocaleString('tr-TR') + " kcal/h";
-      document.getElementById('res2Sub').innerHTML = `Havuzun ilk dolumda 15°C'den <strong>${tWater.toFixed(1)}°C</strong>'ye belirlenen sürede (<strong>${warmupHours} saat</strong>) şartlandırılması için gereken geçici kapasite.`;
+      document.getElementById('res2Sub').innerHTML = `Havuzun ilk dolumda ${tFresh.toFixed(1)}°C'den <strong>${tWater.toFixed(1)}°C</strong>'ye belirlenen sürede (<strong>${warmupHours} saat</strong>) şartlandırılması için gereken geçici kapasite.`;
 
       // İkincil Göstergeler
       document.getElementById('sec1Title').innerText = "Nem Alma Santrali Nem Yükü";
@@ -1300,7 +1313,7 @@
       renderIndoorSimulation(vol, tWater, tFresh, totalSteady, warmupHours);
 
       // Detaylı Kayıp Tablosu
-      renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady);
+      renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady, tFresh);
     }
 
     function renderIndoorSimulation(vol, tWater, tFresh, totalSteady, activeHours) {
@@ -1428,7 +1441,7 @@
       ctx.textAlign = 'left';
     }
 
-    function renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady) {
+    function renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady, tFresh) {
       document.getElementById('lossTableHead').innerHTML = `
         <tr>
           <th style="width:36%;">Termodinamik Kalem</th>
@@ -1442,7 +1455,7 @@
         { name: "Buharlaşma Isı Kaybı (Gizli Isı - Latent)", kw: qEvap, note: "Havuzdan salon havasına buharlaşma" },
         { name: "Konveksiyon ve Radyasyon Isı Kaybı", kw: qConvRad, note: "Sudan mahal havasına ısı transferi" },
         { name: "Taban ve Duvar İletimi (Kondüksiyon)", kw: qCond, note: "Toprak / zemin yapısına ısı geçişi" },
-        { name: "Taze Su Tamamlama Isıtması", kw: qFresh, note: "Eksilen suyun 15°C'den ısıtılması" }
+        { name: "Taze Su Tamamlama Isıtması", kw: qFresh, note: `Eksilen suyun ${tFresh.toFixed(1)}°C'den ısıtılması` }
       ];
 
       let html = '';
@@ -1477,22 +1490,22 @@
       const endIdx = parseInt(document.getElementById('seasonEnd').value);
 
       // Hibrit Rüzgar Modeli Katsayısı
-      const shelterPct = parseFloat(document.getElementById('shelterPct').value) || 0;
+      const shelterPct = readNum('shelterPct', 0);
       const kWind = getWindCoeff(shelterPct);
       document.getElementById('kWindVal').value = `k = ${kWind.toFixed(3)}`;
       document.getElementById('kWindVal_txt').innerText = `k = ${kWind.toFixed(3)}`;
 
-      const nightTol = parseFloat(document.getElementById('nightTolerance').value) || 0.0;
+      const nightTol = readNum('nightTolerance', 0.0);
       const solarEff = parseFloat(document.getElementById('solarEfficiency').value);
       const hasCover = document.getElementById('poolCover').value === 'yes';
 
-      const targetAlt = parseFloat(document.getElementById('altitude').value) || city.refAlt;
+      const targetAlt = readNum('altitude', city.refAlt);
       const deltaAlt = targetAlt - city.refAlt;
       const deltaT = -0.0065 * deltaAlt;
       const solarBoost = 1.0 + (0.08 * (targetAlt / 1000.0));
 
       // Aktif seçili ay
-      const activeIdx = parseInt(document.getElementById('activeMonthSelect').value) || startIdx;
+      const activeIdx = readNum('activeMonthSelect', startIdx);
 
       // Gün uzunluğu ilin enlemine ve aya göre hesaplanır
       const lat = city.lat !== undefined ? city.lat : 39.0;
@@ -1506,7 +1519,7 @@
       document.getElementById('bufferMax_txt').innerText = `${Math.round(activeBufferKw)} kW (Maksimum)`;
 
       // Su seviyesi efektif rüzgar göstergesi
-      const baseWindLive = parseFloat(document.getElementById('curWind').value) || 2.7;
+      const baseWindLive = readNum('curWind', 2.7);
       const effWindLive = baseWindLive * kWind;
       document.getElementById('effectiveWindHint').innerText = `Efektif su rüzgarı: ${effWindLive.toFixed(2)} m/s`;
       document.getElementById('vEffVal').value = `${effWindLive.toFixed(2)} m/s`;
@@ -1665,14 +1678,15 @@
       const qRadN = getSkyRadiationKw(area, tWater, curTNight, curRh);
 
       renderOutdoorLossTable([
-        { name: "Buharlaşma Isı Kaybı", day: qEvD, night: qEvN, net: qEvN },
-        { name: "Konveksiyon (Rüzgarla Taşınım)", day: qCvD, night: qCvN, net: qCvN },
-        { name: "Gökyüzüne Işınım (Açık Gök)", day: qRadD, night: qRadN, net: qRadN },
-        { name: "Taban ve Duvar İletimi", day: qCond, night: qCond, net: qCond },
-        { name: "Taze Su Besleme Isıtması", day: qFresh, night: qFresh, net: qFresh },
-        { name: "☀️ Güneş Işınımı Kazancı (Gündüz)", day: -solKw, night: 0, net: -solKw, isGain: true },
-        { name: "🛡️ Termal Kütle Tamponu (Gece)", day: 0, night: -bufKw, net: -bufKw, isGain: true }
-      ]);
+        { name: "Buharlaşma Isı Kaybı", day: qEvD, night: qEvN },
+        { name: "Konveksiyon (Rüzgarla Taşınım)", day: qCvD, night: qCvN },
+        { name: "Gökyüzüne Işınım (Açık Gök)", day: qRadD, night: qRadN },
+        { name: "Taban ve Duvar İletimi", day: qCond, night: qCond },
+        { name: "Taze Su Besleme Isıtması", day: qFresh, night: qFresh },
+        { name: "☀️ Güneş Işınımı Kazancı (Gündüz)", day: -solKw, night: 0, isGain: true },
+        // Tampon gece kullanılır, gündüz geri yüklenir: günlük enerji dengesine etkisi yoktur
+        { name: "🛡️ Termal Kütle Tamponu (Gece)", day: 0, night: -bufKw, isGain: true, noDaily: true }
+      ], activeDayH, activeNightH);
     }
 
     function renderSeasonTable(results, peakName) {
@@ -1775,35 +1789,52 @@
       ctx.textAlign = 'left';
     }
 
-    function renderOutdoorLossTable(items) {
+    function renderOutdoorLossTable(items, dayH, nightH) {
       document.getElementById('lossTableHead').innerHTML = `
         <tr>
           <th>Termodinamik Kalem</th>
           <th class="num">Gündüz (kW)</th>
           <th class="num">Gece (kW)</th>
-          <th class="num">Net Etki (kW)</th>
+          <th class="num">Günlük Enerji (kWh/gün)</th>
         </tr>
       `;
 
       let html = '';
+      let dailyTotal = 0;
       items.forEach(it => {
         const isGain = it.isGain;
+        const daily = it.noDaily ? 0 : it.day * dayH + it.night * nightH;
+        dailyTotal += daily;
+        const dailyCell = it.noDaily
+          ? '<span style="font-weight:400; color:var(--text-muted);">0 (gündüz geri yüklenir)</span>'
+          : `${Math.round(daily).toLocaleString('tr-TR')} kWh`;
         html += `
           <tr>
             <td><strong>${it.name}</strong></td>
             <td class="num" style="${isGain ? 'color:var(--corp-green); font-weight:700;' : ''}">${it.day ? it.day.toFixed(1) : '-'}</td>
             <td class="num" style="${isGain ? 'color:var(--corp-blue); font-weight:700;' : ''}">${it.night ? it.night.toFixed(1) : '-'}</td>
-            <td class="num" style="font-weight:700; color:${it.net < 0 ? 'var(--corp-green)' : 'var(--corp-slate)'};">
-              ${it.net.toFixed(1)} kW
+            <td class="num" style="font-weight:700; color:${daily < 0 ? 'var(--corp-green)' : 'var(--corp-slate)'};">
+              ${dailyCell}
             </td>
           </tr>
         `;
       });
+
+      html += `
+        <tr style="background:#f1f5f9; border-top:2px solid var(--border);">
+          <td><strong>GÜNLÜK NET ISI DENGESİ</strong>
+            <div style="font-size:0.65rem; color:var(--text-muted);">Gündüz ${dayH.toFixed(1)} h, gece ${nightH.toFixed(1)} h · 24 saat ortalaması ${(dailyTotal / 24).toFixed(1)} kW</div></td>
+          <td class="num">-</td>
+          <td class="num">-</td>
+          <td class="num" style="font-weight:900; color:var(--corp-blue); font-size:0.82rem;">${Math.round(dailyTotal).toLocaleString('tr-TR')} kWh</td>
+        </tr>
+      `;
       document.getElementById('lossTableBody').innerHTML = html;
     }
 
     window.onload = function() {
       populateCitySelect();
+      updateReportFooter('HY');
       updateActiveMonthList();
       onActiveMonthChange();
     };
