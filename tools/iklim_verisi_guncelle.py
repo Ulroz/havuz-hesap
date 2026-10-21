@@ -29,10 +29,6 @@ import urllib.request
 MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
           "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
 
-# Programdaki solarW değeri gündüz süresi (14 h) boyunca ortalama ışınım olarak kullanılır:
-# günlük kazanç = solarW × 14 h. Bu nedenle solarW = günlük GHI / 14 h olarak türetilir.
-DAY_HOURS = 14.0
-
 NORMALS_PERIOD = (1991, 2020)
 PVGIS_PERIOD = (2005, 2023)
 QC_CONSTANT_HOURS = 24
@@ -202,7 +198,6 @@ def main():
                 "m": MONTHS[i],
                 "tDay": norm["tMax"][i],
                 "tNight": norm["tMin"][i],
-                "solarW": int(round(ghi[i] * 1000 / DAY_HOURS)),
                 "ghi": round(ghi[i], 2),
                 "wind": round(tmy["wind"][i], 1),
                 "rh": int(round(tmy["rh"][i])),
