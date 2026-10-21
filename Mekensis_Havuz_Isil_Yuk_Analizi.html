@@ -520,7 +520,7 @@
       <div class="form-grid-4">
         <div class="input-group">
           <label style="color:var(--corp-blue);">🏙️ İl Seçimi</label>
-          <select id="citySelect" onchange="syncPrintValues(); onCityOrAltChange();">
+          <select id="citySelect" onchange="syncPrintValues(); onCityChange();">
             <!-- JS -->
           </select>
           <div class="print-only-val" id="citySelect_txt">Antalya</div>
@@ -1079,6 +1079,13 @@
       }
       syncPrintValues();
       calculate();
+    }
+
+    // İl değiştiğinde saha rakımı ilin referans rakımına getirilir (elle değiştirilebilir)
+    function onCityChange() {
+      const city = CITIES[document.getElementById('citySelect').value];
+      if (city) document.getElementById('altitude').value = city.refAlt;
+      onCityOrAltChange();
     }
 
     function onCityOrAltChange() {
