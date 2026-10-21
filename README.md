@@ -16,6 +16,28 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 
 İnternet bağlantısı gerekmez; tüm iklim verileri dosyanın içindedir.
 
+### Web uygulaması (GitHub Pages)
+
+Program, GitHub Pages üzerinden web sitesi olarak da yayımlanabilir. Bu durumda telefona veya bilgisayara uygulama olarak yüklenebilir (PWA) ve ilk açılıştan sonra internetsiz çalışır.
+
+Yayımlama için bir kez şu ayar yapılır: deponun *Settings → Pages* sayfasında **Source: Deploy from a branch**, **Branch: main**, klasör **/ (root)** seçilir ve kaydedilir. Birkaç dakika içinde site `https://<kullanıcı-adı>.github.io/<depo-adı>/` adresinde yayına girer; `main` dalına birleştirilen her değişiklik siteye otomatik yansır.
+
+Uygulama olarak yükleme:
+- **Android / Chrome, Edge:** Adres çubuğundaki yükle simgesi ya da menüdeki **"Uygulamayı yükle"** / **"Ana ekrana ekle"**.
+- **iPhone / Safari:** Paylaş düğmesi → **"Ana Ekrana Ekle"**.
+
+GitHub Pages sitesi, depo gizli olsa bile herkese açıktır. Pages'in gizli depolarda kullanılabilmesi ücretli GitHub planı gerektirir.
+
+### Dosya yapısı
+
+| Dosya | Görevi |
+|---|---|
+| `Mekensis_Havuz_Isil_Yuk_Analizi.html` | Programın kendisi (tek başına da çalışır) |
+| `index.html` | Web sitesinin giriş sayfası; programa yönlendirir |
+| `manifest.webmanifest`, `icons/` | Uygulama adı, rengi ve simgeleri (PWA) |
+| `sw.js` | Çevrimdışı çalışma için önbellek (service worker) |
+| `tools/iklim_verisi_guncelle.py` | İklim verisini kaynaklardan yeniden üreten betik |
+
 ## Girdiler
 
 **Ortak (havuz geometrisi)**
