@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HAVUZ ISIL YÜK HESAP RAPORU - MEKENSİS MÜHENDİSLİK</title>
+  <!-- PWA: GitHub Pages üzerinden yüklenebilir uygulama; dosya doğrudan açıldığında etkisizdir -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <style>
     :root {
       --corp-dark: #0f172a;
@@ -357,6 +362,39 @@
       align-items: center;
       font-size: 0.68rem;
       color: var(--text-muted);
+    }
+    /* Telefon ve dar ekranlar (yalnız ekran; yazdırma düzeni değişmez) */
+    @media screen and (max-width: 760px) {
+      header {
+        padding: 10px 16px;
+      }
+      .header-content {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .header-titles {
+        text-align: left;
+      }
+      .container {
+        padding: 0 16px;
+      }
+      .form-grid-4, .form-grid-5, .secondary-metrics-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .results-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .input-group input, .input-group select {
+        min-width: 0;
+        width: 100%;
+      }
+      .card-title, .footer-stamp {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .action-bar {
+        flex-wrap: wrap;
+      }
     }
     /* Strict A4 Page Split & Print Perfection */
     @page {
@@ -1889,6 +1927,13 @@
         </tr>
       `;
       document.getElementById('lossTableBody').innerHTML = html;
+    }
+
+    // Service worker yalnızca web sunucusundan (GitHub Pages) açıldığında kaydedilir
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
     }
 
     window.onload = function() {
