@@ -1,11 +1,10 @@
 // Çevrimdışı çalışma için service worker.
 // Strateji: önce ağ (güncel sürüm), ağ yoksa önbellek. Böylece yayımlanan düzeltmeler
 // çevrimiçi ilk açılışta gelir, çevrimdışıyken son indirilen sürüm çalışır.
-const CACHE = 'havuz-hesap-v1';
+const CACHE = 'havuz-hesap-v2';
 const ASSETS = [
   './',
   './index.html',
-  './Mekensis_Havuz_Isil_Yuk_Analizi.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',

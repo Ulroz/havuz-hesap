@@ -3,16 +3,1979 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mekensis Havuz Isıl Yük Hesabı</title>
-  <meta http-equiv="refresh" content="0; url=Mekensis_Havuz_Isil_Yuk_Analizi.html">
+  <title>Havuz Isıl Yük Hesabı</title>
+  <!-- PWA: GitHub Pages üzerinden yüklenebilir uygulama; dosya doğrudan açıldığında etkisizdir -->
   <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#134e4a">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <style>
-    body { margin: 0; padding: 24px 16px; background: #f8fafc; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    a { color: #0284c7; font-weight: 700; }
+    :root {
+      --corp-dark: #134e4a;
+      --corp-slate: #1e293b;
+      --c-primary: #0d9488;
+      --c-primary-light: #ccfbf1;
+      --c-warn: #d97706;
+      --c-warn-light: #fef3c7;
+      --corp-green: #16a34a;
+      --corp-green-light: #dcfce7;
+      --corp-red: #dc2626;
+      --corp-red-light: #fee2e2;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.35;
+      font-size: 12.5px;
+      padding-bottom: 40px;
+    }
+    /* Top Corporate Banner */
+    header {
+      background: var(--corp-dark);
+      color: white;
+      padding: 10px 24px;
+      border-bottom: 3px solid var(--c-primary);
+    }
+    .header-content {
+      max-width: 1060px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-titles {
+      text-align: left;
+    }
+    .header-titles h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
+    }
+    .header-titles p {
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+    /* Container */
+    .container {
+      max-width: 1060px;
+      margin: 10px auto;
+      padding: 0 12px;
+    }
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title {
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--corp-slate);
+      border-bottom: 1.5px solid var(--border-light);
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--c-primary-light);
+      color: var(--c-primary);
+      text-transform: none;
+    }
+    /* Grids */
+    .form-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .form-grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .input-group label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--corp-slate);
+      margin-bottom: 2px;
+    }
+    .input-group input, .input-group select {
+      padding: 4px 7px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--corp-dark);
+      background-color: #fff;
+      outline: none;
+      transition: border-color 0.15s ease-in-out;
+    }
+    .input-group input:focus, .input-group select:focus {
+      border-color: var(--c-primary);
+    }
+    .input-hint {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    /* Results Big Boxes */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .result-box {
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .result-box.theoretical {
+      background: #f1f5f9;
+      border: 1.5px solid #cbd5e1;
+    }
+    .result-box.optimized {
+      background: #f0fdfa;
+      border: 2px solid var(--c-primary);
+      box-shadow: 0 4px 10px -2px rgba(2, 132, 199, 0.15);
+    }
+    .result-box h3 {
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .result-box.theoretical h3 {
+      color: var(--corp-slate);
+    }
+    .result-box.optimized h3 {
+      color: var(--c-primary);
+    }
+    .cap-display-kw {
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+    .result-box.theoretical .cap-display-kw {
+      color: var(--corp-slate);
+    }
+    .result-box.optimized .cap-display-kw {
+      color: var(--c-primary);
+    }
+    .cap-display-kcal {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .cap-sub {
+      font-size: 0.68rem;
+      color: var(--corp-slate);
+      line-height: 1.25;
+    }
+    /* Secondary Metrics Strip */
+    .secondary-metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .metric-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    .metric-card.highlight {
+      border-color: var(--c-primary);
+      background: #f0fdfa;
+    }
+    .metric-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .metric-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--corp-slate);
+    }
+    .metric-unit {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+    }
+    th, td {
+      padding: 4px 6px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 800;
+      color: var(--corp-slate);
+      border-top: 1px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
+      white-space: normal;
+    }
+    td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    tr.peak-month {
+      background-color: var(--c-warn-light);
+      font-weight: 700;
+    }
+    tr.peak-month td {
+      color: #92400e;
+      border-bottom: 1.5px solid #fcd34d;
+    }
+    .badge-status-ok {
+      background: var(--corp-green-light);
+      color: var(--corp-green);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      display: inline-block;
+    }
+    .badge-status-req {
+      background: var(--c-warn-light);
+      color: var(--c-warn);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      display: inline-block;
+    }
+    .badge-status-indoor {
+      background: var(--c-primary-light);
+      color: var(--c-primary);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      display: inline-block;
+    }
+    /* Quick Warmup Buttons */
+    .quick-btn-group {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .quick-btn {
+      flex: 1;
+      padding: 2px 4px;
+      font-size: 0.70rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #f8fafc;
+      color: var(--c-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-btn:hover {
+      background: #ccfbf1;
+      border-color: var(--c-primary);
+    }
+    .quick-btn.active {
+      background: var(--c-primary);
+      color: #ffffff;
+      border-color: var(--c-primary);
+    }
+    /* Print values container */
+    .print-only-val {
+      display: none;
+    }
+    /* Action Buttons */
+    .action-bar {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--c-primary);
+      color: white;
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--corp-slate);
+    }
+    .footer-stamp {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    /* Telefon ve dar ekranlar (yalnız ekran; yazdırma düzeni değişmez) */
+    @media screen and (max-width: 760px) {
+      header {
+        padding: 10px 16px;
+      }
+      .header-content {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .header-titles {
+        text-align: left;
+      }
+      .container {
+        padding: 0 16px;
+      }
+      .form-grid-4, .form-grid-5, .secondary-metrics-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .results-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .input-group input, .input-group select {
+        min-width: 0;
+        width: 100%;
+      }
+      .card-title, .footer-stamp {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .action-bar {
+        flex-wrap: wrap;
+      }
+    }
+    /* Strict A4 Page Split & Print Perfection */
+    @page {
+      margin: 10mm 12mm 10mm 12mm;
+      size: A4 portrait;
+    }
+    @media print {
+      body {
+        padding: 0;
+        background: #fff;
+      }
+      header {
+        position: static !important;
+        display: block !important;
+        background: var(--corp-dark) !important;
+        color: white !important;
+        padding: 12px 18px !important;
+        border-bottom: 3px solid #0d9488 !important;
+        margin-bottom: 8px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .action-bar, .input-hint, .quick-btn-group {
+        display: none !important;
+      }
+      /* Container must be block in print for page-break to work properly */
+      .container {
+        display: block !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .card {
+        border: 1px solid #cbd5e1;
+        box-shadow: none;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        margin-bottom: 8px;
+        padding: 10px 14px;
+      }
+      /* Guaranteed 2nd page break directly on #seasonCard and #indoorSimCard */
+      #seasonCard, #indoorSimCard {
+        break-before: page !important;
+        page-break-before: always !important;
+        margin-top: 15px !important;
+      }
+      .form-grid-4 {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+      }
+      .form-grid-5 {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 6px !important;
+      }
+      .results-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      /* Hide form interactive controls and display clean report values */
+      select, .hide-in-print {
+        display: none !important;
+      }
+      .print-only-val {
+        display: block !important;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.84rem;
+        padding: 1px 0;
+      }
+    }
   </style>
 </head>
 <body>
-  <p>Hesap programı açılıyor… Açılmazsa <a href="Mekensis_Havuz_Isil_Yuk_Analizi.html">buraya tıklayınız</a>.</p>
+
+  <!-- RAPOR BAŞLIĞI -->
+  <header>
+    <div class="header-content">
+      <div class="header-titles">
+        <h1 id="mainReportHeader">HAVUZ ISIL YÜK HESABI</h1>
+        <p id="mainReportSub">VDI 2089 / ASHRAE Termodinamik & Sezonluk İklim Simülasyonu</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- RAPOR BİLGİLERİ (İSTEĞE BAĞLI) -->
+    <div class="card">
+      <div class="card-title">
+        <span>RAPOR BİLGİLERİ</span>
+        <span class="badge">İsteğe Bağlı</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group" style="grid-column: span 2;">
+          <label>Proje Adı</label>
+          <input type="text" id="projectName" value="" placeholder="ör. Otel açık yüzme havuzu" oninput="syncPrintValues();" class="hide-in-print">
+          <div class="print-only-val" id="projectName_txt">-</div>
+        </div>
+        <div class="input-group" style="grid-column: span 2;">
+          <label>Hazırlayan</label>
+          <input type="text" id="preparedBy" value="" placeholder="Ad Soyad / Firma" oninput="onPreparedByInput();" class="hide-in-print">
+          <div class="print-only-val" id="preparedBy_txt">-</div>
+          <div class="input-hint">Bu tarayıcıda hatırlanır</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. HAVUZ GEOMETRİSİ VE BOYUTLANDIRMA -->
+    <div class="card">
+      <div class="card-title">
+        <span>1. HAVUZ GEOMETRİSİ VE BOYUTLANDIRMA</span>
+        <span class="badge">Tesis Verileri</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label>Havuz Konumu</label>
+          <select id="poolType" onchange="syncPrintValues(); onPoolTypeChange();">
+            <option value="outdoor" selected>Açık Havuz</option>
+            <option value="indoor">Kapalı Havuz</option>
+          </select>
+          <div class="print-only-val" id="poolType_txt">Açık Havuz</div>
+        </div>
+        <div class="input-group">
+          <label>Su Yüzey Alanı (m²)</label>
+          <input type="number" id="area" value="2000" min="5" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="area_txt">2,000 m²</div>
+          <div class="input-hint">Su aynası net yüzeyi</div>
+        </div>
+        <div class="input-group">
+          <label>Ortalama Derinlik (m)</label>
+          <input type="number" id="depth" value="1.5" min="0.5" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="depth_txt">1.50 m</div>
+          <div class="input-hint">Ortalama su yüksekliği</div>
+        </div>
+        <div class="input-group">
+          <label>Hesaplanan Su Hacmi</label>
+          <input type="text" id="volDisplay" value="3000.0 m³" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="print-only-val" id="volDisplay_txt">3,000.0 m³</div>
+          <div class="input-hint">3,000 Ton su kütlesi</div>
+        </div>
+      </div>
+
+      <div class="form-grid-4" style="margin-top:4px;">
+        <div class="input-group">
+          <label>Hedef Su Sıcaklığı</label>
+          <input type="number" id="tWater" value="28" min="15" max="45" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="tWater_txt">28.0 °C</div>
+          <div class="input-hint">Dizayn su sıcaklığı</div>
+        </div>
+        <div class="input-group">
+          <label>Ek Taze Su (Ters Yıkama vb.)</label>
+          <input type="number" id="freshFlow" value="0.05" min="0" max="20" step="0.05" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="freshFlow_txt">0.05 lt/sn</div>
+          <div class="input-hint">Buharlaşan su ayrıca eklenir</div>
+        </div>
+        <div class="input-group">
+          <label>Kullanım Şekli</label>
+          <input type="text" id="usageDesc" value="Yüzme / Rekreasyon" oninput="syncPrintValues();" style="background:#f8fafc;" class="hide-in-print">
+          <div class="print-only-val" id="usageDesc_txt">Yüzme / Rekreasyon</div>
+          <div class="input-hint">Genel tesis tanımı</div>
+        </div>
+        <div class="input-group">
+          <label>Termal Atalet</label>
+          <input type="text" id="inertiaDesc" value="Yüksek (3,000 Ton Su)" readonly style="background:#f1f5f9;" class="hide-in-print">
+          <div class="print-only-val" id="inertiaDesc_txt">Yüksek (3,000 Ton Su)</div>
+          <div class="input-hint">Termal akümülasyon</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. LOKASYON, RAKIM VE İŞLETME SEZONU (AÇIK HAVUZ İÇİN) -->
+    <div class="card" id="outdoorLocationCard">
+      <div class="card-title">
+        <span>2. LOKASYON, RAKIM VE İŞLETME SEZONU</span>
+        <span class="badge" id="locBadge">81 İl · MGM 1991-2020 & PVGIS</span>
+      </div>
+
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label style="color:var(--c-primary);">🏙️ İl Seçimi</label>
+          <select id="citySelect" onchange="syncPrintValues(); onCityChange();">
+            <!-- JS -->
+          </select>
+          <div class="print-only-val" id="citySelect_txt">Antalya</div>
+        </div>
+        <div class="input-group">
+          <label>🏔️ Saha / Havuz Rakımı (m)</label>
+          <input type="number" id="altitude" value="47" min="0" max="3000" step="5" oninput="syncPrintValues(); onCityOrAltChange();" class="hide-in-print">
+          <div class="print-only-val" id="altitude_txt">47 m</div>
+          <div class="input-hint" id="altHint">İl referans rakımı: 47 m</div>
+        </div>
+        <div class="input-group">
+          <label style="color:var(--c-warn);">📅 Sezon Başlangıcı</label>
+          <select id="seasonStart" onchange="syncPrintValues(); onSeasonChange();">
+            <option value="0">Ocak</option>
+            <option value="1">Şubat</option>
+            <option value="2">Mart</option>
+            <option value="3" selected>Nisan</option>
+            <option value="4">Mayıs</option>
+            <option value="5">Haziran</option>
+          </select>
+          <div class="print-only-val" id="seasonStart_txt">Nisan</div>
+        </div>
+        <div class="input-group">
+          <label style="color:var(--c-warn);">📅 Sezon Bitişi</label>
+          <select id="seasonEnd" onchange="syncPrintValues(); onSeasonChange();">
+            <option value="8">Eylül</option>
+            <option value="9" selected>Ekim</option>
+            <option value="10">Kasım</option>
+            <option value="11">Aralık</option>
+          </select>
+          <div class="print-only-val" id="seasonEnd_txt">Ekim</div>
+        </div>
+      </div>
+
+      <!-- DETAYLI İNCELENEN REFERANS AYI GİRDİLERİ -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:10px 12px; margin-top:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.75rem; font-weight:700; color:var(--corp-slate);">
+            🔍 Detaylı İncelenen Referans Ayı:
+          </span>
+          <select id="activeMonthSelect" style="padding:3px 8px; font-size:0.78rem; font-weight:700; color:var(--c-primary); width:auto;" onchange="syncPrintValues(); onActiveMonthChange();">
+            <!-- JS -->
+          </select>
+          <span class="print-only-val" id="activeMonthSelect_txt" style="color:var(--c-primary); font-weight:800;">Nisan</span>
+        </div>
+
+        <div class="form-grid-5">
+          <div class="input-group">
+            <label>Gündüz Dış (°C)</label>
+            <input type="number" id="curTDay" value="23.8" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curTDay_txt">23.8 °C</div>
+            <div class="input-hint">Ort. en yüksek (MGM)</div>
+          </div>
+          <div class="input-group">
+            <label>Gece Dış (°C)</label>
+            <input type="number" id="curTNight" value="14.2" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curTNight_txt">14.2 °C</div>
+            <div class="input-hint">Ort. en düşük (MGM)</div>
+          </div>
+          <div class="input-group">
+            <label>Güneş (kWh/m²·gün)</label>
+            <input type="number" id="curSolar" value="5.96" min="0" max="12" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curSolar_txt">5.96 kWh/m²·gün</div>
+            <div class="input-hint">Günlük GHI (PVGIS)</div>
+          </div>
+          <div class="input-group">
+            <label>Rüzgar, 10 m (m/s)</label>
+            <input type="number" id="curWind" value="2.7" min="0" max="20" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curWind_txt">2.7 m/s</div>
+            <div class="input-hint">PVGIS/ERA5 aylık ort. (elle girilir)</div>
+          </div>
+          <div class="input-group">
+            <label>Çiy Noktası (°C)</label>
+            <input type="number" id="curTd" value="11.5" min="-40" max="35" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curTd_txt">11.5 °C</div>
+            <div class="input-hint" id="tdHint">PVGIS/ERA5 aylık ort.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. KAPALI HAVUZ İÇ MAHAL VE ŞARTLANDIRMA PARAMETRELERİ (KAPALI HAVUZ İÇİN) -->
+    <div class="card" id="indoorLocationCard" style="display:none;">
+      <div class="card-title">
+        <span>2. KAPALI HAVUZ İÇ MAHAL VE ŞARTLANDIRMA PARAMETRELERİ</span>
+        <span class="badge" style="background:#f0fdfa; color:#0d9488;">Kapalı Mahal Ortamı</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label style="color:var(--c-primary);">🌡️ Mahal Hava Sıcaklığı (°C)</label>
+          <input type="number" id="indoorTAir" value="20" min="10" max="40" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorTAir_txt">20.0 °C</div>
+          <div class="input-hint">Mahal sıcaklığı (elle girilir)</div>
+        </div>
+        <div class="input-group">
+          <label style="color:var(--c-primary);">💧 Mahal Bağıl Nemi (% RH)</label>
+          <input type="number" id="indoorRh" value="60" min="20" max="95" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorRh_txt">%60</div>
+          <div class="input-hint">VDI 2089: %50 - %65</div>
+        </div>
+        <div class="input-group">
+          <label>💨 İç Ortam Hava Hızı (m/s)</label>
+          <input type="number" id="indoorWind" value="0.15" min="0.05" max="1.5" step="0.05" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorWind_txt">0.15 m/s</div>
+          <div class="input-hint">Durgun konfor: 0.10 - 0.20 m/s</div>
+        </div>
+        <div class="input-group">
+          <label>🚰 Doldurma / Şebeke Suyu (°C)</label>
+          <input type="number" id="indoorTFresh" value="15.0" min="5" max="25" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorTFresh_txt">15.0 °C</div>
+          <div class="input-hint">İlk dolum su sıcaklığı</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. DİNAMİK SAHA VE MİKROKLİMA FAKTÖRLERİ (AÇIK HAVUZ İÇİN) -->
+    <div class="card" id="dynamicFactorsCard">
+      <div class="card-title">
+        <span>3. DİNAMİK SAHA VE MİKROKLİMA FAKTÖRLERİ</span>
+        <span class="badge" style="background:#fef3c7; color:#b45309;">Saha Gerçekliği & İhale Optimizasyonu</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label>Çevre Rüzgar Koruması (Hibrit)</label>
+          <select id="windPreset" onchange="onWindPresetChange()">
+            <option value="0">Açık Saha / Düzlük (Korumasız — %0 Kapalı)</option>
+            <option value="25">Tek Cephesi Kapalı / Duvarlı (~%25 Kapalı)</option>
+            <option value="50" selected>Bahçe İçi / Peyzajlı / L Tipi (~%50 Kapalı)</option>
+            <option value="75">Yapılar Arası / U Tipi Avlu (~%75 Kapalı)</option>
+            <option value="90">İç Avlu / Atrium / Çukur Kot (~%90 Kapalı)</option>
+            <option value="custom">Özel Kapalılık Oranı Girişi</option>
+          </select>
+          <div class="print-only-val" id="windPreset_txt">Bahçe İçi / Peyzajlı / L Tipi (~%50 Kapalı)</div>
+          <div class="input-hint" id="effectiveWindHint">Efektif su rüzgarı: 1.35 m/s</div>
+        </div>
+
+        <div class="input-group">
+          <label>Çevre Kapalılık Oranı (%)</label>
+          <input type="number" id="shelterPct" value="50" min="0" max="100" step="5" oninput="onShelterPctInput()" class="hide-in-print">
+          <div class="print-only-val" id="shelterPct_txt">%50 Kapalılık (k = 0.500)</div>
+          <div class="input-hint">Serbest elle girilebilir (%)</div>
+        </div>
+
+        <div class="input-group">
+          <label>Gece İzin Verilen Soğuma (°C)</label>
+          <input type="number" id="nightTolerance" value="1.2" min="0.0" max="5.0" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="nightTolerance_txt">1.2 °C</div>
+          <div class="input-hint">Termal tampon sağlar (elle girilir)</div>
+        </div>
+
+        <div class="input-group">
+          <label>Güneş Radyasyonu Etkinliği</label>
+          <select id="solarEfficiency" onchange="syncPrintValues(); calculate();">
+            <option value="1.0" selected>Açık Güneşli (%100 Katkı)</option>
+            <option value="0.6">Parçalı Bulutlu (%60 Katkı)</option>
+            <option value="0.2">Kapalı / Yağmurlu (%20 Katkı)</option>
+            <option value="0.0">Sıfır Güneş (Geleneksel Güvenli Tasarım)</option>
+          </select>
+          <div class="print-only-val" id="solarEfficiency_txt">Açık Güneşli (%100 Katkı)</div>
+          <div class="input-hint">Gündüz suyun güneş emilimi</div>
+        </div>
+      </div>
+
+      <div class="form-grid-4" style="margin-top:4px;">
+        <div class="input-group">
+          <label>Gece Havuz Örtüsü</label>
+          <select id="poolCover" onchange="syncPrintValues(); calculate();">
+            <option value="no" selected>Yok (Açık Yüzey)</option>
+            <option value="bubble">Hava Kabarcıklı Örtü (R = 0,10 m²K/W)</option>
+            <option value="foam">Köpük Yalıtımlı Örtü (R = 0,30 m²K/W)</option>
+          </select>
+          <div class="print-only-val" id="poolCover_txt">Yok (Açık Yüzey)</div>
+          <div class="input-hint">Buharlaşmayı %85 keser</div>
+        </div>
+        <div class="input-group">
+          <label>Aerodinamik Rüzgar Katsayısı</label>
+          <div class="print-only-val" id="kWindVal_txt">k = 0.500</div>
+          <input type="text" id="kWindVal" value="k = 0.500" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="input-hint">Otomatik hesaplanan çarpan</div>
+        </div>
+        <div class="input-group">
+          <label>Hesapta Kullanılan Su Rüzgarı</label>
+          <div class="print-only-val" id="vEffVal_txt">1.35 m/s</div>
+          <input type="text" id="vEffVal" value="1.35 m/s" readonly style="background:#f0fdfa; color:var(--c-primary); font-weight:800;" class="hide-in-print">
+          <div class="input-hint">v_su = v_10m × k</div>
+        </div>
+        <div class="input-group">
+          <label>Termal Kütle Rezervi</label>
+          <div class="print-only-val" id="bufferMax_txt">419 kW (Maksimum)</div>
+          <input type="text" id="bufferMax" value="419 kW (Maksimum)" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="input-hint">3,000 Ton suyun akümülasyonu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. VDI 2089 İŞLETME VE İLK ISITMA (WARM-UP) KRİTERLERİ (KAPALI HAVUZ İÇİN) -->
+    <div class="card" id="indoorCriteriaCard" style="display:none;">
+      <div class="card-title">
+        <span>3. VDI 2089 İŞLETME VE İLK ISITMA (WARM-UP) KRİTERLERİ</span>
+        <span class="badge" style="background:#f0fdfa; color:#0d9488;">Standart & İlk Isıtma</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label style="color:var(--c-warn);">⏱️ İlk Isıtma Süresi (Saat)</label>
+          <input type="number" id="warmupHours" value="48" min="12" max="168" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="warmupHours_txt">48 Saat</div>
+          <div class="quick-btn-group hide-in-print">
+            <button type="button" class="quick-btn" id="btn24" onclick="setWarmupHours(24)">24h</button>
+            <button type="button" class="quick-btn active" id="btn48" onclick="setWarmupHours(48)">48h</button>
+            <button type="button" class="quick-btn" id="btn72" onclick="setWarmupHours(72)">72h</button>
+            <button type="button" class="quick-btn" id="btn96" onclick="setWarmupHours(96)">96h</button>
+          </div>
+          <div class="input-hint">İlk şartlandırma süresi</div>
+        </div>
+        <div class="input-group">
+          <label>📈 Saatlik Isınma Hızı</label>
+          <input type="text" id="warmupRateVal" value="0.27 °C/saat" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="print-only-val" id="warmupRateVal_txt">0.27 °C/saat</div>
+          <div class="input-hint">ΔT / Süre artışı</div>
+        </div>
+        <div class="input-group">
+          <label>🌬️ Hava Dağıtım Tipi</label>
+          <input type="text" value="Durgun / Konfor (VDI 2089)" readonly style="background:#f1f5f9;" class="hide-in-print">
+          <div class="print-only-val">Durgun / Konfor (VDI 2089)</div>
+          <div class="input-hint">Düşük hava türbülansı</div>
+        </div>
+        <div class="input-group">
+          <label>🏊 Kullanım Şekli & Aktivite</label>
+          <input type="text" value="Yüzme / Rekreasyon" readonly style="background:#f1f5f9;" class="hide-in-print">
+          <div class="print-only-val">Yüzme / Rekreasyon</div>
+          <div class="input-hint">VDI 2089 aktivite faktörü</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ANA KAPASİTE SONUÇLARI -->
+    <div class="results-grid">
+      <div class="result-box theoretical">
+        <h3 id="res1Title">KLASİK TEORİK PİK YÜK</h3>
+        <div class="cap-display-kw" id="outTheoryKw">0 kW</div>
+        <div class="cap-display-kcal" id="outTheoryKcal">0 kcal/h</div>
+        <div class="cap-sub" id="res1Sub">Sıfır güneş, sıfır tolerans ve açık rüzgar koşullarında teorik ekstrem gece piki. (Şartname referansı)</div>
+      </div>
+
+      <div class="result-box optimized">
+        <h3 id="res2Title">ÖNERİLEN SİSTEM DİZAYN GÜCÜ</h3>
+        <div class="cap-display-kw" id="outOptKw">0 kW</div>
+        <div class="cap-display-kcal" id="outOptKcal">0 kcal/h</div>
+        <div class="cap-sub" id="res2Sub">24 saat sürekli çalışma esaslı net dizayn kapasitesi. Günlük ısı dengesi sağlanır ve su sıcaklığı, gece izin verilen soğuma bandının dışına çıkmaz.</div>
+      </div>
+    </div>
+
+    <!-- İKİNCİL GÖSTERGELER -->
+    <div class="secondary-metrics-strip">
+      <div class="metric-card">
+        <div class="metric-title" id="sec1Title">Gündüz Güneş Kazancı</div>
+        <div class="metric-val" id="outSec1" style="color:var(--c-warn);">0 kW</div>
+        <div class="metric-unit" id="sec1Sub">Bedava güneş enerjisi</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" id="sec2Title">Termal Kütle Tamponu</div>
+        <div class="metric-val" id="outSec2" style="color:var(--c-primary);">0 kW</div>
+        <div class="metric-unit" id="sec2Sub">Gece sağlanan rezerv</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" id="sec3Title">Günlük Buharlaşan Su</div>
+        <div class="metric-val" id="outSec3">0 kg/gün</div>
+        <div class="metric-unit" id="sec3Sub">24 saatlik su kaybı</div>
+      </div>
+      <div class="metric-card highlight">
+        <div class="metric-title" id="sec4Title">Havuz Devresi Debisi</div>
+        <div class="metric-val" id="outSec4">0 m³/h</div>
+        <div class="metric-unit" id="sec4Sub">Sirkülasyon (ΔT = 5°C)</div>
+      </div>
+    </div>
+
+    <!-- 4. SEZONLUK AYLIK ISI DENGESİ VE İŞLETME PROFİLİ (AÇIK HAVUZ İÇİN 2. SAYFA BAŞLANGICI) -->
+    <div class="card" id="seasonCard">
+      <div class="card-title">
+        <span>4. SEZONLUK AYLIK ISI DENGESİ VE İŞLETME PROFİLİ</span>
+        <span class="badge" id="seasonBadge">Sezon Analizi</span>
+      </div>
+      <div class="table-container">
+        <table class="season-table">
+          <thead>
+            <tr>
+              <th style="width:14%;">Ay</th>
+              <th style="width:22%; text-align:right;">Dış Hava (Gündüz / Gece)</th>
+              <th style="width:11%; text-align:right;">Güneş</th>
+              <th style="width:13%; text-align:right;">Gece Kaybı</th>
+              <th style="width:14%; text-align:right;">Termal Tampon</th>
+              <th style="width:13%; text-align:right;">Net Güç</th>
+              <th style="width:13%; text-align:center;">Durum</th>
+            </tr>
+          </thead>
+          <tbody id="seasonTableBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px; text-align:center;">
+        <canvas id="seasonChart" width="760" height="220" style="max-width:100%; height:auto;"></canvas>
+      </div>
+    </div>
+
+    <!-- 4. İLK ISITMA SÜRESİ SİMÜLASYONU VE KAPASİTE ANALİZİ (KAPALI HAVUZ İÇİN 2. SAYFA BAŞLANGICI) -->
+    <div class="card" id="indoorSimCard" style="display:none;">
+      <div class="card-title">
+        <span>4. İLK ISITMA SÜRESİ SİMÜLASYONU VE KAPASİTE ANALİZİ</span>
+        <span class="badge" style="background:#f0fdfa; color:#0d9488;">Warm-Up & Süre Analizi</span>
+      </div>
+      <div class="table-container">
+        <table class="season-table">
+          <thead>
+            <tr>
+              <th style="width:18%;">İlk Isıtma Süresi</th>
+              <th style="width:16%; text-align:right;">Isınma Hızı</th>
+              <th style="width:16%; text-align:right;">Gerekli Güç (kW)</th>
+              <th style="width:18%; text-align:right;">Gerekli Güç (kcal/h)</th>
+              <th style="width:16%; text-align:right;">Rejim Gücüne Oranı</th>
+              <th style="width:16%; text-align:center;">Mühendislik Değerlendirmesi</th>
+            </tr>
+          </thead>
+          <tbody id="indoorWarmupTableBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px; text-align:center;">
+        <canvas id="indoorWarmupChart" width="760" height="200" style="max-width:100%; height:auto;"></canvas>
+      </div>
+    </div>
+
+    <!-- 5. ANLIK DETAYLI KAYIP KALEMLERİ -->
+    <div class="card" id="detailCard">
+      <div class="card-title">
+        <span id="detailTitle">5. REFERANS AYI DETAYLI TERMODİNAMİK KAYIP VE KAZANÇ DAĞILIMI</span>
+        <span class="badge" id="detailBadge">Termodinamik Döküm</span>
+      </div>
+      <div class="table-container">
+        <table class="detail-table">
+          <thead id="lossTableHead">
+            <tr>
+              <th>Termodinamik Kalem</th>
+              <th class="num">Gündüz (kW)</th>
+              <th class="num">Gece (kW)</th>
+              <th class="num">Net Etki (kW)</th>
+            </tr>
+          </thead>
+          <tbody id="lossTableBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-stamp">
+        <div>Havuz Isıl Yük Hesabı · ulroz</div>
+        <div id="footerCode">Rapor Kodu: HY | Tarih: -</div>
+      </div>
+    </div>
+
+    <!-- BUTONLAR -->
+    <div class="action-bar">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Raporu Yazdır / PDF Kaydet</button>
+      <button class="btn btn-primary" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆️ Yukarı Dön</button>
+    </div>
+
+  </div>
+
+  <script>
+    // İklim verisi: tools/iklim_verisi_guncelle.py ile üretilir, elle düzenlenmez.
+    // tDay/tNight: MGM 1991-2020 normalleri, ortalama en yüksek / en düşük sıcaklık (İstanbul: MGM 1950-2025)
+    // ghi: PVGIS-SARAH3 (2005-2023) günlük yatay ışınım, kWh/m²·gün
+    // wind (10 m), td (çiy noktası): PVGIS TMY (ERA5, 2005-2023) aylık ortalama rüzgar ve buhar basıncı; refAlt, lat, lon: MGM il merkez istasyonu
+    const CITIES = {"adana": {"name": "Adana", "refAlt": 20, "lat": 36.9838, "lon": 35.298, "station": 19272, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 5.6, "ghi": 2.34, "wind": 2.3, "td": 4.8}, {"m": "Şubat", "tDay": 16.6, "tNight": 6.3, "ghi": 3.3, "wind": 2.4, "td": 1.7}, {"m": "Mart", "tDay": 19.9, "tNight": 8.9, "ghi": 4.42, "wind": 2.2, "td": 9.5}, {"m": "Nisan", "tDay": 24.1, "tNight": 12.4, "ghi": 5.65, "wind": 1.9, "td": 13.3}, {"m": "Mayıs", "tDay": 28.4, "tNight": 16.6, "ghi": 6.69, "wind": 2.1, "td": 14.9}, {"m": "Haziran", "tDay": 31.7, "tNight": 20.8, "ghi": 7.5, "wind": 2.2, "td": 20.1}, {"m": "Temmuz", "tDay": 33.9, "tNight": 24.3, "ghi": 7.56, "wind": 2.4, "td": 22.2}, {"m": "Ağustos", "tDay": 34.9, "tNight": 24.7, "ghi": 6.85, "wind": 2.3, "td": 20.7}, {"m": "Eylül", "tDay": 33.2, "tNight": 21.4, "ghi": 5.79, "wind": 2.0, "td": 20.3}, {"m": "Ekim", "tDay": 29.5, "tNight": 16.9, "ghi": 4.23, "wind": 2.0, "td": 10.5}, {"m": "Kasım", "tDay": 22.6, "tNight": 11.0, "ghi": 2.96, "wind": 2.2, "td": 9.2}, {"m": "Aralık", "tDay": 16.8, "tNight": 7.3, "ghi": 2.25, "wind": 2.1, "td": 3.4}]}, "adiyaman": {"name": "Adıyaman", "refAlt": 672, "lat": 37.7553, "lon": 38.2775, "station": 17265, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.2, "tNight": 1.8, "ghi": 2.07, "wind": 2.1, "td": 0.4}, {"m": "Şubat", "tDay": 10.9, "tNight": 2.5, "ghi": 3.02, "wind": 1.7, "td": 0.9}, {"m": "Mart", "tDay": 15.7, "tNight": 5.9, "ghi": 4.24, "wind": 1.7, "td": 4.3}, {"m": "Nisan", "tDay": 21.1, "tNight": 10.0, "ghi": 5.71, "wind": 1.7, "td": 5.9}, {"m": "Mayıs", "tDay": 27.4, "tNight": 14.7, "ghi": 6.88, "wind": 1.8, "td": 10.0}, {"m": "Haziran", "tDay": 34.1, "tNight": 20.1, "ghi": 8.14, "wind": 2.2, "td": 10.1}, {"m": "Temmuz", "tDay": 38.7, "tNight": 24.1, "ghi": 8.31, "wind": 2.4, "td": 6.9}, {"m": "Ağustos", "tDay": 38.6, "tNight": 23.9, "ghi": 7.36, "wind": 1.9, "td": 10.0}, {"m": "Eylül", "tDay": 33.6, "tNight": 19.4, "ghi": 6.09, "wind": 1.9, "td": 5.8}, {"m": "Ekim", "tDay": 26.3, "tNight": 14.2, "ghi": 4.13, "wind": 1.7, "td": 8.7}, {"m": "Kasım", "tDay": 17.4, "tNight": 7.6, "ghi": 2.77, "wind": 1.6, "td": 6.2}, {"m": "Aralık", "tDay": 11.1, "tNight": 3.6, "ghi": 2.1, "wind": 1.9, "td": -3.7}]}, "afyon": {"name": "Afyonkarahisar", "refAlt": 1034, "lat": 38.738, "lon": 30.5604, "station": 17190, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.6, "tNight": -3.0, "ghi": 1.86, "wind": 2.1, "td": -1.2}, {"m": "Şubat", "tDay": 7.1, "tNight": -1.8, "ghi": 2.8, "wind": 1.6, "td": -6.2}, {"m": "Mart", "tDay": 11.7, "tNight": 1.1, "ghi": 3.99, "wind": 2.6, "td": 0.3}, {"m": "Nisan", "tDay": 16.6, "tNight": 4.9, "ghi": 5.31, "wind": 2.1, "td": 0.8}, {"m": "Mayıs", "tDay": 21.8, "tNight": 9.2, "ghi": 6.17, "wind": 1.9, "td": 5.4}, {"m": "Haziran", "tDay": 26.2, "tNight": 12.7, "ghi": 7.02, "wind": 2.3, "td": 6.5}, {"m": "Temmuz", "tDay": 30.3, "tNight": 15.3, "ghi": 7.71, "wind": 2.0, "td": 8.8}, {"m": "Ağustos", "tDay": 30.2, "tNight": 15.4, "ghi": 6.96, "wind": 1.9, "td": 5.9}, {"m": "Eylül", "tDay": 25.9, "tNight": 11.4, "ghi": 5.51, "wind": 1.6, "td": 3.4}, {"m": "Ekim", "tDay": 19.7, "tNight": 7.2, "ghi": 3.74, "wind": 1.7, "td": 0.5}, {"m": "Kasım", "tDay": 12.8, "tNight": 2.1, "ghi": 2.65, "wind": 1.5, "td": 1.6}, {"m": "Aralık", "tDay": 6.8, "tNight": -0.8, "ghi": 1.86, "wind": 1.8, "td": -3.0}]}, "agri": {"name": "Ağrı", "refAlt": 1646, "lat": 39.7253, "lon": 43.0522, "station": 17099, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -4.6, "tNight": -14.8, "ghi": 1.61, "wind": 1.4, "td": -12.5}, {"m": "Şubat", "tDay": -2.6, "tNight": -13.8, "ghi": 2.56, "wind": 1.8, "td": -6.1}, {"m": "Mart", "tDay": 3.7, "tNight": -6.4, "ghi": 3.28, "wind": 2.3, "td": -2.4}, {"m": "Nisan", "tDay": 12.9, "tNight": 1.4, "ghi": 4.61, "wind": 2.2, "td": 1.8}, {"m": "Mayıs", "tDay": 18.8, "tNight": 5.5, "ghi": 5.91, "wind": 1.6, "td": 6.7}, {"m": "Haziran", "tDay": 24.9, "tNight": 8.9, "ghi": 7.38, "wind": 1.7, "td": 8.0}, {"m": "Temmuz", "tDay": 29.8, "tNight": 12.9, "ghi": 7.29, "wind": 1.9, "td": 9.1}, {"m": "Ağustos", "tDay": 30.8, "tNight": 13.0, "ghi": 6.64, "wind": 1.8, "td": 8.7}, {"m": "Eylül", "tDay": 25.7, "tNight": 7.8, "ghi": 5.49, "wind": 1.6, "td": 6.8}, {"m": "Ekim", "tDay": 18.0, "tNight": 2.9, "ghi": 3.73, "wind": 1.7, "td": 0.1}, {"m": "Kasım", "tDay": 8.2, "tNight": -3.7, "ghi": 2.4, "wind": 1.5, "td": 0.5}, {"m": "Aralık", "tDay": -1.1, "tNight": -10.2, "ghi": 1.41, "wind": 1.5, "td": -3.5}]}, "aksaray": {"name": "Aksaray", "refAlt": 970, "lat": 38.3705, "lon": 33.9987, "station": 17192, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 5.8, "tNight": -3.0, "ghi": 1.95, "wind": 2.3, "td": -3.0}, {"m": "Şubat", "tDay": 8.1, "tNight": -2.0, "ghi": 2.96, "wind": 2.0, "td": -2.4}, {"m": "Mart", "tDay": 13.3, "tNight": 1.7, "ghi": 4.16, "wind": 2.2, "td": -0.3}, {"m": "Nisan", "tDay": 18.4, "tNight": 6.0, "ghi": 5.57, "wind": 2.6, "td": -0.6}, {"m": "Mayıs", "tDay": 23.5, "tNight": 10.3, "ghi": 6.7, "wind": 2.4, "td": 4.9}, {"m": "Haziran", "tDay": 27.7, "tNight": 13.9, "ghi": 7.71, "wind": 2.3, "td": 10.6}, {"m": "Temmuz", "tDay": 31.3, "tNight": 17.1, "ghi": 8.12, "wind": 3.1, "td": 7.2}, {"m": "Ağustos", "tDay": 31.3, "tNight": 17.0, "ghi": 7.29, "wind": 2.7, "td": 6.4}, {"m": "Eylül", "tDay": 27.2, "tNight": 12.3, "ghi": 5.86, "wind": 2.2, "td": 2.4}, {"m": "Ekim", "tDay": 21.4, "tNight": 7.7, "ghi": 4.06, "wind": 2.3, "td": 1.8}, {"m": "Kasım", "tDay": 13.7, "tNight": 2.1, "ghi": 2.77, "wind": 2.3, "td": -0.4}, {"m": "Aralık", "tDay": 7.7, "tNight": -1.2, "ghi": 2.01, "wind": 2.4, "td": 0.2}]}, "amasya": {"name": "Amasya", "refAlt": 409, "lat": 40.6668, "lon": 35.8353, "station": 17085, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.4, "tNight": -0.7, "ghi": 1.63, "wind": 1.2, "td": -0.8}, {"m": "Şubat", "tDay": 10.2, "tNight": 0.2, "ghi": 2.55, "wind": 1.1, "td": -3.2}, {"m": "Mart", "tDay": 15.0, "tNight": 3.3, "ghi": 3.56, "wind": 1.5, "td": -0.5}, {"m": "Nisan", "tDay": 20.6, "tNight": 6.9, "ghi": 5.04, "wind": 1.4, "td": 4.0}, {"m": "Mayıs", "tDay": 25.6, "tNight": 11.1, "ghi": 5.95, "wind": 1.4, "td": 9.6}, {"m": "Haziran", "tDay": 29.3, "tNight": 14.7, "ghi": 6.87, "wind": 1.3, "td": 11.7}, {"m": "Temmuz", "tDay": 31.9, "tNight": 17.0, "ghi": 7.15, "wind": 1.9, "td": 12.0}, {"m": "Ağustos", "tDay": 32.3, "tNight": 17.3, "ghi": 6.47, "wind": 1.7, "td": 12.9}, {"m": "Eylül", "tDay": 28.6, "tNight": 13.4, "ghi": 5.07, "wind": 1.5, "td": 9.9}, {"m": "Ekim", "tDay": 22.7, "tNight": 9.2, "ghi": 3.36, "wind": 1.1, "td": 8.5}, {"m": "Kasım", "tDay": 14.6, "tNight": 3.3, "ghi": 2.2, "wind": 1.0, "td": 3.6}, {"m": "Aralık", "tDay": 8.9, "tNight": 1.1, "ghi": 1.55, "wind": 0.9, "td": -2.0}]}, "ankara": {"name": "Ankara", "refAlt": 891, "lat": 39.9727, "lon": 32.8637, "station": 17130, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.7, "tNight": -2.2, "ghi": 1.82, "wind": 2.1, "td": -3.5}, {"m": "Şubat", "tDay": 7.4, "tNight": -1.2, "ghi": 2.74, "wind": 2.7, "td": -2.9}, {"m": "Mart", "tDay": 12.2, "tNight": 1.9, "ghi": 3.87, "wind": 2.8, "td": 1.2}, {"m": "Nisan", "tDay": 17.5, "tNight": 6.0, "ghi": 5.26, "wind": 2.2, "td": -1.4}, {"m": "Mayıs", "tDay": 22.8, "tNight": 10.5, "ghi": 6.16, "wind": 2.0, "td": 5.4}, {"m": "Haziran", "tDay": 27.3, "tNight": 14.1, "ghi": 6.95, "wind": 1.9, "td": 9.3}, {"m": "Temmuz", "tDay": 31.0, "tNight": 17.2, "ghi": 7.71, "wind": 2.3, "td": 8.9}, {"m": "Ağustos", "tDay": 31.0, "tNight": 17.4, "ghi": 6.95, "wind": 2.0, "td": 10.3}, {"m": "Eylül", "tDay": 26.5, "tNight": 13.1, "ghi": 5.48, "wind": 2.0, "td": 5.2}, {"m": "Ekim", "tDay": 20.3, "tNight": 8.4, "ghi": 3.69, "wind": 1.8, "td": 3.3}, {"m": "Kasım", "tDay": 13.0, "tNight": 2.7, "ghi": 2.53, "wind": 1.6, "td": 1.9}, {"m": "Aralık", "tDay": 6.7, "tNight": -0.3, "ghi": 1.74, "wind": 1.8, "td": -8.1}]}, "antalya": {"name": "Antalya", "refAlt": 47, "lat": 36.8851, "lon": 30.6828, "station": 17302, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 5.9, "ghi": 2.39, "wind": 4.1, "td": 6.5}, {"m": "Şubat", "tDay": 15.9, "tNight": 6.5, "ghi": 3.29, "wind": 2.7, "td": 9.2}, {"m": "Mart", "tDay": 18.4, "tNight": 8.3, "ghi": 4.59, "wind": 3.4, "td": 8.5}, {"m": "Nisan", "tDay": 21.8, "tNight": 11.3, "ghi": 5.94, "wind": 2.7, "td": 11.5}, {"m": "Mayıs", "tDay": 26.4, "tNight": 15.7, "ghi": 6.81, "wind": 2.6, "td": 14.1}, {"m": "Haziran", "tDay": 31.6, "tNight": 20.1, "ghi": 7.64, "wind": 3.2, "td": 16.8}, {"m": "Temmuz", "tDay": 34.9, "tNight": 23.4, "ghi": 7.81, "wind": 2.9, "td": 21.2}, {"m": "Ağustos", "tDay": 34.9, "tNight": 23.7, "ghi": 7.04, "wind": 3.2, "td": 20.5}, {"m": "Eylül", "tDay": 31.7, "tNight": 20.1, "ghi": 5.81, "wind": 2.7, "td": 17.0}, {"m": "Ekim", "tDay": 27.3, "tNight": 15.9, "ghi": 4.15, "wind": 4.0, "td": 10.4}, {"m": "Kasım", "tDay": 21.6, "tNight": 10.7, "ghi": 2.96, "wind": 2.8, "td": 10.6}, {"m": "Aralık", "tDay": 16.7, "tNight": 7.5, "ghi": 2.27, "wind": 4.3, "td": 8.1}]}, "ardahan": {"name": "Ardahan", "refAlt": 1827, "lat": 41.1061, "lon": 42.7055, "station": 17046, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -4.4, "tNight": -15.5, "ghi": 1.79, "wind": 1.9, "td": -11.0}, {"m": "Şubat", "tDay": -2.7, "tNight": -14.6, "ghi": 2.87, "wind": 1.5, "td": -9.6}, {"m": "Mart", "tDay": 3.6, "tNight": -7.5, "ghi": 3.82, "wind": 1.6, "td": -6.1}, {"m": "Nisan", "tDay": 11.1, "tNight": -0.8, "ghi": 4.56, "wind": 1.4, "td": 0.9}, {"m": "Mayıs", "tDay": 16.4, "tNight": 3.6, "ghi": 5.32, "wind": 1.4, "td": 6.1}, {"m": "Haziran", "tDay": 20.8, "tNight": 6.5, "ghi": 6.3, "wind": 1.3, "td": 9.8}, {"m": "Temmuz", "tDay": 24.3, "tNight": 9.4, "ghi": 6.5, "wind": 1.3, "td": 11.0}, {"m": "Ağustos", "tDay": 25.2, "tNight": 9.3, "ghi": 5.98, "wind": 1.3, "td": 12.3}, {"m": "Eylül", "tDay": 21.2, "tNight": 4.9, "ghi": 4.81, "wind": 1.5, "td": 5.3}, {"m": "Ekim", "tDay": 15.2, "tNight": 0.7, "ghi": 3.27, "wind": 1.3, "td": 2.6}, {"m": "Kasım", "tDay": 6.7, "tNight": -5.4, "ghi": 2.07, "wind": 1.3, "td": -1.8}, {"m": "Aralık", "tDay": -1.5, "tNight": -12.1, "ghi": 1.45, "wind": 1.5, "td": -10.4}]}, "artvin": {"name": "Artvin", "refAlt": 613, "lat": 41.1752, "lon": 41.8187, "station": 17045, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 6.4, "tNight": 0.1, "ghi": 1.68, "wind": 0.8, "td": -9.6}, {"m": "Şubat", "tDay": 8.5, "tNight": 0.7, "ghi": 2.68, "wind": 0.8, "td": -7.3}, {"m": "Mart", "tDay": 12.6, "tNight": 3.2, "ghi": 3.49, "wind": 0.8, "td": 2.0}, {"m": "Nisan", "tDay": 17.7, "tNight": 7.1, "ghi": 4.51, "wind": 0.7, "td": 4.7}, {"m": "Mayıs", "tDay": 21.8, "tNight": 11.4, "ghi": 5.38, "wind": 0.7, "td": 8.6}, {"m": "Haziran", "tDay": 24.4, "tNight": 14.8, "ghi": 6.06, "wind": 0.6, "td": 13.7}, {"m": "Temmuz", "tDay": 26.2, "tNight": 17.4, "ghi": 6.0, "wind": 0.9, "td": 14.2}, {"m": "Ağustos", "tDay": 26.8, "tNight": 18.0, "ghi": 5.68, "wind": 0.9, "td": 16.6}, {"m": "Eylül", "tDay": 24.4, "tNight": 14.8, "ghi": 4.43, "wind": 0.8, "td": 11.3}, {"m": "Ekim", "tDay": 20.0, "tNight": 11.0, "ghi": 3.01, "wind": 0.6, "td": 7.4}, {"m": "Kasım", "tDay": 13.1, "tNight": 5.6, "ghi": 2.0, "wind": 0.7, "td": 0.2}, {"m": "Aralık", "tDay": 7.9, "tNight": 1.8, "ghi": 1.49, "wind": 0.8, "td": -2.0}]}, "aydin": {"name": "Aydın", "refAlt": 56, "lat": 37.8402, "lon": 27.8379, "station": 17234, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 13.5, "tNight": 4.4, "ghi": 2.3, "wind": 1.5, "td": 4.1}, {"m": "Şubat", "tDay": 15.2, "tNight": 5.3, "ghi": 3.1, "wind": 1.7, "td": 4.1}, {"m": "Mart", "tDay": 18.7, "tNight": 7.2, "ghi": 4.42, "wind": 1.4, "td": 4.9}, {"m": "Nisan", "tDay": 23.2, "tNight": 10.5, "ghi": 5.81, "wind": 1.5, "td": 6.3}, {"m": "Mayıs", "tDay": 28.9, "tNight": 14.9, "ghi": 6.88, "wind": 1.2, "td": 11.2}, {"m": "Haziran", "tDay": 34.2, "tNight": 19.1, "ghi": 7.8, "wind": 1.4, "td": 13.5}, {"m": "Temmuz", "tDay": 37.0, "tNight": 21.5, "ghi": 8.18, "wind": 1.7, "td": 13.5}, {"m": "Ağustos", "tDay": 36.6, "tNight": 21.4, "ghi": 7.31, "wind": 1.7, "td": 11.7}, {"m": "Eylül", "tDay": 32.6, "tNight": 17.6, "ghi": 5.88, "wind": 1.4, "td": 12.7}, {"m": "Ekim", "tDay": 27.0, "tNight": 13.6, "ghi": 4.17, "wind": 1.0, "td": 11.7}, {"m": "Kasım", "tDay": 20.3, "tNight": 9.0, "ghi": 2.87, "wind": 1.2, "td": 6.1}, {"m": "Aralık", "tDay": 14.7, "tNight": 5.9, "ghi": 2.16, "wind": 1.2, "td": 5.7}]}, "balikesir": {"name": "Balıkesir", "refAlt": 110, "lat": 39.6551, "lon": 27.9207, "station": 18433, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 8.8, "tNight": 1.1, "ghi": 1.74, "wind": 2.4, "td": -0.4}, {"m": "Şubat", "tDay": 10.4, "tNight": 1.5, "ghi": 2.47, "wind": 2.4, "td": 6.2}, {"m": "Mart", "tDay": 13.2, "tNight": 3.1, "ghi": 3.67, "wind": 2.4, "td": 5.4}, {"m": "Nisan", "tDay": 19.1, "tNight": 7.4, "ghi": 5.21, "wind": 2.0, "td": 9.8}, {"m": "Mayıs", "tDay": 24.2, "tNight": 12.1, "ghi": 6.35, "wind": 2.2, "td": 10.4}, {"m": "Haziran", "tDay": 29.3, "tNight": 16.1, "ghi": 7.25, "wind": 2.5, "td": 14.6}, {"m": "Temmuz", "tDay": 30.8, "tNight": 18.4, "ghi": 7.83, "wind": 3.9, "td": 14.1}, {"m": "Ağustos", "tDay": 31.1, "tNight": 18.9, "ghi": 6.96, "wind": 2.4, "td": 14.3}, {"m": "Eylül", "tDay": 28.0, "tNight": 14.5, "ghi": 5.33, "wind": 2.5, "td": 12.6}, {"m": "Ekim", "tDay": 22.7, "tNight": 11.0, "ghi": 3.51, "wind": 2.2, "td": 8.9}, {"m": "Kasım", "tDay": 15.0, "tNight": 5.4, "ghi": 2.29, "wind": 2.2, "td": 5.9}, {"m": "Aralık", "tDay": 9.9, "tNight": 3.1, "ghi": 1.62, "wind": 1.8, "td": 1.8}]}, "bartin": {"name": "Bartın", "refAlt": 33, "lat": 41.6248, "lon": 32.3569, "station": 17020, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.3, "tNight": 0.5, "ghi": 1.44, "wind": 2.0, "td": 3.5}, {"m": "Şubat", "tDay": 10.8, "tNight": 0.7, "ghi": 2.22, "wind": 2.4, "td": -0.0}, {"m": "Mart", "tDay": 13.6, "tNight": 2.6, "ghi": 3.24, "wind": 2.2, "td": 6.4}, {"m": "Nisan", "tDay": 18.1, "tNight": 5.8, "ghi": 4.77, "wind": 2.1, "td": 8.0}, {"m": "Mayıs", "tDay": 22.5, "tNight": 10.2, "ghi": 5.82, "wind": 1.7, "td": 13.9}, {"m": "Haziran", "tDay": 26.4, "tNight": 14.1, "ghi": 6.64, "wind": 2.1, "td": 16.4}, {"m": "Temmuz", "tDay": 28.8, "tNight": 16.3, "ghi": 7.11, "wind": 2.2, "td": 18.1}, {"m": "Ağustos", "tDay": 29.2, "tNight": 16.4, "ghi": 6.4, "wind": 2.0, "td": 19.2}, {"m": "Eylül", "tDay": 25.6, "tNight": 12.8, "ghi": 4.7, "wind": 2.0, "td": 15.5}, {"m": "Ekim", "tDay": 21.1, "tNight": 9.5, "ghi": 3.01, "wind": 2.2, "td": 10.3}, {"m": "Kasım", "tDay": 16.1, "tNight": 4.5, "ghi": 2.07, "wind": 1.9, "td": 8.4}, {"m": "Aralık", "tDay": 11.3, "tNight": 1.9, "ghi": 1.46, "wind": 2.2, "td": 4.6}]}, "batman": {"name": "Batman", "refAlt": 610, "lat": 37.8636, "lon": 41.1562, "station": 17282, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 8.0, "tNight": -1.0, "ghi": 1.99, "wind": 1.5, "td": -1.1}, {"m": "Şubat", "tDay": 10.9, "tNight": 0.2, "ghi": 2.95, "wind": 1.1, "td": 3.4}, {"m": "Mart", "tDay": 16.2, "tNight": 3.8, "ghi": 3.93, "wind": 1.6, "td": 4.3}, {"m": "Nisan", "tDay": 21.8, "tNight": 7.8, "ghi": 5.33, "wind": 1.5, "td": 7.5}, {"m": "Mayıs", "tDay": 27.8, "tNight": 11.6, "ghi": 6.6, "wind": 1.4, "td": 8.0}, {"m": "Haziran", "tDay": 35.3, "tNight": 16.4, "ghi": 8.03, "wind": 1.4, "td": 7.6}, {"m": "Temmuz", "tDay": 39.7, "tNight": 20.8, "ghi": 8.09, "wind": 1.4, "td": 7.5}, {"m": "Ağustos", "tDay": 39.6, "tNight": 20.4, "ghi": 7.24, "wind": 1.4, "td": 6.5}, {"m": "Eylül", "tDay": 34.5, "tNight": 15.6, "ghi": 5.97, "wind": 1.3, "td": 5.4}, {"m": "Ekim", "tDay": 27.0, "tNight": 10.8, "ghi": 4.05, "wind": 1.5, "td": 1.8}, {"m": "Kasım", "tDay": 17.0, "tNight": 4.2, "ghi": 2.75, "wind": 1.2, "td": 1.8}, {"m": "Aralık", "tDay": 9.6, "tNight": 0.5, "ghi": 1.92, "wind": 1.5, "td": 2.5}]}, "bayburt": {"name": "Bayburt", "refAlt": 1584, "lat": 40.2547, "lon": 40.2207, "station": 17089, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -0.2, "tNight": -9.7, "ghi": 1.68, "wind": 1.5, "td": -10.4}, {"m": "Şubat", "tDay": 1.3, "tNight": -8.8, "ghi": 2.73, "wind": 1.1, "td": -10.1}, {"m": "Mart", "tDay": 6.9, "tNight": -3.5, "ghi": 3.63, "wind": 2.1, "td": -2.8}, {"m": "Nisan", "tDay": 13.5, "tNight": 1.7, "ghi": 4.69, "wind": 1.7, "td": -1.7}, {"m": "Mayıs", "tDay": 18.8, "tNight": 5.8, "ghi": 5.72, "wind": 1.3, "td": 4.9}, {"m": "Haziran", "tDay": 23.7, "tNight": 8.6, "ghi": 7.01, "wind": 1.9, "td": 4.3}, {"m": "Temmuz", "tDay": 27.8, "tNight": 11.4, "ghi": 7.39, "wind": 1.8, "td": 8.2}, {"m": "Ağustos", "tDay": 28.6, "tNight": 11.6, "ghi": 6.62, "wind": 1.8, "td": 7.9}, {"m": "Eylül", "tDay": 24.2, "tNight": 7.7, "ghi": 5.32, "wind": 1.3, "td": 4.0}, {"m": "Ekim", "tDay": 17.6, "tNight": 4.0, "ghi": 3.57, "wind": 1.3, "td": 1.8}, {"m": "Kasım", "tDay": 9.0, "tNight": -2.0, "ghi": 2.32, "wind": 1.2, "td": -7.8}, {"m": "Aralık", "tDay": 2.1, "tNight": -6.9, "ghi": 1.64, "wind": 1.0, "td": -10.0}]}, "bilecik": {"name": "Bilecik", "refAlt": 539, "lat": 40.1414, "lon": 29.9772, "station": 17120, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 6.3, "tNight": 0.0, "ghi": 1.77, "wind": 1.7, "td": -0.3}, {"m": "Şubat", "tDay": 8.5, "tNight": 0.8, "ghi": 2.48, "wind": 1.6, "td": -2.9}, {"m": "Mart", "tDay": 12.4, "tNight": 3.2, "ghi": 3.48, "wind": 1.6, "td": 1.1}, {"m": "Nisan", "tDay": 17.5, "tNight": 6.9, "ghi": 4.83, "wind": 1.6, "td": 3.9}, {"m": "Mayıs", "tDay": 22.7, "tNight": 11.3, "ghi": 5.76, "wind": 1.5, "td": 9.0}, {"m": "Haziran", "tDay": 26.8, "tNight": 14.8, "ghi": 6.59, "wind": 1.7, "td": 12.2}, {"m": "Temmuz", "tDay": 29.6, "tNight": 17.0, "ghi": 7.26, "wind": 1.9, "td": 12.1}, {"m": "Ağustos", "tDay": 30.0, "tNight": 17.4, "ghi": 6.52, "wind": 1.8, "td": 13.5}, {"m": "Eylül", "tDay": 25.9, "tNight": 13.9, "ghi": 4.95, "wind": 1.5, "td": 11.3}, {"m": "Ekim", "tDay": 20.2, "tNight": 10.2, "ghi": 3.3, "wind": 1.4, "td": 8.7}, {"m": "Kasım", "tDay": 13.7, "tNight": 5.5, "ghi": 2.32, "wind": 1.9, "td": 5.2}, {"m": "Aralık", "tDay": 7.9, "tNight": 1.9, "ghi": 1.69, "wind": 1.8, "td": 1.4}]}, "bingol": {"name": "Bingöl", "refAlt": 1139, "lat": 38.8847, "lon": 40.5007, "station": 17203, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 2.4, "tNight": -5.5, "ghi": 1.68, "wind": 1.4, "td": -8.0}, {"m": "Şubat", "tDay": 4.1, "tNight": -4.6, "ghi": 2.66, "wind": 1.1, "td": -0.8}, {"m": "Mart", "tDay": 10.2, "tNight": 0.4, "ghi": 3.6, "wind": 1.6, "td": 1.4}, {"m": "Nisan", "tDay": 16.9, "tNight": 5.8, "ghi": 4.88, "wind": 1.6, "td": 4.6}, {"m": "Mayıs", "tDay": 23.1, "tNight": 10.2, "ghi": 6.29, "wind": 1.9, "td": 4.7}, {"m": "Haziran", "tDay": 29.8, "tNight": 15.0, "ghi": 7.85, "wind": 1.6, "td": 9.2}, {"m": "Temmuz", "tDay": 34.7, "tNight": 19.3, "ghi": 8.02, "wind": 2.0, "td": 8.5}, {"m": "Ağustos", "tDay": 35.1, "tNight": 19.1, "ghi": 7.19, "wind": 1.8, "td": 7.6}, {"m": "Eylül", "tDay": 29.9, "tNight": 13.9, "ghi": 5.83, "wind": 1.6, "td": 5.4}, {"m": "Ekim", "tDay": 22.0, "tNight": 8.6, "ghi": 3.85, "wind": 1.3, "td": 1.8}, {"m": "Kasım", "tDay": 12.7, "tNight": 2.2, "ghi": 2.56, "wind": 1.4, "td": -3.1}, {"m": "Aralık", "tDay": 5.2, "tNight": -2.8, "ghi": 1.77, "wind": 1.1, "td": -0.1}]}, "bitlis": {"name": "Bitlis", "refAlt": 1789, "lat": 38.475, "lon": 42.1625, "station": 17208, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -0.9, "tNight": -8.5, "ghi": 1.81, "wind": 1.2, "td": -7.8}, {"m": "Şubat", "tDay": 0.9, "tNight": -7.5, "ghi": 2.64, "wind": 1.2, "td": -8.1}, {"m": "Mart", "tDay": 5.0, "tNight": -2.8, "ghi": 3.85, "wind": 1.5, "td": -7.4}, {"m": "Nisan", "tDay": 11.7, "tNight": 2.5, "ghi": 4.87, "wind": 1.5, "td": 0.7}, {"m": "Mayıs", "tDay": 17.5, "tNight": 7.2, "ghi": 6.16, "wind": 1.4, "td": 4.3}, {"m": "Haziran", "tDay": 24.0, "tNight": 11.4, "ghi": 7.89, "wind": 1.7, "td": 6.5}, {"m": "Temmuz", "tDay": 28.9, "tNight": 15.6, "ghi": 7.97, "wind": 1.9, "td": 8.6}, {"m": "Ağustos", "tDay": 29.3, "tNight": 15.9, "ghi": 7.12, "wind": 1.5, "td": 3.6}, {"m": "Eylül", "tDay": 24.8, "tNight": 11.6, "ghi": 5.82, "wind": 1.5, "td": 3.3}, {"m": "Ekim", "tDay": 16.5, "tNight": 6.3, "ghi": 3.72, "wind": 1.2, "td": 2.4}, {"m": "Kasım", "tDay": 7.9, "tNight": 0.4, "ghi": 2.47, "wind": 1.1, "td": -2.9}, {"m": "Aralık", "tDay": 2.0, "tNight": -5.0, "ghi": 1.6, "wind": 1.2, "td": -2.0}]}, "bolu": {"name": "Bolu", "refAlt": 743, "lat": 40.7329, "lon": 31.6022, "station": 17070, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 5.8, "tNight": -2.4, "ghi": 1.57, "wind": 1.4, "td": -4.2}, {"m": "Şubat", "tDay": 8.1, "tNight": -1.6, "ghi": 2.41, "wind": 1.5, "td": -5.7}, {"m": "Mart", "tDay": 11.8, "tNight": 0.6, "ghi": 3.4, "wind": 1.7, "td": -0.5}, {"m": "Nisan", "tDay": 17.1, "tNight": 4.2, "ghi": 4.72, "wind": 1.6, "td": 3.2}, {"m": "Mayıs", "tDay": 21.9, "tNight": 8.5, "ghi": 5.5, "wind": 1.3, "td": 7.8}, {"m": "Haziran", "tDay": 25.3, "tNight": 11.7, "ghi": 6.15, "wind": 1.2, "td": 12.6}, {"m": "Temmuz", "tDay": 28.2, "tNight": 14.0, "ghi": 6.83, "wind": 1.5, "td": 13.7}, {"m": "Ağustos", "tDay": 28.7, "tNight": 14.2, "ghi": 6.32, "wind": 1.5, "td": 13.1}, {"m": "Eylül", "tDay": 25.0, "tNight": 10.7, "ghi": 4.74, "wind": 1.1, "td": 13.0}, {"m": "Ekim", "tDay": 19.7, "tNight": 7.3, "ghi": 3.16, "wind": 1.2, "td": 7.6}, {"m": "Kasım", "tDay": 13.5, "tNight": 2.4, "ghi": 2.23, "wind": 1.4, "td": 0.8}, {"m": "Aralık", "tDay": 7.6, "tNight": -0.6, "ghi": 1.53, "wind": 1.3, "td": -5.9}]}, "burdur": {"name": "Burdur", "refAlt": 957, "lat": 37.722, "lon": 30.294, "station": 17238, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.1, "tNight": -1.0, "ghi": 2.28, "wind": 1.4, "td": -0.2}, {"m": "Şubat", "tDay": 9.4, "tNight": -0.2, "ghi": 3.16, "wind": 1.5, "td": 2.5}, {"m": "Mart", "tDay": 13.6, "tNight": 2.3, "ghi": 4.37, "wind": 1.7, "td": 3.7}, {"m": "Nisan", "tDay": 18.2, "tNight": 6.1, "ghi": 5.78, "wind": 1.4, "td": 4.0}, {"m": "Mayıs", "tDay": 23.7, "tNight": 10.4, "ghi": 6.64, "wind": 1.5, "td": 7.0}, {"m": "Haziran", "tDay": 29.0, "tNight": 14.3, "ghi": 7.55, "wind": 1.7, "td": 8.0}, {"m": "Temmuz", "tDay": 33.0, "tNight": 17.6, "ghi": 8.01, "wind": 1.6, "td": 11.0}, {"m": "Ağustos", "tDay": 33.1, "tNight": 17.6, "ghi": 7.23, "wind": 1.4, "td": 11.6}, {"m": "Eylül", "tDay": 28.6, "tNight": 13.2, "ghi": 5.9, "wind": 1.6, "td": 7.7}, {"m": "Ekim", "tDay": 22.2, "tNight": 8.6, "ghi": 4.15, "wind": 1.5, "td": 3.7}, {"m": "Kasım", "tDay": 14.8, "tNight": 3.5, "ghi": 2.95, "wind": 1.3, "td": 4.8}, {"m": "Aralık", "tDay": 8.6, "tNight": 0.6, "ghi": 2.18, "wind": 1.6, "td": -3.8}]}, "bursa": {"name": "Bursa", "refAlt": 100, "lat": 40.2308, "lon": 29.0133, "station": 17116, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.8, "tNight": 1.7, "ghi": 1.74, "wind": 1.4, "td": 1.6}, {"m": "Şubat", "tDay": 11.4, "tNight": 2.4, "ghi": 2.41, "wind": 1.2, "td": 3.1}, {"m": "Mart", "tDay": 14.6, "tNight": 4.1, "ghi": 3.46, "wind": 1.4, "td": 3.4}, {"m": "Nisan", "tDay": 19.2, "tNight": 7.4, "ghi": 4.95, "wind": 1.2, "td": 7.8}, {"m": "Mayıs", "tDay": 24.4, "tNight": 12.0, "ghi": 5.88, "wind": 1.2, "td": 10.8}, {"m": "Haziran", "tDay": 28.9, "tNight": 16.2, "ghi": 6.78, "wind": 1.3, "td": 14.7}, {"m": "Temmuz", "tDay": 31.5, "tNight": 18.4, "ghi": 7.25, "wind": 1.8, "td": 13.9}, {"m": "Ağustos", "tDay": 31.7, "tNight": 18.7, "ghi": 6.47, "wind": 1.7, "td": 14.2}, {"m": "Eylül", "tDay": 27.6, "tNight": 14.8, "ghi": 4.88, "wind": 1.5, "td": 12.5}, {"m": "Ekim", "tDay": 22.2, "tNight": 10.8, "ghi": 3.27, "wind": 1.5, "td": 9.0}, {"m": "Kasım", "tDay": 16.6, "tNight": 6.0, "ghi": 2.3, "wind": 1.5, "td": 7.3}, {"m": "Aralık", "tDay": 11.5, "tNight": 3.3, "ghi": 1.65, "wind": 1.4, "td": 1.8}]}, "canakkale": {"name": "Çanakkale", "refAlt": 6, "lat": 40.141, "lon": 26.3993, "station": 17112, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.8, "tNight": 3.6, "ghi": 1.9, "wind": 4.2, "td": 4.1}, {"m": "Şubat", "tDay": 10.5, "tNight": 4.0, "ghi": 2.69, "wind": 4.2, "td": 7.7}, {"m": "Mart", "tDay": 13.1, "tNight": 5.7, "ghi": 3.95, "wind": 3.6, "td": 5.3}, {"m": "Nisan", "tDay": 17.4, "tNight": 9.0, "ghi": 5.5, "wind": 4.3, "td": 6.1}, {"m": "Mayıs", "tDay": 23.0, "tNight": 13.7, "ghi": 6.62, "wind": 2.8, "td": 13.0}, {"m": "Haziran", "tDay": 28.4, "tNight": 17.9, "ghi": 7.42, "wind": 3.3, "td": 14.5}, {"m": "Temmuz", "tDay": 31.4, "tNight": 20.8, "ghi": 7.74, "wind": 3.8, "td": 15.9}, {"m": "Ağustos", "tDay": 31.5, "tNight": 21.2, "ghi": 6.91, "wind": 5.3, "td": 15.9}, {"m": "Eylül", "tDay": 26.7, "tNight": 17.1, "ghi": 5.24, "wind": 4.6, "td": 12.4}, {"m": "Ekim", "tDay": 21.1, "tNight": 13.1, "ghi": 3.42, "wind": 4.3, "td": 12.5}, {"m": "Kasım", "tDay": 16.1, "tNight": 8.9, "ghi": 2.3, "wind": 3.3, "td": 12.3}, {"m": "Aralık", "tDay": 11.5, "tNight": 5.5, "ghi": 1.67, "wind": 4.5, "td": 6.4}]}, "cankiri": {"name": "Çankırı", "refAlt": 755, "lat": 40.6082, "lon": 33.6102, "station": 17080, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 3.9, "tNight": -3.8, "ghi": 1.58, "wind": 1.5, "td": -1.8}, {"m": "Şubat", "tDay": 7.0, "tNight": -2.9, "ghi": 2.7, "wind": 1.6, "td": 0.7}, {"m": "Mart", "tDay": 12.8, "tNight": 0.1, "ghi": 3.85, "wind": 1.8, "td": -2.4}, {"m": "Nisan", "tDay": 18.3, "tNight": 4.2, "ghi": 5.17, "wind": 2.2, "td": 2.5}, {"m": "Mayıs", "tDay": 23.5, "tNight": 8.7, "ghi": 6.1, "wind": 1.8, "td": 5.8}, {"m": "Haziran", "tDay": 28.0, "tNight": 12.3, "ghi": 6.87, "wind": 2.1, "td": 8.4}, {"m": "Temmuz", "tDay": 32.0, "tNight": 14.7, "ghi": 7.45, "wind": 2.1, "td": 8.9}, {"m": "Ağustos", "tDay": 32.2, "tNight": 14.6, "ghi": 6.7, "wind": 2.0, "td": 10.1}, {"m": "Eylül", "tDay": 27.5, "tNight": 10.1, "ghi": 5.26, "wind": 1.8, "td": 8.5}, {"m": "Ekim", "tDay": 20.9, "tNight": 5.8, "ghi": 3.57, "wind": 1.8, "td": 2.9}, {"m": "Kasım", "tDay": 12.4, "tNight": 0.2, "ghi": 2.43, "wind": 1.5, "td": 0.5}, {"m": "Aralık", "tDay": 5.7, "tNight": -2.0, "ghi": 1.56, "wind": 1.6, "td": -5.9}]}, "corum": {"name": "Çorum", "refAlt": 776, "lat": 40.5461, "lon": 34.9362, "station": 17084, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.6, "tNight": -4.1, "ghi": 1.59, "wind": 1.4, "td": -1.0}, {"m": "Şubat", "tDay": 7.4, "tNight": -3.5, "ghi": 2.58, "wind": 1.5, "td": -7.3}, {"m": "Mart", "tDay": 12.5, "tNight": -0.3, "ghi": 3.71, "wind": 1.8, "td": 1.5}, {"m": "Nisan", "tDay": 17.9, "tNight": 3.4, "ghi": 5.14, "wind": 1.6, "td": 5.3}, {"m": "Mayıs", "tDay": 22.9, "tNight": 7.4, "ghi": 6.02, "wind": 1.3, "td": 9.3}, {"m": "Haziran", "tDay": 26.8, "tNight": 10.7, "ghi": 6.84, "wind": 1.5, "td": 10.9}, {"m": "Temmuz", "tDay": 30.2, "tNight": 12.8, "ghi": 7.32, "wind": 2.3, "td": 12.0}, {"m": "Ağustos", "tDay": 30.7, "tNight": 13.1, "ghi": 6.65, "wind": 2.0, "td": 12.8}, {"m": "Eylül", "tDay": 26.7, "tNight": 9.6, "ghi": 5.2, "wind": 1.6, "td": 6.7}, {"m": "Ekim", "tDay": 20.7, "tNight": 5.7, "ghi": 3.45, "wind": 1.2, "td": 7.4}, {"m": "Kasım", "tDay": 12.9, "tNight": 0.2, "ghi": 2.34, "wind": 1.2, "td": -2.5}, {"m": "Aralık", "tDay": 6.5, "tNight": -2.2, "ghi": 1.61, "wind": 1.4, "td": -7.2}]}, "denizli": {"name": "Denizli", "refAlt": 425, "lat": 37.762, "lon": 29.0921, "station": 17237, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.7, "tNight": 2.7, "ghi": 2.18, "wind": 1.2, "td": -1.0}, {"m": "Şubat", "tDay": 12.7, "tNight": 3.6, "ghi": 3.03, "wind": 1.1, "td": -1.1}, {"m": "Mart", "tDay": 16.5, "tNight": 6.0, "ghi": 4.19, "wind": 1.2, "td": -0.2}, {"m": "Nisan", "tDay": 21.3, "tNight": 9.7, "ghi": 5.64, "wind": 1.5, "td": 3.6}, {"m": "Mayıs", "tDay": 27.0, "tNight": 14.2, "ghi": 6.53, "wind": 1.1, "td": 6.5}, {"m": "Haziran", "tDay": 32.3, "tNight": 18.6, "ghi": 7.4, "wind": 1.2, "td": 8.2}, {"m": "Temmuz", "tDay": 35.7, "tNight": 21.6, "ghi": 7.95, "wind": 1.6, "td": 3.2}, {"m": "Ağustos", "tDay": 35.7, "tNight": 21.5, "ghi": 7.09, "wind": 1.3, "td": 5.4}, {"m": "Eylül", "tDay": 31.0, "tNight": 17.2, "ghi": 5.73, "wind": 1.1, "td": 8.5}, {"m": "Ekim", "tDay": 24.7, "tNight": 12.5, "ghi": 4.04, "wind": 1.2, "td": 2.0}, {"m": "Kasım", "tDay": 17.8, "tNight": 7.5, "ghi": 2.79, "wind": 1.5, "td": 5.4}, {"m": "Aralık", "tDay": 12.2, "tNight": 4.4, "ghi": 2.08, "wind": 1.3, "td": 1.5}]}, "diyarbakir": {"name": "Diyarbakır", "refAlt": 674, "lat": 37.9094, "lon": 40.2133, "station": 17281, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.3, "tNight": -2.0, "ghi": 1.98, "wind": 1.4, "td": -2.3}, {"m": "Şubat", "tDay": 9.6, "tNight": -1.1, "ghi": 2.97, "wind": 1.2, "td": 1.8}, {"m": "Mart", "tDay": 15.0, "tNight": 2.6, "ghi": 4.01, "wind": 1.6, "td": 3.7}, {"m": "Nisan", "tDay": 20.5, "tNight": 6.6, "ghi": 5.41, "wind": 1.3, "td": 5.6}, {"m": "Mayıs", "tDay": 26.8, "tNight": 10.9, "ghi": 6.61, "wind": 1.7, "td": 7.6}, {"m": "Haziran", "tDay": 34.4, "tNight": 16.8, "ghi": 7.97, "wind": 1.7, "td": 6.9}, {"m": "Temmuz", "tDay": 38.9, "tNight": 21.7, "ghi": 8.07, "wind": 2.2, "td": 6.8}, {"m": "Ağustos", "tDay": 38.7, "tNight": 21.2, "ghi": 7.23, "wind": 1.7, "td": 5.8}, {"m": "Eylül", "tDay": 33.4, "tNight": 15.9, "ghi": 5.95, "wind": 1.5, "td": 4.7}, {"m": "Ekim", "tDay": 25.7, "tNight": 10.4, "ghi": 4.04, "wind": 1.2, "td": 5.8}, {"m": "Kasım", "tDay": 16.3, "tNight": 3.8, "ghi": 2.74, "wind": 1.3, "td": 0.1}, {"m": "Aralık", "tDay": 9.2, "tNight": -0.5, "ghi": 1.97, "wind": 1.6, "td": 4.2}]}, "duzce": {"name": "Düzce", "refAlt": 146, "lat": 40.8437, "lon": 31.1488, "station": 17072, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 8.7, "tNight": 0.8, "ghi": 1.51, "wind": 1.8, "td": 0.3}, {"m": "Şubat", "tDay": 11.2, "tNight": 1.5, "ghi": 2.23, "wind": 1.8, "td": 0.4}, {"m": "Mart", "tDay": 14.3, "tNight": 3.7, "ghi": 3.15, "wind": 1.7, "td": 3.3}, {"m": "Nisan", "tDay": 19.3, "tNight": 7.1, "ghi": 4.55, "wind": 1.4, "td": 6.6}, {"m": "Mayıs", "tDay": 23.9, "tNight": 11.5, "ghi": 5.42, "wind": 1.3, "td": 12.2}, {"m": "Haziran", "tDay": 27.5, "tNight": 15.2, "ghi": 6.18, "wind": 1.2, "td": 15.6}, {"m": "Temmuz", "tDay": 29.7, "tNight": 17.4, "ghi": 6.61, "wind": 1.3, "td": 17.2}, {"m": "Ağustos", "tDay": 30.0, "tNight": 17.8, "ghi": 6.07, "wind": 1.2, "td": 18.6}, {"m": "Eylül", "tDay": 26.5, "tNight": 13.9, "ghi": 4.53, "wind": 1.5, "td": 11.5}, {"m": "Ekim", "tDay": 21.5, "tNight": 10.3, "ghi": 2.95, "wind": 1.4, "td": 12.4}, {"m": "Kasım", "tDay": 15.9, "tNight": 5.3, "ghi": 2.09, "wind": 1.5, "td": 6.0}, {"m": "Aralık", "tDay": 10.3, "tNight": 2.3, "ghi": 1.45, "wind": 1.4, "td": -2.3}]}, "edirne": {"name": "Edirne", "refAlt": 51, "lat": 41.6767, "lon": 26.5508, "station": 17050, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.1, "tNight": -0.4, "ghi": 1.66, "wind": 2.7, "td": 1.9}, {"m": "Şubat", "tDay": 10.2, "tNight": 0.7, "ghi": 2.48, "wind": 3.4, "td": 1.3}, {"m": "Mart", "tDay": 14.3, "tNight": 3.5, "ghi": 3.73, "wind": 2.9, "td": 5.3}, {"m": "Nisan", "tDay": 19.8, "tNight": 7.3, "ghi": 5.17, "wind": 3.5, "td": 8.0}, {"m": "Mayıs", "tDay": 25.5, "tNight": 12.1, "ghi": 6.19, "wind": 2.4, "td": 10.1}, {"m": "Haziran", "tDay": 30.1, "tNight": 16.1, "ghi": 6.78, "wind": 1.9, "td": 15.1}, {"m": "Temmuz", "tDay": 32.7, "tNight": 18.2, "ghi": 7.23, "wind": 2.6, "td": 15.7}, {"m": "Ağustos", "tDay": 33.1, "tNight": 18.3, "ghi": 6.53, "wind": 3.6, "td": 13.5}, {"m": "Eylül", "tDay": 27.9, "tNight": 14.2, "ghi": 4.89, "wind": 2.8, "td": 11.3}, {"m": "Ekim", "tDay": 21.0, "tNight": 9.9, "ghi": 3.19, "wind": 2.5, "td": 10.7}, {"m": "Kasım", "tDay": 14.4, "tNight": 5.4, "ghi": 2.01, "wind": 2.2, "td": 7.4}, {"m": "Aralık", "tDay": 8.4, "tNight": 1.2, "ghi": 1.47, "wind": 2.4, "td": 0.7}]}, "elazig": {"name": "Elazığ", "refAlt": 881, "lat": 38.6058, "lon": 39.2973, "station": 17201, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.0, "tNight": -3.1, "ghi": 1.82, "wind": 1.4, "td": -3.2}, {"m": "Şubat", "tDay": 6.3, "tNight": -2.6, "ghi": 2.87, "wind": 1.6, "td": 0.9}, {"m": "Mart", "tDay": 12.4, "tNight": 1.6, "ghi": 3.96, "wind": 2.0, "td": -2.9}, {"m": "Nisan", "tDay": 18.4, "tNight": 6.2, "ghi": 5.28, "wind": 1.7, "td": 5.4}, {"m": "Mayıs", "tDay": 24.2, "tNight": 10.3, "ghi": 6.54, "wind": 1.5, "td": 11.1}, {"m": "Haziran", "tDay": 30.7, "tNight": 14.7, "ghi": 7.87, "wind": 1.9, "td": 8.8}, {"m": "Temmuz", "tDay": 35.2, "tNight": 19.0, "ghi": 8.16, "wind": 2.2, "td": 9.5}, {"m": "Ağustos", "tDay": 35.2, "tNight": 18.9, "ghi": 7.25, "wind": 1.6, "td": 10.2}, {"m": "Eylül", "tDay": 30.1, "tNight": 13.9, "ghi": 5.91, "wind": 1.5, "td": 7.4}, {"m": "Ekim", "tDay": 22.6, "tNight": 8.8, "ghi": 3.98, "wind": 1.0, "td": 9.3}, {"m": "Kasım", "tDay": 13.1, "tNight": 2.6, "ghi": 2.64, "wind": 1.0, "td": 3.9}, {"m": "Aralık", "tDay": 5.9, "tNight": -0.9, "ghi": 1.75, "wind": 1.4, "td": -3.0}]}, "erzincan": {"name": "Erzincan", "refAlt": 1216, "lat": 39.7523, "lon": 39.4868, "station": 17094, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 2.8, "tNight": -5.7, "ghi": 1.97, "wind": 0.9, "td": -9.0}, {"m": "Şubat", "tDay": 4.8, "tNight": -4.3, "ghi": 3.1, "wind": 1.2, "td": -2.1}, {"m": "Mart", "tDay": 10.9, "tNight": 0.5, "ghi": 3.93, "wind": 1.2, "td": 0.2}, {"m": "Nisan", "tDay": 17.3, "tNight": 5.5, "ghi": 5.03, "wind": 1.0, "td": 2.0}, {"m": "Mayıs", "tDay": 22.7, "tNight": 9.5, "ghi": 6.15, "wind": 1.0, "td": 5.2}, {"m": "Haziran", "tDay": 27.9, "tNight": 13.4, "ghi": 7.46, "wind": 1.0, "td": 10.6}, {"m": "Temmuz", "tDay": 32.4, "tNight": 16.7, "ghi": 7.85, "wind": 1.3, "td": 10.5}, {"m": "Ağustos", "tDay": 33.0, "tNight": 16.8, "ghi": 6.98, "wind": 1.0, "td": 10.8}, {"m": "Eylül", "tDay": 28.1, "tNight": 12.0, "ghi": 5.64, "wind": 0.9, "td": 8.0}, {"m": "Ekim", "tDay": 20.7, "tNight": 7.0, "ghi": 3.75, "wind": 1.0, "td": 5.0}, {"m": "Kasım", "tDay": 12.0, "tNight": 0.9, "ghi": 2.58, "wind": 1.0, "td": -5.3}, {"m": "Aralık", "tDay": 5.1, "tNight": -3.1, "ghi": 1.94, "wind": 1.0, "td": -7.6}]}, "erzurum": {"name": "Erzurum", "refAlt": 1860, "lat": 39.9058, "lon": 41.2544, "station": 17095, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -4.0, "tNight": -15.9, "ghi": 1.96, "wind": 1.5, "td": -9.6}, {"m": "Şubat", "tDay": -2.4, "tNight": -14.7, "ghi": 2.89, "wind": 1.3, "td": -12.7}, {"m": "Mart", "tDay": 3.9, "tNight": -7.5, "ghi": 3.82, "wind": 2.1, "td": -2.9}, {"m": "Nisan", "tDay": 12.1, "tNight": -0.7, "ghi": 4.66, "wind": 1.3, "td": -2.1}, {"m": "Mayıs", "tDay": 17.6, "tNight": 3.4, "ghi": 5.54, "wind": 1.5, "td": 4.1}, {"m": "Haziran", "tDay": 22.9, "tNight": 6.1, "ghi": 6.83, "wind": 1.5, "td": 5.8}, {"m": "Temmuz", "tDay": 27.7, "tNight": 9.9, "ghi": 7.12, "wind": 1.4, "td": 9.0}, {"m": "Ağustos", "tDay": 28.5, "tNight": 10.0, "ghi": 6.41, "wind": 1.3, "td": 7.8}, {"m": "Eylül", "tDay": 23.7, "tNight": 4.4, "ghi": 5.3, "wind": 1.4, "td": 3.2}, {"m": "Ekim", "tDay": 16.4, "tNight": 0.3, "ghi": 3.52, "wind": 1.3, "td": -0.1}, {"m": "Kasım", "tDay": 7.3, "tNight": -6.0, "ghi": 2.35, "wind": 1.2, "td": -1.3}, {"m": "Aralık", "tDay": -1.2, "tNight": -12.4, "ghi": 1.66, "wind": 1.2, "td": -6.3}]}, "eskisehir": {"name": "Eskişehir", "refAlt": 801, "lat": 39.7656, "lon": 30.5502, "station": 17126, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 3.9, "tNight": -2.5, "ghi": 1.65, "wind": 2.1, "td": -1.6}, {"m": "Şubat", "tDay": 7.6, "tNight": -1.9, "ghi": 2.67, "wind": 2.3, "td": -2.1}, {"m": "Mart", "tDay": 12.7, "tNight": 0.6, "ghi": 3.82, "wind": 2.1, "td": -0.6}, {"m": "Nisan", "tDay": 17.5, "tNight": 3.7, "ghi": 5.23, "wind": 2.2, "td": 3.5}, {"m": "Mayıs", "tDay": 22.8, "tNight": 8.3, "ghi": 6.16, "wind": 2.1, "td": 5.4}, {"m": "Haziran", "tDay": 27.0, "tNight": 12.2, "ghi": 7.02, "wind": 2.4, "td": 12.3}, {"m": "Temmuz", "tDay": 30.3, "tNight": 14.5, "ghi": 7.71, "wind": 2.5, "td": 11.1}, {"m": "Ağustos", "tDay": 30.7, "tNight": 14.8, "ghi": 6.9, "wind": 2.5, "td": 9.5}, {"m": "Eylül", "tDay": 26.4, "tNight": 10.5, "ghi": 5.38, "wind": 2.1, "td": 9.2}, {"m": "Ekim", "tDay": 19.8, "tNight": 6.1, "ghi": 3.61, "wind": 1.9, "td": 3.9}, {"m": "Kasım", "tDay": 12.8, "tNight": 1.1, "ghi": 2.46, "wind": 1.9, "td": 1.9}, {"m": "Aralık", "tDay": 6.1, "tNight": -1.4, "ghi": 1.69, "wind": 1.9, "td": 2.1}]}, "gaziantep": {"name": "Gaziantep", "refAlt": 700, "lat": 36.9468, "lon": 37.4617, "station": 17261, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 8.4, "tNight": 0.4, "ghi": 2.18, "wind": 2.5, "td": -3.1}, {"m": "Şubat", "tDay": 10.2, "tNight": 0.9, "ghi": 3.08, "wind": 2.6, "td": -0.0}, {"m": "Mart", "tDay": 15.0, "tNight": 4.2, "ghi": 4.36, "wind": 2.8, "td": 3.2}, {"m": "Nisan", "tDay": 20.3, "tNight": 8.3, "ghi": 5.77, "wind": 3.0, "td": 6.2}, {"m": "Mayıs", "tDay": 26.0, "tNight": 13.0, "ghi": 6.98, "wind": 3.2, "td": 7.3}, {"m": "Haziran", "tDay": 31.9, "tNight": 18.1, "ghi": 8.13, "wind": 3.6, "td": 12.5}, {"m": "Temmuz", "tDay": 36.0, "tNight": 22.1, "ghi": 8.19, "wind": 4.0, "td": 9.8}, {"m": "Ağustos", "tDay": 36.2, "tNight": 22.1, "ghi": 7.25, "wind": 3.4, "td": 9.0}, {"m": "Eylül", "tDay": 31.8, "tNight": 17.5, "ghi": 6.02, "wind": 3.1, "td": 10.3}, {"m": "Ekim", "tDay": 25.0, "tNight": 11.7, "ghi": 4.22, "wind": 2.6, "td": 7.3}, {"m": "Kasım", "tDay": 16.5, "tNight": 5.4, "ghi": 2.9, "wind": 2.3, "td": 1.1}, {"m": "Aralık", "tDay": 10.4, "tNight": 1.9, "ghi": 2.18, "wind": 2.3, "td": -2.2}]}, "giresun": {"name": "Giresun", "refAlt": 38, "lat": 40.9227, "lon": 38.3878, "station": 17034, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.6, "tNight": 5.3, "ghi": 1.49, "wind": 2.6, "td": 1.1}, {"m": "Şubat", "tDay": 10.7, "tNight": 4.8, "ghi": 2.14, "wind": 2.3, "td": -1.8}, {"m": "Mart", "tDay": 12.4, "tNight": 6.1, "ghi": 2.88, "wind": 1.7, "td": 3.6}, {"m": "Nisan", "tDay": 15.3, "tNight": 8.9, "ghi": 4.05, "wind": 1.5, "td": 5.0}, {"m": "Mayıs", "tDay": 19.2, "tNight": 13.6, "ghi": 4.81, "wind": 1.7, "td": 12.8}, {"m": "Haziran", "tDay": 23.9, "tNight": 18.1, "ghi": 5.34, "wind": 1.5, "td": 17.3}, {"m": "Temmuz", "tDay": 26.8, "tNight": 21.0, "ghi": 5.25, "wind": 1.4, "td": 18.1}, {"m": "Ağustos", "tDay": 27.4, "tNight": 21.7, "ghi": 4.58, "wind": 1.2, "td": 19.7}, {"m": "Eylül", "tDay": 24.2, "tNight": 18.4, "ghi": 3.75, "wind": 1.3, "td": 17.1}, {"m": "Ekim", "tDay": 20.3, "tNight": 14.7, "ghi": 2.54, "wind": 1.7, "td": 15.7}, {"m": "Kasım", "tDay": 16.0, "tNight": 10.3, "ghi": 1.85, "wind": 2.2, "td": 7.5}, {"m": "Aralık", "tDay": 12.7, "tNight": 7.3, "ghi": 1.45, "wind": 2.2, "td": 4.5}]}, "gumushane": {"name": "Gümüşhane", "refAlt": 1216, "lat": 40.4598, "lon": 39.4653, "station": 17088, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 3.4, "tNight": -5.2, "ghi": 1.07, "wind": 1.2, "td": -6.3}, {"m": "Şubat", "tDay": 5.7, "tNight": -4.8, "ghi": 2.66, "wind": 1.3, "td": -5.0}, {"m": "Mart", "tDay": 10.3, "tNight": -0.9, "ghi": 3.63, "wind": 1.6, "td": -0.8}, {"m": "Nisan", "tDay": 16.2, "tNight": 3.4, "ghi": 4.59, "wind": 1.3, "td": 1.2}, {"m": "Mayıs", "tDay": 21.2, "tNight": 7.4, "ghi": 5.48, "wind": 1.1, "td": 7.6}, {"m": "Haziran", "tDay": 25.4, "tNight": 10.9, "ghi": 6.51, "wind": 1.4, "td": 8.0}, {"m": "Temmuz", "tDay": 28.7, "tNight": 13.8, "ghi": 7.15, "wind": 1.6, "td": 10.5}, {"m": "Ağustos", "tDay": 29.5, "tNight": 14.2, "ghi": 6.4, "wind": 1.2, "td": 12.6}, {"m": "Eylül", "tDay": 25.6, "tNight": 10.3, "ghi": 4.97, "wind": 1.3, "td": 7.0}, {"m": "Ekim", "tDay": 19.5, "tNight": 6.3, "ghi": 3.1, "wind": 1.1, "td": 2.0}, {"m": "Kasım", "tDay": 10.7, "tNight": 0.5, "ghi": 1.52, "wind": 1.0, "td": -6.3}, {"m": "Aralık", "tDay": 5.2, "tNight": -3.0, "ghi": 0.86, "wind": 1.0, "td": -4.3}]}, "hakkari": {"name": "Hakkari", "refAlt": 1727, "lat": 37.5744, "lon": 43.7388, "station": 17285, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -0.5, "tNight": -7.5, "ghi": 2.21, "wind": 0.9, "td": -12.1}, {"m": "Şubat", "tDay": 1.3, "tNight": -6.2, "ghi": 3.08, "wind": 1.0, "td": -13.7}, {"m": "Mart", "tDay": 7.0, "tNight": -1.2, "ghi": 4.19, "wind": 0.9, "td": -6.0}, {"m": "Nisan", "tDay": 13.2, "tNight": 4.2, "ghi": 5.1, "wind": 1.1, "td": -2.9}, {"m": "Mayıs", "tDay": 19.6, "tNight": 9.6, "ghi": 6.29, "wind": 1.1, "td": 2.2}, {"m": "Haziran", "tDay": 26.3, "tNight": 14.7, "ghi": 7.97, "wind": 1.2, "td": 0.8}, {"m": "Temmuz", "tDay": 31.1, "tNight": 18.7, "ghi": 8.03, "wind": 1.3, "td": 1.7}, {"m": "Ağustos", "tDay": 31.5, "tNight": 18.8, "ghi": 7.18, "wind": 1.3, "td": -0.3}, {"m": "Eylül", "tDay": 26.7, "tNight": 14.5, "ghi": 6.0, "wind": 1.3, "td": -1.4}, {"m": "Ekim", "tDay": 19.0, "tNight": 8.3, "ghi": 3.86, "wind": 1.0, "td": 0.9}, {"m": "Kasım", "tDay": 10.0, "tNight": 1.3, "ghi": 2.67, "wind": 1.0, "td": -4.4}, {"m": "Aralık", "tDay": 2.5, "tNight": -4.6, "ghi": 2.0, "wind": 1.2, "td": -12.9}]}, "hatay": {"name": "Hatay", "refAlt": 82, "lat": 36.3615, "lon": 36.2829, "station": 17372, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 12.5, "tNight": 5.0, "ghi": 2.1, "wind": 1.3, "td": 5.2}, {"m": "Şubat", "tDay": 14.9, "tNight": 5.9, "ghi": 3.08, "wind": 1.3, "td": 4.7}, {"m": "Mart", "tDay": 19.0, "tNight": 9.1, "ghi": 4.46, "wind": 1.4, "td": 9.4}, {"m": "Nisan", "tDay": 23.0, "tNight": 12.6, "ghi": 5.89, "wind": 1.6, "td": 10.9}, {"m": "Mayıs", "tDay": 27.0, "tNight": 16.9, "ghi": 7.15, "wind": 1.8, "td": 13.5}, {"m": "Haziran", "tDay": 29.7, "tNight": 21.3, "ghi": 8.06, "wind": 2.2, "td": 17.9}, {"m": "Temmuz", "tDay": 31.6, "tNight": 24.4, "ghi": 8.03, "wind": 2.7, "td": 19.3}, {"m": "Ağustos", "tDay": 32.5, "tNight": 25.2, "ghi": 7.16, "wind": 2.3, "td": 19.7}, {"m": "Eylül", "tDay": 31.4, "tNight": 21.7, "ghi": 5.91, "wind": 1.8, "td": 18.4}, {"m": "Ekim", "tDay": 28.2, "tNight": 16.2, "ghi": 4.19, "wind": 1.1, "td": 15.1}, {"m": "Kasım", "tDay": 20.3, "tNight": 9.8, "ghi": 2.89, "wind": 1.2, "td": 6.8}, {"m": "Aralık", "tDay": 13.9, "tNight": 6.2, "ghi": 2.06, "wind": 1.1, "td": 6.6}]}, "igdir": {"name": "Iğdır", "refAlt": 856, "lat": 39.9227, "lon": 44.0523, "station": 17100, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 2.4, "tNight": -6.7, "ghi": 1.94, "wind": 1.4, "td": -6.3}, {"m": "Şubat", "tDay": 6.5, "tNight": -4.1, "ghi": 2.85, "wind": 1.4, "td": -3.9}, {"m": "Mart", "tDay": 14.0, "tNight": 1.8, "ghi": 3.74, "wind": 1.3, "td": 0.5}, {"m": "Nisan", "tDay": 20.0, "tNight": 7.2, "ghi": 4.71, "wind": 1.1, "td": 6.2}, {"m": "Mayıs", "tDay": 24.7, "tNight": 11.6, "ghi": 5.63, "wind": 1.2, "td": 9.2}, {"m": "Haziran", "tDay": 30.2, "tNight": 15.9, "ghi": 6.93, "wind": 1.1, "td": 12.7}, {"m": "Temmuz", "tDay": 33.8, "tNight": 19.5, "ghi": 7.09, "wind": 1.3, "td": 14.0}, {"m": "Ağustos", "tDay": 33.7, "tNight": 19.0, "ghi": 6.42, "wind": 1.2, "td": 14.2}, {"m": "Eylül", "tDay": 29.1, "tNight": 13.9, "ghi": 5.29, "wind": 1.1, "td": 10.6}, {"m": "Ekim", "tDay": 21.8, "tNight": 7.7, "ghi": 3.47, "wind": 1.2, "td": 7.8}, {"m": "Kasım", "tDay": 12.9, "tNight": 0.7, "ghi": 2.43, "wind": 1.2, "td": 0.1}, {"m": "Aralık", "tDay": 4.6, "tNight": -4.1, "ghi": 1.68, "wind": 1.2, "td": -5.1}]}, "isparta": {"name": "Isparta", "refAlt": 997, "lat": 37.7848, "lon": 30.7679, "station": 17240, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 6.6, "tNight": -2.1, "ghi": 1.75, "wind": 1.4, "td": -1.1}, {"m": "Şubat", "tDay": 8.4, "tNight": -1.1, "ghi": 2.71, "wind": 1.9, "td": -1.7}, {"m": "Mart", "tDay": 12.3, "tNight": 1.3, "ghi": 3.85, "wind": 1.7, "td": 1.0}, {"m": "Nisan", "tDay": 17.0, "tNight": 4.8, "ghi": 5.09, "wind": 1.5, "td": 3.6}, {"m": "Mayıs", "tDay": 22.3, "tNight": 8.9, "ghi": 5.88, "wind": 1.3, "td": 5.4}, {"m": "Haziran", "tDay": 27.3, "tNight": 13.0, "ghi": 6.73, "wind": 1.6, "td": 6.0}, {"m": "Temmuz", "tDay": 31.2, "tNight": 16.2, "ghi": 7.48, "wind": 1.5, "td": 8.9}, {"m": "Ağustos", "tDay": 31.4, "tNight": 16.0, "ghi": 6.69, "wind": 1.4, "td": 9.3}, {"m": "Eylül", "tDay": 27.2, "tNight": 11.5, "ghi": 5.26, "wind": 1.4, "td": 6.0}, {"m": "Ekim", "tDay": 21.2, "tNight": 7.2, "ghi": 3.56, "wind": 1.3, "td": 5.8}, {"m": "Kasım", "tDay": 14.4, "tNight": 2.2, "ghi": 2.35, "wind": 1.4, "td": 1.4}, {"m": "Aralık", "tDay": 8.5, "tNight": -0.5, "ghi": 1.66, "wind": 1.3, "td": 1.9}]}, "istanbul": {"name": "İstanbul", "refAlt": 33, "lat": 40.9819, "lon": 28.8208, "station": 17060, "altSrc": "MGM", "tPeriod": "1950-2025", "qcHours": 474, "months": [{"m": "Ocak", "tDay": 9.6, "tNight": 4.2, "ghi": 1.63, "wind": 4.3, "td": 6.3}, {"m": "Şubat", "tDay": 10.2, "tNight": 4.2, "ghi": 2.28, "wind": 5.0, "td": 3.4}, {"m": "Mart", "tDay": 12.4, "tNight": 5.5, "ghi": 3.45, "wind": 5.2, "td": 3.7}, {"m": "Nisan", "tDay": 17.4, "tNight": 9.2, "ghi": 5.08, "wind": 3.7, "td": 9.2}, {"m": "Mayıs", "tDay": 22.3, "tNight": 13.6, "ghi": 6.16, "wind": 3.9, "td": 12.0}, {"m": "Haziran", "tDay": 27.1, "tNight": 18.0, "ghi": 7.01, "wind": 3.0, "td": 16.9}, {"m": "Temmuz", "tDay": 29.7, "tNight": 20.5, "ghi": 7.35, "wind": 4.7, "td": 17.5}, {"m": "Ağustos", "tDay": 29.7, "tNight": 20.8, "ghi": 6.44, "wind": 4.2, "td": 19.6}, {"m": "Eylül", "tDay": 25.9, "tNight": 17.6, "ghi": 4.75, "wind": 5.1, "td": 18.7}, {"m": "Ekim", "tDay": 20.6, "tNight": 13.7, "ghi": 3.03, "wind": 5.3, "td": 13.9}, {"m": "Kasım", "tDay": 16.1, "tNight": 9.9, "ghi": 2.0, "wind": 4.1, "td": 12.6}, {"m": "Aralık", "tDay": 11.8, "tNight": 6.5, "ghi": 1.46, "wind": 6.7, "td": 6.6}]}, "izmir": {"name": "İzmir", "refAlt": 29, "lat": 38.4049, "lon": 27.1895, "station": 17220, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 12.7, "tNight": 6.0, "ghi": 2.25, "wind": 1.9, "td": 1.2}, {"m": "Şubat", "tDay": 14.0, "tNight": 6.6, "ghi": 2.99, "wind": 2.2, "td": 4.9}, {"m": "Mart", "tDay": 17.2, "tNight": 8.6, "ghi": 4.28, "wind": 2.3, "td": 7.6}, {"m": "Nisan", "tDay": 21.3, "tNight": 11.8, "ghi": 5.74, "wind": 1.6, "td": 10.3}, {"m": "Mayıs", "tDay": 26.5, "tNight": 16.2, "ghi": 6.83, "wind": 1.7, "td": 13.4}, {"m": "Haziran", "tDay": 31.3, "tNight": 20.9, "ghi": 7.62, "wind": 2.0, "td": 13.8}, {"m": "Temmuz", "tDay": 33.8, "tNight": 23.5, "ghi": 8.11, "wind": 3.2, "td": 11.6}, {"m": "Ağustos", "tDay": 33.6, "tNight": 23.7, "ghi": 7.23, "wind": 2.0, "td": 14.4}, {"m": "Eylül", "tDay": 29.5, "tNight": 19.5, "ghi": 5.75, "wind": 2.5, "td": 11.6}, {"m": "Ekim", "tDay": 24.6, "tNight": 15.4, "ghi": 4.06, "wind": 1.7, "td": 13.0}, {"m": "Kasım", "tDay": 18.8, "tNight": 10.9, "ghi": 2.74, "wind": 1.8, "td": 8.9}, {"m": "Aralık", "tDay": 14.0, "tNight": 7.7, "ghi": 2.05, "wind": 2.1, "td": 6.9}]}, "kahramanmaras": {"name": "Kahramanmaraş", "refAlt": 570, "lat": 37.576, "lon": 36.915, "station": 17255, "altSrc": "DEM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.5, "tNight": 1.9, "ghi": 2.07, "wind": 1.3, "td": -2.4}, {"m": "Şubat", "tDay": 11.6, "tNight": 2.7, "ghi": 3.0, "wind": 1.2, "td": 1.2}, {"m": "Mart", "tDay": 16.5, "tNight": 6.3, "ghi": 4.2, "wind": 1.5, "td": 3.8}, {"m": "Nisan", "tDay": 21.8, "tNight": 10.3, "ghi": 5.7, "wind": 1.4, "td": 4.0}, {"m": "Mayıs", "tDay": 27.4, "tNight": 14.8, "ghi": 6.85, "wind": 1.5, "td": 9.5}, {"m": "Haziran", "tDay": 32.8, "tNight": 19.5, "ghi": 8.11, "wind": 2.0, "td": 14.1}, {"m": "Temmuz", "tDay": 36.5, "tNight": 22.8, "ghi": 8.29, "wind": 2.5, "td": 16.5}, {"m": "Ağustos", "tDay": 36.9, "tNight": 23.0, "ghi": 7.33, "wind": 2.1, "td": 13.6}, {"m": "Eylül", "tDay": 33.1, "tNight": 19.2, "ghi": 6.02, "wind": 1.7, "td": 10.5}, {"m": "Ekim", "tDay": 26.6, "tNight": 13.8, "ghi": 4.14, "wind": 1.2, "td": 5.8}, {"m": "Kasım", "tDay": 17.8, "tNight": 7.4, "ghi": 2.83, "wind": 1.2, "td": 0.5}, {"m": "Aralık", "tDay": 11.3, "tNight": 3.6, "ghi": 2.08, "wind": 1.2, "td": 2.0}]}, "karabuk": {"name": "Karabük", "refAlt": 485, "lat": 41.2327, "lon": 32.6294, "station": 17078, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.3, "tNight": -0.9, "ghi": 1.63, "wind": 1.3, "td": -1.8}, {"m": "Şubat", "tDay": 12.2, "tNight": 1.5, "ghi": 2.52, "wind": 1.3, "td": 2.3}, {"m": "Mart", "tDay": 16.3, "tNight": 3.4, "ghi": 3.54, "wind": 1.3, "td": 1.9}, {"m": "Nisan", "tDay": 21.1, "tNight": 5.4, "ghi": 4.96, "wind": 1.2, "td": 4.8}, {"m": "Mayıs", "tDay": 24.7, "tNight": 10.8, "ghi": 5.79, "wind": 1.1, "td": 9.8}, {"m": "Haziran", "tDay": 28.6, "tNight": 14.6, "ghi": 6.47, "wind": 1.1, "td": 12.8}, {"m": "Temmuz", "tDay": 31.7, "tNight": 16.3, "ghi": 7.17, "wind": 1.4, "td": 11.8}, {"m": "Ağustos", "tDay": 32.8, "tNight": 16.7, "ghi": 6.5, "wind": 1.3, "td": 14.1}, {"m": "Eylül", "tDay": 29.2, "tNight": 13.5, "ghi": 4.88, "wind": 1.1, "td": 11.2}, {"m": "Ekim", "tDay": 22.3, "tNight": 9.5, "ghi": 3.21, "wind": 1.1, "td": 6.8}, {"m": "Kasım", "tDay": 15.0, "tNight": 3.6, "ghi": 2.22, "wind": 1.0, "td": 4.1}, {"m": "Aralık", "tDay": 9.0, "tNight": 0.7, "ghi": 1.59, "wind": 1.1, "td": 1.0}]}, "karaman": {"name": "Karaman", "refAlt": 1018, "lat": 37.1932, "lon": 33.2202, "station": 17246, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 5.6, "tNight": -3.4, "ghi": 2.01, "wind": 2.8, "td": -3.2}, {"m": "Şubat", "tDay": 7.5, "tNight": -2.7, "ghi": 2.9, "wind": 2.9, "td": -0.6}, {"m": "Mart", "tDay": 12.9, "tNight": 0.9, "ghi": 4.4, "wind": 3.1, "td": 0.8}, {"m": "Nisan", "tDay": 18.3, "tNight": 5.2, "ghi": 5.77, "wind": 2.1, "td": 1.6}, {"m": "Mayıs", "tDay": 23.7, "tNight": 9.5, "ghi": 6.89, "wind": 2.0, "td": 5.2}, {"m": "Haziran", "tDay": 28.3, "tNight": 13.3, "ghi": 7.75, "wind": 2.3, "td": 5.6}, {"m": "Temmuz", "tDay": 31.7, "tNight": 16.0, "ghi": 8.16, "wind": 3.0, "td": 2.8}, {"m": "Ağustos", "tDay": 31.7, "tNight": 15.8, "ghi": 7.39, "wind": 2.7, "td": 5.6}, {"m": "Eylül", "tDay": 27.7, "tNight": 11.3, "ghi": 5.94, "wind": 2.2, "td": 8.1}, {"m": "Ekim", "tDay": 21.3, "tNight": 6.7, "ghi": 4.13, "wind": 1.5, "td": 6.2}, {"m": "Kasım", "tDay": 13.5, "tNight": 1.0, "ghi": 2.86, "wind": 1.8, "td": 2.1}, {"m": "Aralık", "tDay": 7.5, "tNight": -1.7, "ghi": 2.07, "wind": 2.3, "td": 1.3}]}, "kars": {"name": "Kars", "refAlt": 1795, "lat": 40.6042, "lon": 43.1073, "station": 17097, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -3.2, "tNight": -14.8, "ghi": 1.53, "wind": 1.6, "td": -6.7}, {"m": "Şubat", "tDay": -1.2, "tNight": -13.4, "ghi": 2.45, "wind": 1.8, "td": -13.3}, {"m": "Mart", "tDay": 4.9, "tNight": -6.3, "ghi": 3.39, "wind": 1.7, "td": -6.0}, {"m": "Nisan", "tDay": 12.3, "tNight": -0.2, "ghi": 4.44, "wind": 1.7, "td": -0.5}, {"m": "Mayıs", "tDay": 17.3, "tNight": 4.3, "ghi": 5.4, "wind": 1.5, "td": 4.9}, {"m": "Haziran", "tDay": 22.2, "tNight": 7.4, "ghi": 6.74, "wind": 1.5, "td": 8.6}, {"m": "Temmuz", "tDay": 26.3, "tNight": 10.5, "ghi": 6.89, "wind": 1.5, "td": 10.7}, {"m": "Ağustos", "tDay": 27.3, "tNight": 10.7, "ghi": 6.28, "wind": 1.6, "td": 9.3}, {"m": "Eylül", "tDay": 23.0, "tNight": 6.1, "ghi": 5.03, "wind": 1.5, "td": 6.0}, {"m": "Ekim", "tDay": 16.1, "tNight": 1.5, "ghi": 3.35, "wind": 1.3, "td": 2.9}, {"m": "Kasım", "tDay": 7.5, "tNight": -4.8, "ghi": 2.26, "wind": 1.3, "td": -3.3}, {"m": "Aralık", "tDay": -0.4, "tNight": -11.2, "ghi": 1.42, "wind": 1.5, "td": -14.0}]}, "kastamonu": {"name": "Kastamonu", "refAlt": 800, "lat": 41.371, "lon": 33.7756, "station": 17074, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 3.6, "tNight": -3.8, "ghi": 1.56, "wind": 1.6, "td": -2.9}, {"m": "Şubat", "tDay": 6.9, "tNight": -3.1, "ghi": 2.5, "wind": 1.4, "td": -2.0}, {"m": "Mart", "tDay": 11.5, "tNight": -0.4, "ghi": 3.43, "wind": 1.8, "td": -0.7}, {"m": "Nisan", "tDay": 17.0, "tNight": 3.4, "ghi": 4.74, "wind": 1.8, "td": 2.5}, {"m": "Mayıs", "tDay": 21.7, "tNight": 7.7, "ghi": 5.48, "wind": 1.3, "td": 7.6}, {"m": "Haziran", "tDay": 25.3, "tNight": 11.0, "ghi": 6.21, "wind": 1.4, "td": 8.9}, {"m": "Temmuz", "tDay": 28.8, "tNight": 13.0, "ghi": 6.92, "wind": 1.8, "td": 10.2}, {"m": "Ağustos", "tDay": 29.1, "tNight": 13.1, "ghi": 6.33, "wind": 1.6, "td": 11.3}, {"m": "Eylül", "tDay": 24.6, "tNight": 9.5, "ghi": 4.71, "wind": 1.5, "td": 7.0}, {"m": "Ekim", "tDay": 18.7, "tNight": 5.9, "ghi": 3.13, "wind": 1.3, "td": 5.5}, {"m": "Kasım", "tDay": 11.2, "tNight": 0.5, "ghi": 2.18, "wind": 1.1, "td": 3.4}, {"m": "Aralık", "tDay": 4.8, "tNight": -2.4, "ghi": 1.46, "wind": 1.5, "td": -0.1}]}, "kayseri": {"name": "Kayseri", "refAlt": 1094, "lat": 38.687, "lon": 35.5, "station": 17196, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.6, "tNight": -5.4, "ghi": 1.84, "wind": 1.9, "td": -4.1}, {"m": "Şubat", "tDay": 6.6, "tNight": -4.5, "ghi": 2.91, "wind": 1.5, "td": -6.6}, {"m": "Mart", "tDay": 12.2, "tNight": -0.1, "ghi": 3.66, "wind": 2.0, "td": -4.2}, {"m": "Nisan", "tDay": 17.9, "tNight": 3.9, "ghi": 4.99, "wind": 1.6, "td": 0.3}, {"m": "Mayıs", "tDay": 22.7, "tNight": 7.6, "ghi": 5.88, "wind": 1.8, "td": 5.1}, {"m": "Haziran", "tDay": 27.4, "tNight": 11.0, "ghi": 6.88, "wind": 1.7, "td": 5.6}, {"m": "Temmuz", "tDay": 31.3, "tNight": 13.5, "ghi": 7.62, "wind": 2.0, "td": 5.0}, {"m": "Ağustos", "tDay": 31.4, "tNight": 13.3, "ghi": 6.95, "wind": 1.6, "td": 4.6}, {"m": "Eylül", "tDay": 27.1, "tNight": 9.0, "ghi": 5.56, "wind": 1.6, "td": 3.7}, {"m": "Ekim", "tDay": 20.8, "tNight": 4.9, "ghi": 3.77, "wind": 1.3, "td": 2.8}, {"m": "Kasım", "tDay": 12.9, "tNight": -0.5, "ghi": 2.6, "wind": 1.5, "td": -5.9}, {"m": "Aralık", "tDay": 6.5, "tNight": -3.6, "ghi": 1.81, "wind": 1.5, "td": -9.8}]}, "kilis": {"name": "Kilis", "refAlt": 640, "lat": 36.7085, "lon": 37.1123, "station": 17262, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.8, "tNight": 2.9, "ghi": 2.18, "wind": 2.2, "td": -0.2}, {"m": "Şubat", "tDay": 11.8, "tNight": 3.8, "ghi": 3.08, "wind": 2.4, "td": 3.4}, {"m": "Mart", "tDay": 16.4, "tNight": 6.8, "ghi": 4.32, "wind": 2.4, "td": 3.1}, {"m": "Nisan", "tDay": 21.6, "tNight": 10.7, "ghi": 5.77, "wind": 2.3, "td": 4.1}, {"m": "Mayıs", "tDay": 27.7, "tNight": 15.2, "ghi": 7.05, "wind": 2.8, "td": 7.7}, {"m": "Haziran", "tDay": 33.1, "tNight": 19.2, "ghi": 8.25, "wind": 3.1, "td": 12.0}, {"m": "Temmuz", "tDay": 36.5, "tNight": 21.9, "ghi": 8.27, "wind": 3.1, "td": 11.9}, {"m": "Ağustos", "tDay": 36.6, "tNight": 22.2, "ghi": 7.36, "wind": 3.0, "td": 13.4}, {"m": "Eylül", "tDay": 32.9, "tNight": 19.3, "ghi": 6.09, "wind": 2.5, "td": 10.7}, {"m": "Ekim", "tDay": 26.6, "tNight": 15.2, "ghi": 4.26, "wind": 1.8, "td": 10.3}, {"m": "Kasım", "tDay": 17.9, "tNight": 9.0, "ghi": 2.93, "wind": 2.2, "td": 2.0}, {"m": "Aralık", "tDay": 11.6, "tNight": 4.6, "ghi": 2.17, "wind": 2.1, "td": -5.2}]}, "kirikkale": {"name": "Kırıkkale", "refAlt": 751, "lat": 39.8433, "lon": 33.5181, "station": 17135, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.7, "tNight": -2.4, "ghi": 1.72, "wind": 2.1, "td": -1.5}, {"m": "Şubat", "tDay": 7.8, "tNight": -1.4, "ghi": 2.76, "wind": 2.0, "td": -1.5}, {"m": "Mart", "tDay": 13.2, "tNight": 2.0, "ghi": 3.92, "wind": 2.4, "td": -0.6}, {"m": "Nisan", "tDay": 18.7, "tNight": 6.1, "ghi": 5.35, "wind": 2.5, "td": 1.8}, {"m": "Mayıs", "tDay": 23.8, "tNight": 10.7, "ghi": 6.26, "wind": 2.0, "td": 5.7}, {"m": "Haziran", "tDay": 28.2, "tNight": 14.5, "ghi": 7.2, "wind": 2.1, "td": 9.6}, {"m": "Temmuz", "tDay": 31.8, "tNight": 17.6, "ghi": 7.76, "wind": 2.4, "td": 9.1}, {"m": "Ağustos", "tDay": 31.9, "tNight": 17.7, "ghi": 7.01, "wind": 2.3, "td": 9.6}, {"m": "Eylül", "tDay": 27.7, "tNight": 13.1, "ghi": 5.53, "wind": 2.4, "td": 5.9}, {"m": "Ekim", "tDay": 21.4, "tNight": 8.3, "ghi": 3.75, "wind": 1.8, "td": 6.1}, {"m": "Kasım", "tDay": 13.0, "tNight": 2.2, "ghi": 2.55, "wind": 1.9, "td": 0.1}, {"m": "Aralık", "tDay": 6.3, "tNight": -0.6, "ghi": 1.7, "wind": 1.8, "td": 1.9}]}, "kirklareli": {"name": "Kırklareli", "refAlt": 232, "lat": 41.7382, "lon": 27.2178, "station": 17052, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.2, "tNight": 0.3, "ghi": 1.69, "wind": 2.9, "td": 1.9}, {"m": "Şubat", "tDay": 9.2, "tNight": 1.0, "ghi": 2.45, "wind": 2.9, "td": 4.6}, {"m": "Mart", "tDay": 12.8, "tNight": 3.4, "ghi": 3.67, "wind": 2.9, "td": 5.4}, {"m": "Nisan", "tDay": 18.4, "tNight": 7.3, "ghi": 5.13, "wind": 2.8, "td": 5.1}, {"m": "Mayıs", "tDay": 24.0, "tNight": 12.0, "ghi": 6.21, "wind": 2.7, "td": 11.2}, {"m": "Haziran", "tDay": 28.7, "tNight": 16.1, "ghi": 6.77, "wind": 2.0, "td": 15.2}, {"m": "Temmuz", "tDay": 31.3, "tNight": 18.4, "ghi": 7.27, "wind": 3.0, "td": 12.4}, {"m": "Ağustos", "tDay": 31.5, "tNight": 18.6, "ghi": 6.63, "wind": 3.6, "td": 15.9}, {"m": "Eylül", "tDay": 26.6, "tNight": 14.5, "ghi": 4.88, "wind": 3.0, "td": 12.6}, {"m": "Ekim", "tDay": 20.1, "tNight": 10.3, "ghi": 3.2, "wind": 3.1, "td": 7.4}, {"m": "Kasım", "tDay": 14.0, "tNight": 6.0, "ghi": 2.02, "wind": 2.9, "td": 5.3}, {"m": "Aralık", "tDay": 8.7, "tNight": 2.1, "ghi": 1.47, "wind": 2.8, "td": 4.1}]}, "kirsehir": {"name": "Kırşehir", "refAlt": 1007, "lat": 39.1639, "lon": 34.1561, "station": 17160, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.9, "tNight": -3.8, "ghi": 1.78, "wind": 1.9, "td": -5.9}, {"m": "Şubat", "tDay": 7.2, "tNight": -3.0, "ghi": 2.73, "wind": 2.1, "td": -1.5}, {"m": "Mart", "tDay": 12.2, "tNight": 0.5, "ghi": 3.86, "wind": 2.3, "td": -0.7}, {"m": "Nisan", "tDay": 17.5, "tNight": 4.7, "ghi": 5.32, "wind": 2.4, "td": 2.2}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.2, "ghi": 6.3, "wind": 2.0, "td": 5.7}, {"m": "Haziran", "tDay": 26.9, "tNight": 13.2, "ghi": 7.26, "wind": 2.0, "td": 8.6}, {"m": "Temmuz", "tDay": 30.7, "tNight": 16.5, "ghi": 7.87, "wind": 2.7, "td": 8.0}, {"m": "Ağustos", "tDay": 30.9, "tNight": 16.8, "ghi": 7.1, "wind": 2.2, "td": 9.3}, {"m": "Eylül", "tDay": 26.7, "tNight": 12.1, "ghi": 5.69, "wind": 1.9, "td": 3.7}, {"m": "Ekim", "tDay": 20.6, "tNight": 7.2, "ghi": 3.86, "wind": 1.9, "td": 6.1}, {"m": "Kasım", "tDay": 13.0, "tNight": 1.2, "ghi": 2.62, "wind": 1.8, "td": -0.3}, {"m": "Aralık", "tDay": 6.9, "tNight": -1.7, "ghi": 1.85, "wind": 2.0, "td": -5.6}]}, "kocaeli": {"name": "Kocaeli", "refAlt": 59, "lat": 40.7663, "lon": 29.9173, "station": 17066, "altSrc": "DEM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.0, "tNight": 3.5, "ghi": 1.59, "wind": 1.6, "td": 2.1}, {"m": "Şubat", "tDay": 11.3, "tNight": 3.9, "ghi": 2.24, "wind": 1.6, "td": 4.0}, {"m": "Mart", "tDay": 14.0, "tNight": 5.5, "ghi": 3.25, "wind": 1.6, "td": 4.8}, {"m": "Nisan", "tDay": 18.9, "tNight": 8.9, "ghi": 4.77, "wind": 1.6, "td": 7.9}, {"m": "Mayıs", "tDay": 23.8, "tNight": 13.5, "ghi": 5.72, "wind": 1.4, "td": 12.9}, {"m": "Haziran", "tDay": 28.1, "tNight": 17.6, "ghi": 6.51, "wind": 1.7, "td": 15.7}, {"m": "Temmuz", "tDay": 30.3, "tNight": 19.8, "ghi": 6.83, "wind": 2.3, "td": 15.4}, {"m": "Ağustos", "tDay": 30.5, "tNight": 20.4, "ghi": 6.11, "wind": 1.8, "td": 17.2}, {"m": "Eylül", "tDay": 26.7, "tNight": 16.9, "ghi": 4.54, "wind": 1.7, "td": 14.6}, {"m": "Ekim", "tDay": 21.6, "tNight": 13.3, "ghi": 2.91, "wind": 1.3, "td": 9.7}, {"m": "Kasım", "tDay": 16.6, "tNight": 8.8, "ghi": 2.06, "wind": 1.6, "td": 7.1}, {"m": "Aralık", "tDay": 12.0, "tNight": 5.6, "ghi": 1.53, "wind": 1.5, "td": -0.9}]}, "konya": {"name": "Konya", "refAlt": 1029, "lat": 37.8687, "lon": 32.4713, "station": 17245, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.6, "tNight": -3.9, "ghi": 2.14, "wind": 2.4, "td": -1.4}, {"m": "Şubat", "tDay": 6.9, "tNight": -3.3, "ghi": 3.13, "wind": 2.7, "td": -1.6}, {"m": "Mart", "tDay": 12.5, "tNight": 0.2, "ghi": 4.35, "wind": 2.6, "td": -1.2}, {"m": "Nisan", "tDay": 17.6, "tNight": 4.4, "ghi": 5.56, "wind": 2.7, "td": 1.3}, {"m": "Mayıs", "tDay": 22.8, "tNight": 9.0, "ghi": 6.4, "wind": 2.0, "td": 7.2}, {"m": "Haziran", "tDay": 27.4, "tNight": 13.6, "ghi": 7.23, "wind": 2.5, "td": 6.2}, {"m": "Temmuz", "tDay": 31.0, "tNight": 17.1, "ghi": 7.93, "wind": 2.8, "td": 6.9}, {"m": "Ağustos", "tDay": 30.9, "tNight": 17.2, "ghi": 7.2, "wind": 2.9, "td": 8.6}, {"m": "Eylül", "tDay": 26.7, "tNight": 12.3, "ghi": 5.74, "wind": 2.4, "td": 5.2}, {"m": "Ekim", "tDay": 20.4, "tNight": 7.0, "ghi": 4.02, "wind": 2.2, "td": 2.4}, {"m": "Kasım", "tDay": 12.7, "tNight": 0.8, "ghi": 2.82, "wind": 2.2, "td": -0.3}, {"m": "Aralık", "tDay": 6.3, "tNight": -2.2, "ghi": 2.05, "wind": 1.9, "td": -6.7}]}, "kutahya": {"name": "Kütahya", "refAlt": 969, "lat": 39.4171, "lon": 29.9891, "station": 17155, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 5.1, "tNight": -2.7, "ghi": 1.78, "wind": 2.1, "td": -6.2}, {"m": "Şubat", "tDay": 7.7, "tNight": -1.8, "ghi": 2.69, "wind": 2.0, "td": 0.4}, {"m": "Mart", "tDay": 11.8, "tNight": 0.8, "ghi": 3.8, "wind": 2.2, "td": 0.2}, {"m": "Nisan", "tDay": 16.8, "tNight": 4.4, "ghi": 5.09, "wind": 2.1, "td": 2.5}, {"m": "Mayıs", "tDay": 21.9, "tNight": 8.6, "ghi": 5.92, "wind": 1.8, "td": 5.0}, {"m": "Haziran", "tDay": 25.9, "tNight": 12.0, "ghi": 6.75, "wind": 2.3, "td": 8.7}, {"m": "Temmuz", "tDay": 29.2, "tNight": 14.5, "ghi": 7.57, "wind": 2.6, "td": 8.4}, {"m": "Ağustos", "tDay": 29.4, "tNight": 14.7, "ghi": 6.75, "wind": 2.4, "td": 8.5}, {"m": "Eylül", "tDay": 25.4, "tNight": 10.4, "ghi": 5.22, "wind": 1.7, "td": 10.0}, {"m": "Ekim", "tDay": 19.7, "tNight": 6.7, "ghi": 3.54, "wind": 1.6, "td": 6.3}, {"m": "Kasım", "tDay": 13.2, "tNight": 2.0, "ghi": 2.5, "wind": 1.6, "td": -0.0}, {"m": "Aralık", "tDay": 6.8, "tNight": -0.7, "ghi": 1.76, "wind": 1.7, "td": -6.6}]}, "malatya": {"name": "Malatya", "refAlt": 950, "lat": 38.35, "lon": 38.25, "station": 17199, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -2.1, "ghi": 1.79, "wind": 1.3, "td": -5.7}, {"m": "Şubat", "tDay": 6.9, "tNight": -1.3, "ghi": 2.91, "wind": 1.3, "td": -2.5}, {"m": "Mart", "tDay": 13.0, "tNight": 3.0, "ghi": 3.97, "wind": 1.7, "td": -1.7}, {"m": "Nisan", "tDay": 19.0, "tNight": 7.7, "ghi": 5.34, "wind": 1.5, "td": 1.1}, {"m": "Mayıs", "tDay": 24.6, "tNight": 12.2, "ghi": 6.45, "wind": 1.5, "td": 4.2}, {"m": "Haziran", "tDay": 30.6, "tNight": 16.9, "ghi": 7.78, "wind": 1.6, "td": 7.2}, {"m": "Temmuz", "tDay": 34.9, "tNight": 20.7, "ghi": 8.14, "wind": 2.2, "td": 5.1}, {"m": "Ağustos", "tDay": 34.8, "tNight": 20.9, "ghi": 7.21, "wind": 1.5, "td": 5.5}, {"m": "Eylül", "tDay": 29.8, "tNight": 16.4, "ghi": 5.9, "wind": 1.6, "td": 1.3}, {"m": "Ekim", "tDay": 22.3, "tNight": 10.8, "ghi": 3.96, "wind": 1.3, "td": 1.3}, {"m": "Kasım", "tDay": 12.9, "tNight": 4.0, "ghi": 2.64, "wind": 1.3, "td": 1.1}, {"m": "Aralık", "tDay": 6.0, "tNight": -0.2, "ghi": 1.8, "wind": 1.3, "td": -6.3}]}, "manisa": {"name": "Manisa", "refAlt": 71, "lat": 38.6153, "lon": 27.4049, "station": 17186, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.7, "tNight": 3.0, "ghi": 2.02, "wind": 1.1, "td": 6.1}, {"m": "Şubat", "tDay": 12.9, "tNight": 4.1, "ghi": 2.7, "wind": 1.5, "td": 3.8}, {"m": "Mart", "tDay": 16.8, "tNight": 6.1, "ghi": 4.02, "wind": 1.7, "td": 6.7}, {"m": "Nisan", "tDay": 21.7, "tNight": 9.6, "ghi": 5.46, "wind": 1.4, "td": 8.9}, {"m": "Mayıs", "tDay": 27.6, "tNight": 14.4, "ghi": 6.46, "wind": 1.4, "td": 9.9}, {"m": "Haziran", "tDay": 32.7, "tNight": 19.1, "ghi": 7.28, "wind": 1.5, "td": 12.8}, {"m": "Temmuz", "tDay": 35.7, "tNight": 22.2, "ghi": 7.89, "wind": 2.0, "td": 15.1}, {"m": "Ağustos", "tDay": 35.7, "tNight": 22.3, "ghi": 7.04, "wind": 2.1, "td": 12.7}, {"m": "Eylül", "tDay": 31.1, "tNight": 17.5, "ghi": 5.51, "wind": 1.5, "td": 9.7}, {"m": "Ekim", "tDay": 24.8, "tNight": 13.1, "ghi": 3.84, "wind": 1.4, "td": 10.1}, {"m": "Kasım", "tDay": 17.6, "tNight": 7.7, "ghi": 2.59, "wind": 1.3, "td": 5.8}, {"m": "Aralık", "tDay": 12.0, "tNight": 4.7, "ghi": 1.86, "wind": 1.4, "td": 5.0}]}, "mardin": {"name": "Mardin", "refAlt": 1040, "lat": 37.3103, "lon": 40.7284, "station": 17275, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 6.8, "tNight": 1.3, "ghi": 2.18, "wind": 1.7, "td": -2.0}, {"m": "Şubat", "tDay": 8.2, "tNight": 1.8, "ghi": 3.1, "wind": 1.9, "td": -1.1}, {"m": "Mart", "tDay": 12.8, "tNight": 5.5, "ghi": 4.21, "wind": 1.9, "td": 2.5}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.3, "ghi": 5.61, "wind": 2.1, "td": 5.5}, {"m": "Mayıs", "tDay": 24.7, "tNight": 15.4, "ghi": 6.94, "wind": 2.4, "td": 2.5}, {"m": "Haziran", "tDay": 31.6, "tNight": 20.9, "ghi": 8.16, "wind": 2.1, "td": 8.1}, {"m": "Temmuz", "tDay": 35.9, "tNight": 25.2, "ghi": 8.16, "wind": 2.4, "td": 6.1}, {"m": "Ağustos", "tDay": 35.5, "tNight": 25.5, "ghi": 7.32, "wind": 2.1, "td": 3.7}, {"m": "Eylül", "tDay": 30.7, "tNight": 21.3, "ghi": 6.1, "wind": 1.8, "td": 3.5}, {"m": "Ekim", "tDay": 23.9, "tNight": 15.5, "ghi": 4.13, "wind": 1.6, "td": 4.7}, {"m": "Kasım", "tDay": 14.9, "tNight": 8.1, "ghi": 2.83, "wind": 2.1, "td": 2.0}, {"m": "Aralık", "tDay": 8.8, "tNight": 3.4, "ghi": 2.14, "wind": 2.1, "td": -2.4}]}, "mersin": {"name": "Mersin", "refAlt": 7, "lat": 36.812, "lon": 34.6411, "station": 17340, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 15.2, "tNight": 7.6, "ghi": 2.31, "wind": 3.3, "td": 5.9}, {"m": "Şubat", "tDay": 16.2, "tNight": 8.2, "ghi": 3.31, "wind": 3.7, "td": 5.0}, {"m": "Mart", "tDay": 19.0, "tNight": 10.9, "ghi": 4.59, "wind": 3.3, "td": 9.5}, {"m": "Nisan", "tDay": 22.2, "tNight": 14.4, "ghi": 5.84, "wind": 2.6, "td": 11.6}, {"m": "Mayıs", "tDay": 25.8, "tNight": 18.6, "ghi": 6.78, "wind": 2.3, "td": 16.4}, {"m": "Haziran", "tDay": 29.1, "tNight": 22.6, "ghi": 7.55, "wind": 2.5, "td": 20.3}, {"m": "Temmuz", "tDay": 31.9, "tNight": 25.8, "ghi": 7.57, "wind": 3.0, "td": 23.2}, {"m": "Ağustos", "tDay": 32.8, "tNight": 26.3, "ghi": 6.83, "wind": 2.8, "td": 24.9}, {"m": "Eylül", "tDay": 31.1, "tNight": 23.2, "ghi": 5.78, "wind": 2.1, "td": 23.2}, {"m": "Ekim", "tDay": 27.9, "tNight": 18.6, "ghi": 4.15, "wind": 2.6, "td": 15.3}, {"m": "Kasım", "tDay": 22.1, "tNight": 13.0, "ghi": 2.95, "wind": 2.8, "td": 11.5}, {"m": "Aralık", "tDay": 16.9, "tNight": 9.1, "ghi": 2.23, "wind": 2.8, "td": -6.9}]}, "mugla": {"name": "Muğla", "refAlt": 646, "lat": 37.2095, "lon": 28.3668, "station": 17292, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.4, "tNight": 1.6, "ghi": 2.17, "wind": 1.8, "td": 1.5}, {"m": "Şubat", "tDay": 11.6, "tNight": 2.1, "ghi": 2.87, "wind": 2.3, "td": 1.1}, {"m": "Mart", "tDay": 15.1, "tNight": 3.9, "ghi": 4.18, "wind": 1.8, "td": 4.2}, {"m": "Nisan", "tDay": 19.4, "tNight": 7.1, "ghi": 5.62, "wind": 1.6, "td": 5.7}, {"m": "Mayıs", "tDay": 25.1, "tNight": 11.6, "ghi": 6.56, "wind": 1.6, "td": 9.2}, {"m": "Haziran", "tDay": 30.6, "tNight": 16.7, "ghi": 7.55, "wind": 1.5, "td": 12.3}, {"m": "Temmuz", "tDay": 34.5, "tNight": 20.4, "ghi": 8.11, "wind": 1.9, "td": 9.7}, {"m": "Ağustos", "tDay": 34.6, "tNight": 20.5, "ghi": 7.22, "wind": 1.3, "td": 14.0}, {"m": "Eylül", "tDay": 30.0, "tNight": 15.6, "ghi": 5.86, "wind": 1.6, "td": 9.5}, {"m": "Ekim", "tDay": 23.8, "tNight": 10.6, "ghi": 4.06, "wind": 1.6, "td": 8.2}, {"m": "Kasım", "tDay": 17.2, "tNight": 5.7, "ghi": 2.78, "wind": 1.5, "td": 5.8}, {"m": "Aralık", "tDay": 11.8, "tNight": 3.0, "ghi": 2.08, "wind": 1.4, "td": 2.0}]}, "mus": {"name": "Muş", "refAlt": 1316, "lat": 38.7509, "lon": 41.5023, "station": 17204, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": -2.8, "tNight": -9.9, "ghi": 1.67, "wind": 0.7, "td": -8.9}, {"m": "Şubat", "tDay": -0.7, "tNight": -8.5, "ghi": 2.68, "wind": 0.8, "td": -9.4}, {"m": "Mart", "tDay": 6.8, "tNight": -1.8, "ghi": 3.52, "wind": 1.0, "td": -2.4}, {"m": "Nisan", "tDay": 15.4, "tNight": 4.9, "ghi": 4.85, "wind": 1.1, "td": 1.9}, {"m": "Mayıs", "tDay": 21.7, "tNight": 9.2, "ghi": 6.12, "wind": 1.0, "td": 6.7}, {"m": "Haziran", "tDay": 28.3, "tNight": 13.4, "ghi": 7.69, "wind": 1.6, "td": 0.8}, {"m": "Temmuz", "tDay": 33.6, "tNight": 17.8, "ghi": 7.77, "wind": 1.5, "td": 3.6}, {"m": "Ağustos", "tDay": 33.9, "tNight": 17.9, "ghi": 7.0, "wind": 1.2, "td": 4.0}, {"m": "Eylül", "tDay": 28.6, "tNight": 12.9, "ghi": 5.71, "wind": 1.4, "td": 0.8}, {"m": "Ekim", "tDay": 20.5, "tNight": 7.6, "ghi": 3.78, "wind": 1.2, "td": 0.5}, {"m": "Kasım", "tDay": 10.2, "tNight": 0.7, "ghi": 2.47, "wind": 1.0, "td": -3.7}, {"m": "Aralık", "tDay": 1.0, "tNight": -5.3, "ghi": 1.56, "wind": 0.8, "td": -7.4}]}, "nevsehir": {"name": "Nevşehir", "refAlt": 1260, "lat": 38.6163, "lon": 34.7025, "station": 17193, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 4.1, "tNight": -3.5, "ghi": 1.81, "wind": 2.1, "td": -4.5}, {"m": "Şubat", "tDay": 6.0, "tNight": -2.6, "ghi": 2.74, "wind": 2.2, "td": -6.0}, {"m": "Mart", "tDay": 10.9, "tNight": 1.0, "ghi": 3.8, "wind": 2.5, "td": -4.4}, {"m": "Nisan", "tDay": 16.3, "tNight": 5.2, "ghi": 5.2, "wind": 2.9, "td": 0.5}, {"m": "Mayıs", "tDay": 21.2, "tNight": 9.3, "ghi": 6.12, "wind": 2.1, "td": 3.8}, {"m": "Haziran", "tDay": 25.6, "tNight": 12.3, "ghi": 7.19, "wind": 2.7, "td": 6.3}, {"m": "Temmuz", "tDay": 29.3, "tNight": 14.6, "ghi": 7.82, "wind": 2.5, "td": 8.0}, {"m": "Ağustos", "tDay": 29.4, "tNight": 14.5, "ghi": 7.09, "wind": 2.1, "td": 5.7}, {"m": "Eylül", "tDay": 25.3, "tNight": 11.3, "ghi": 5.66, "wind": 1.7, "td": 0.6}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.4, "ghi": 3.89, "wind": 1.8, "td": 4.1}, {"m": "Kasım", "tDay": 11.6, "tNight": 2.1, "ghi": 2.66, "wind": 1.6, "td": -4.8}, {"m": "Aralık", "tDay": 6.2, "tNight": -1.4, "ghi": 1.86, "wind": 2.0, "td": -1.7}]}, "nigde": {"name": "Niğde", "refAlt": 1211, "lat": 37.9587, "lon": 34.6795, "station": 17250, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 5.3, "tNight": -4.1, "ghi": 2.11, "wind": 1.7, "td": -5.2}, {"m": "Şubat", "tDay": 7.0, "tNight": -3.2, "ghi": 3.18, "wind": 2.0, "td": -2.2}, {"m": "Mart", "tDay": 11.9, "tNight": 0.8, "ghi": 4.16, "wind": 2.3, "td": -0.0}, {"m": "Nisan", "tDay": 17.2, "tNight": 5.0, "ghi": 5.51, "wind": 1.9, "td": 1.7}, {"m": "Mayıs", "tDay": 22.2, "tNight": 9.1, "ghi": 6.5, "wind": 1.5, "td": 3.6}, {"m": "Haziran", "tDay": 26.6, "tNight": 12.9, "ghi": 7.5, "wind": 1.5, "td": 8.0}, {"m": "Temmuz", "tDay": 30.2, "tNight": 15.8, "ghi": 7.97, "wind": 1.9, "td": 5.7}, {"m": "Ağustos", "tDay": 30.3, "tNight": 15.6, "ghi": 7.23, "wind": 1.7, "td": 1.8}, {"m": "Eylül", "tDay": 26.3, "tNight": 11.4, "ghi": 5.87, "wind": 1.5, "td": 3.2}, {"m": "Ekim", "tDay": 20.4, "tNight": 7.0, "ghi": 4.11, "wind": 1.7, "td": -1.4}, {"m": "Kasım", "tDay": 13.2, "tNight": 1.3, "ghi": 2.84, "wind": 1.3, "td": -6.1}, {"m": "Aralık", "tDay": 7.4, "tNight": -2.2, "ghi": 2.09, "wind": 1.6, "td": -0.5}]}, "ordu": {"name": "Ordu", "refAlt": 5, "lat": 40.9838, "lon": 37.8858, "station": 17033, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 11.2, "tNight": 4.4, "ghi": 1.56, "wind": 2.0, "td": 1.8}, {"m": "Şubat", "tDay": 11.4, "tNight": 4.2, "ghi": 2.2, "wind": 2.2, "td": 1.6}, {"m": "Mart", "tDay": 12.8, "tNight": 5.7, "ghi": 2.99, "wind": 1.8, "td": 2.9}, {"m": "Nisan", "tDay": 15.4, "tNight": 8.5, "ghi": 4.25, "wind": 2.1, "td": 8.4}, {"m": "Mayıs", "tDay": 19.8, "tNight": 13.0, "ghi": 5.14, "wind": 1.5, "td": 11.7}, {"m": "Haziran", "tDay": 24.8, "tNight": 17.4, "ghi": 5.8, "wind": 1.4, "td": 16.0}, {"m": "Temmuz", "tDay": 27.7, "tNight": 20.4, "ghi": 5.58, "wind": 1.5, "td": 19.7}, {"m": "Ağustos", "tDay": 28.5, "tNight": 21.1, "ghi": 4.93, "wind": 1.6, "td": 16.6}, {"m": "Eylül", "tDay": 25.2, "tNight": 17.6, "ghi": 3.97, "wind": 1.5, "td": 17.1}, {"m": "Ekim", "tDay": 21.1, "tNight": 13.9, "ghi": 2.68, "wind": 1.8, "td": 10.5}, {"m": "Kasım", "tDay": 16.7, "tNight": 9.1, "ghi": 1.98, "wind": 2.1, "td": 6.1}, {"m": "Aralık", "tDay": 13.2, "tNight": 6.2, "ghi": 1.53, "wind": 2.1, "td": 3.4}]}, "osmaniye": {"name": "Osmaniye", "refAlt": 94, "lat": 37.1021, "lon": 36.2539, "station": 17355, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 14.5, "tNight": 3.8, "ghi": 2.25, "wind": 1.5, "td": 2.2}, {"m": "Şubat", "tDay": 16.0, "tNight": 4.7, "ghi": 3.16, "wind": 1.4, "td": 3.7}, {"m": "Mart", "tDay": 19.3, "tNight": 7.5, "ghi": 4.13, "wind": 1.4, "td": 5.6}, {"m": "Nisan", "tDay": 23.3, "tNight": 11.0, "ghi": 5.46, "wind": 1.3, "td": 10.3}, {"m": "Mayıs", "tDay": 27.7, "tNight": 15.1, "ghi": 6.61, "wind": 1.6, "td": 11.6}, {"m": "Haziran", "tDay": 31.3, "tNight": 19.1, "ghi": 7.32, "wind": 1.7, "td": 16.2}, {"m": "Temmuz", "tDay": 33.4, "tNight": 22.6, "ghi": 7.32, "wind": 1.6, "td": 18.9}, {"m": "Ağustos", "tDay": 34.3, "tNight": 23.3, "ghi": 6.68, "wind": 1.7, "td": 19.8}, {"m": "Eylül", "tDay": 32.2, "tNight": 19.6, "ghi": 5.72, "wind": 1.4, "td": 14.4}, {"m": "Ekim", "tDay": 28.4, "tNight": 14.6, "ghi": 4.11, "wind": 1.2, "td": 12.1}, {"m": "Kasım", "tDay": 21.8, "tNight": 8.4, "ghi": 2.87, "wind": 1.5, "td": 7.9}, {"m": "Aralık", "tDay": 16.1, "tNight": 5.1, "ghi": 2.21, "wind": 1.7, "td": 3.7}]}, "rize": {"name": "Rize", "refAlt": 16, "lat": 41.04, "lon": 40.5013, "station": 17040, "altSrc": "DEM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 3.9, "ghi": 1.56, "wind": 2.4, "td": -0.2}, {"m": "Şubat", "tDay": 11.1, "tNight": 3.7, "ghi": 2.21, "wind": 2.3, "td": -1.1}, {"m": "Mart", "tDay": 12.9, "tNight": 5.4, "ghi": 2.94, "wind": 2.3, "td": 5.2}, {"m": "Nisan", "tDay": 15.9, "tNight": 8.5, "ghi": 4.01, "wind": 2.1, "td": 7.6}, {"m": "Mayıs", "tDay": 20.2, "tNight": 13.2, "ghi": 4.72, "wind": 1.6, "td": 11.2}, {"m": "Haziran", "tDay": 24.9, "tNight": 17.5, "ghi": 4.74, "wind": 1.6, "td": 14.7}, {"m": "Temmuz", "tDay": 27.4, "tNight": 20.5, "ghi": 4.41, "wind": 1.5, "td": 17.9}, {"m": "Ağustos", "tDay": 28.1, "tNight": 21.2, "ghi": 3.92, "wind": 1.6, "td": 19.7}, {"m": "Eylül", "tDay": 25.4, "tNight": 17.7, "ghi": 3.53, "wind": 1.5, "td": 15.9}, {"m": "Ekim", "tDay": 21.4, "tNight": 13.9, "ghi": 2.63, "wind": 1.6, "td": 12.5}, {"m": "Kasım", "tDay": 16.7, "tNight": 8.8, "ghi": 1.95, "wind": 1.8, "td": 6.7}, {"m": "Aralık", "tDay": 13.0, "tNight": 5.6, "ghi": 1.5, "wind": 2.2, "td": 0.7}]}, "sakarya": {"name": "Sakarya", "refAlt": 30, "lat": 40.7676, "lon": 30.3934, "station": 17069, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.2, "tNight": 3.5, "ghi": 1.56, "wind": 1.7, "td": 0.8}, {"m": "Şubat", "tDay": 11.6, "tNight": 3.7, "ghi": 2.22, "wind": 1.5, "td": 2.4}, {"m": "Mart", "tDay": 14.7, "tNight": 5.2, "ghi": 3.19, "wind": 1.5, "td": 3.8}, {"m": "Nisan", "tDay": 19.4, "tNight": 8.5, "ghi": 4.59, "wind": 1.5, "td": 6.3}, {"m": "Mayıs", "tDay": 24.2, "tNight": 13.0, "ghi": 5.52, "wind": 1.1, "td": 13.2}, {"m": "Haziran", "tDay": 28.2, "tNight": 16.9, "ghi": 6.39, "wind": 1.4, "td": 16.0}, {"m": "Temmuz", "tDay": 30.3, "tNight": 19.1, "ghi": 6.83, "wind": 1.6, "td": 15.7}, {"m": "Ağustos", "tDay": 30.5, "tNight": 19.4, "ghi": 6.17, "wind": 1.5, "td": 17.7}, {"m": "Eylül", "tDay": 27.2, "tNight": 15.7, "ghi": 4.61, "wind": 1.3, "td": 14.9}, {"m": "Ekim", "tDay": 22.3, "tNight": 12.3, "ghi": 2.98, "wind": 1.2, "td": 11.8}, {"m": "Kasım", "tDay": 17.2, "tNight": 8.0, "ghi": 2.1, "wind": 1.2, "td": 9.4}, {"m": "Aralık", "tDay": 12.1, "tNight": 5.3, "ghi": 1.52, "wind": 1.4, "td": 3.2}]}, "samsun": {"name": "Samsun", "refAlt": 4, "lat": 41.3442, "lon": 36.2564, "station": 17030, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 11.1, "tNight": 4.4, "ghi": 1.6, "wind": 3.2, "td": 1.2}, {"m": "Şubat", "tDay": 11.3, "tNight": 4.1, "ghi": 2.23, "wind": 3.1, "td": 0.6}, {"m": "Mart", "tDay": 12.8, "tNight": 5.2, "ghi": 3.09, "wind": 2.4, "td": 3.2}, {"m": "Nisan", "tDay": 15.3, "tNight": 7.9, "ghi": 4.5, "wind": 2.3, "td": 7.6}, {"m": "Mayıs", "tDay": 19.4, "tNight": 12.4, "ghi": 5.44, "wind": 1.9, "td": 12.2}, {"m": "Haziran", "tDay": 24.4, "tNight": 17.0, "ghi": 6.41, "wind": 2.1, "td": 15.9}, {"m": "Temmuz", "tDay": 27.4, "tNight": 20.0, "ghi": 6.55, "wind": 2.3, "td": 17.5}, {"m": "Ağustos", "tDay": 28.2, "tNight": 20.7, "ghi": 5.85, "wind": 2.7, "td": 18.7}, {"m": "Eylül", "tDay": 24.8, "tNight": 17.3, "ghi": 4.34, "wind": 2.2, "td": 17.2}, {"m": "Ekim", "tDay": 20.8, "tNight": 13.6, "ghi": 2.79, "wind": 2.2, "td": 11.7}, {"m": "Kasım", "tDay": 16.7, "tNight": 9.1, "ghi": 2.01, "wind": 2.3, "td": 8.4}, {"m": "Aralık", "tDay": 13.1, "tNight": 6.5, "ghi": 1.54, "wind": 2.8, "td": 5.3}]}, "sanliurfa": {"name": "Şanlıurfa", "refAlt": 550, "lat": 37.1608, "lon": 38.7863, "station": 17270, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.6, "tNight": 3.0, "ghi": 2.25, "wind": 2.1, "td": 3.2}, {"m": "Şubat", "tDay": 12.5, "tNight": 3.6, "ghi": 3.15, "wind": 2.3, "td": 1.0}, {"m": "Mart", "tDay": 17.5, "tNight": 7.0, "ghi": 4.4, "wind": 3.0, "td": 3.5}, {"m": "Nisan", "tDay": 23.1, "tNight": 11.3, "ghi": 5.78, "wind": 3.2, "td": 2.6}, {"m": "Mayıs", "tDay": 29.6, "tNight": 16.6, "ghi": 6.99, "wind": 2.5, "td": 10.7}, {"m": "Haziran", "tDay": 35.7, "tNight": 21.9, "ghi": 8.24, "wind": 3.6, "td": 7.4}, {"m": "Temmuz", "tDay": 39.5, "tNight": 25.4, "ghi": 8.23, "wind": 3.2, "td": 9.9}, {"m": "Ağustos", "tDay": 39.0, "tNight": 25.0, "ghi": 7.32, "wind": 3.1, "td": 13.1}, {"m": "Eylül", "tDay": 34.5, "tNight": 20.8, "ghi": 6.09, "wind": 2.9, "td": 7.2}, {"m": "Ekim", "tDay": 27.7, "tNight": 15.8, "ghi": 4.22, "wind": 2.1, "td": 8.9}, {"m": "Kasım", "tDay": 18.9, "tNight": 8.9, "ghi": 2.89, "wind": 2.2, "td": 2.6}, {"m": "Aralık", "tDay": 12.4, "tNight": 4.8, "ghi": 2.2, "wind": 2.1, "td": 6.1}]}, "siirt": {"name": "Siirt", "refAlt": 895, "lat": 37.9319, "lon": 41.9354, "station": 17210, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.3, "tNight": 0.4, "ghi": 2.07, "wind": 1.1, "td": -3.8}, {"m": "Şubat", "tDay": 9.3, "tNight": 1.2, "ghi": 2.97, "wind": 1.0, "td": -2.8}, {"m": "Mart", "tDay": 14.2, "tNight": 5.1, "ghi": 3.86, "wind": 1.2, "td": 1.9}, {"m": "Nisan", "tDay": 19.7, "tNight": 9.7, "ghi": 5.3, "wind": 1.3, "td": 4.4}, {"m": "Mayıs", "tDay": 25.7, "tNight": 14.3, "ghi": 6.63, "wind": 1.5, "td": 4.7}, {"m": "Haziran", "tDay": 32.8, "tNight": 20.1, "ghi": 8.04, "wind": 1.5, "td": 8.3}, {"m": "Temmuz", "tDay": 37.5, "tNight": 24.1, "ghi": 8.1, "wind": 1.6, "td": 6.9}, {"m": "Ağustos", "tDay": 37.6, "tNight": 24.1, "ghi": 7.27, "wind": 1.5, "td": 4.8}, {"m": "Eylül", "tDay": 32.6, "tNight": 19.4, "ghi": 5.98, "wind": 1.4, "td": 4.5}, {"m": "Ekim", "tDay": 25.2, "tNight": 13.7, "ghi": 3.99, "wind": 1.3, "td": 5.3}, {"m": "Kasım", "tDay": 15.7, "tNight": 6.8, "ghi": 2.75, "wind": 1.2, "td": 1.3}, {"m": "Aralık", "tDay": 9.1, "tNight": 2.3, "ghi": 2.04, "wind": 1.2, "td": -3.5}]}, "sinop": {"name": "Sinop", "refAlt": 32, "lat": 42.0299, "lon": 35.1545, "station": 17026, "altSrc": "DEM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.7, "tNight": 4.9, "ghi": 1.46, "wind": 4.6, "td": 1.5}, {"m": "Şubat", "tDay": 9.8, "tNight": 4.4, "ghi": 2.09, "wind": 4.0, "td": 2.5}, {"m": "Mart", "tDay": 11.3, "tNight": 5.6, "ghi": 3.15, "wind": 4.1, "td": 4.3}, {"m": "Nisan", "tDay": 14.5, "tNight": 8.4, "ghi": 4.54, "wind": 4.6, "td": 8.1}, {"m": "Mayıs", "tDay": 19.0, "tNight": 12.7, "ghi": 5.52, "wind": 3.8, "td": 13.5}, {"m": "Haziran", "tDay": 24.0, "tNight": 17.6, "ghi": 6.66, "wind": 4.3, "td": 16.4}, {"m": "Temmuz", "tDay": 26.8, "tNight": 20.6, "ghi": 6.99, "wind": 3.9, "td": 20.3}, {"m": "Ağustos", "tDay": 27.6, "tNight": 21.4, "ghi": 6.15, "wind": 3.6, "td": 21.2}, {"m": "Eylül", "tDay": 24.1, "tNight": 18.1, "ghi": 4.44, "wind": 4.4, "td": 16.6}, {"m": "Ekim", "tDay": 19.9, "tNight": 14.4, "ghi": 2.75, "wind": 4.3, "td": 14.8}, {"m": "Kasım", "tDay": 15.6, "tNight": 10.0, "ghi": 1.86, "wind": 4.5, "td": 8.5}, {"m": "Aralık", "tDay": 12.0, "tNight": 6.9, "ghi": 1.39, "wind": 4.1, "td": 5.5}]}, "sirnak": {"name": "Şırnak", "refAlt": 1350, "lat": 37.5209, "lon": 42.4523, "station": 17287, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 5.9, "tNight": -0.4, "ghi": 2.06, "wind": 1.3, "td": -4.9}, {"m": "Şubat", "tDay": 7.4, "tNight": 0.5, "ghi": 3.03, "wind": 1.3, "td": -4.9}, {"m": "Mart", "tDay": 12.0, "tNight": 4.2, "ghi": 3.8, "wind": 1.4, "td": 0.3}, {"m": "Nisan", "tDay": 16.7, "tNight": 8.2, "ghi": 5.2, "wind": 1.8, "td": 2.4}, {"m": "Mayıs", "tDay": 23.0, "tNight": 13.9, "ghi": 6.59, "wind": 1.5, "td": 6.9}, {"m": "Haziran", "tDay": 30.1, "tNight": 20.1, "ghi": 8.05, "wind": 1.9, "td": 1.5}, {"m": "Temmuz", "tDay": 34.2, "tNight": 24.3, "ghi": 8.1, "wind": 1.8, "td": 1.8}, {"m": "Ağustos", "tDay": 34.0, "tNight": 24.1, "ghi": 7.32, "wind": 1.8, "td": 3.5}, {"m": "Eylül", "tDay": 29.4, "tNight": 19.7, "ghi": 6.05, "wind": 1.8, "td": 1.7}, {"m": "Ekim", "tDay": 22.0, "tNight": 13.3, "ghi": 3.96, "wind": 1.6, "td": 1.2}, {"m": "Kasım", "tDay": 13.5, "tNight": 6.0, "ghi": 2.74, "wind": 1.3, "td": 1.3}, {"m": "Aralık", "tDay": 8.4, "tNight": 1.7, "ghi": 2.03, "wind": 1.3, "td": 0.7}]}, "sivas": {"name": "Sivas", "refAlt": 1294, "lat": 39.7437, "lon": 37.002, "station": 17090, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 1.7, "tNight": -6.2, "ghi": 1.6, "wind": 2.4, "td": -7.1}, {"m": "Şubat", "tDay": 3.5, "tNight": -5.7, "ghi": 2.6, "wind": 3.2, "td": -2.1}, {"m": "Mart", "tDay": 9.5, "tNight": -0.9, "ghi": 3.59, "wind": 3.3, "td": -3.2}, {"m": "Nisan", "tDay": 15.9, "tNight": 3.7, "ghi": 5.01, "wind": 2.8, "td": 2.3}, {"m": "Mayıs", "tDay": 20.7, "tNight": 7.6, "ghi": 5.88, "wind": 2.3, "td": 5.1}, {"m": "Haziran", "tDay": 25.1, "tNight": 10.8, "ghi": 7.09, "wind": 2.1, "td": 9.8}, {"m": "Temmuz", "tDay": 29.0, "tNight": 13.2, "ghi": 7.6, "wind": 3.4, "td": 9.6}, {"m": "Ağustos", "tDay": 29.7, "tNight": 13.3, "ghi": 6.96, "wind": 2.9, "td": 10.7}, {"m": "Eylül", "tDay": 25.5, "tNight": 9.5, "ghi": 5.45, "wind": 2.3, "td": 5.2}, {"m": "Ekim", "tDay": 19.3, "tNight": 5.3, "ghi": 3.63, "wind": 2.1, "td": 5.3}, {"m": "Kasım", "tDay": 11.2, "tNight": -0.3, "ghi": 2.43, "wind": 2.3, "td": -1.4}, {"m": "Aralık", "tDay": 4.2, "tNight": -3.7, "ghi": 1.68, "wind": 2.7, "td": -1.9}]}, "tekirdag": {"name": "Tekirdağ", "refAlt": 4, "lat": 40.9585, "lon": 27.4965, "station": 17056, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 474, "months": [{"m": "Ocak", "tDay": 8.6, "tNight": 2.4, "ghi": 1.69, "wind": 4.4, "td": 3.2}, {"m": "Şubat", "tDay": 9.4, "tNight": 2.8, "ghi": 2.34, "wind": 5.0, "td": 4.5}, {"m": "Mart", "tDay": 12.0, "tNight": 4.8, "ghi": 3.49, "wind": 4.4, "td": 6.5}, {"m": "Nisan", "tDay": 16.1, "tNight": 8.4, "ghi": 5.12, "wind": 3.2, "td": 7.6}, {"m": "Mayıs", "tDay": 21.2, "tNight": 13.1, "ghi": 6.16, "wind": 2.7, "td": 12.3}, {"m": "Haziran", "tDay": 26.0, "tNight": 17.4, "ghi": 6.92, "wind": 2.8, "td": 15.4}, {"m": "Temmuz", "tDay": 28.7, "tNight": 19.8, "ghi": 7.37, "wind": 3.0, "td": 18.0}, {"m": "Ağustos", "tDay": 29.1, "tNight": 20.5, "ghi": 6.52, "wind": 4.3, "td": 18.8}, {"m": "Eylül", "tDay": 25.1, "tNight": 16.7, "ghi": 4.72, "wind": 4.1, "td": 14.4}, {"m": "Ekim", "tDay": 20.0, "tNight": 12.7, "ghi": 3.05, "wind": 4.0, "td": 11.7}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.2, "ghi": 1.97, "wind": 3.8, "td": 6.9}, {"m": "Aralık", "tDay": 10.4, "tNight": 4.2, "ghi": 1.47, "wind": 3.4, "td": 9.4}]}, "tokat": {"name": "Tokat", "refAlt": 611, "lat": 40.3312, "lon": 36.5577, "station": 17086, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 6.5, "tNight": -1.4, "ghi": 1.66, "wind": 1.9, "td": -4.6}, {"m": "Şubat", "tDay": 8.8, "tNight": -0.6, "ghi": 2.55, "wind": 1.8, "td": -10.6}, {"m": "Mart", "tDay": 13.8, "tNight": 2.9, "ghi": 3.37, "wind": 1.9, "td": 2.2}, {"m": "Nisan", "tDay": 19.4, "tNight": 6.6, "ghi": 4.85, "wind": 1.7, "td": 1.9}, {"m": "Mayıs", "tDay": 24.1, "tNight": 10.3, "ghi": 5.7, "wind": 1.4, "td": 7.5}, {"m": "Haziran", "tDay": 27.6, "tNight": 13.7, "ghi": 6.69, "wind": 1.4, "td": 12.8}, {"m": "Temmuz", "tDay": 30.2, "tNight": 16.3, "ghi": 6.77, "wind": 1.6, "td": 14.1}, {"m": "Ağustos", "tDay": 30.9, "tNight": 16.7, "ghi": 6.36, "wind": 1.7, "td": 14.8}, {"m": "Eylül", "tDay": 27.4, "tNight": 13.0, "ghi": 5.09, "wind": 1.7, "td": 9.2}, {"m": "Ekim", "tDay": 21.5, "tNight": 9.0, "ghi": 3.34, "wind": 1.3, "td": 4.6}, {"m": "Kasım", "tDay": 13.6, "tNight": 3.0, "ghi": 2.26, "wind": 1.7, "td": 0.9}, {"m": "Aralık", "tDay": 8.0, "tNight": 0.4, "ghi": 1.6, "wind": 1.9, "td": 0.2}]}, "trabzon": {"name": "Trabzon", "refAlt": 39, "lat": 40.9985, "lon": 39.7649, "station": 17037, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 11.3, "tNight": 5.0, "ghi": 1.61, "wind": 1.7, "td": 1.5}, {"m": "Şubat", "tDay": 11.4, "tNight": 4.6, "ghi": 2.24, "wind": 1.8, "td": 1.9}, {"m": "Mart", "tDay": 13.0, "tNight": 6.2, "ghi": 2.93, "wind": 1.4, "td": 3.2}, {"m": "Nisan", "tDay": 16.3, "tNight": 9.0, "ghi": 4.06, "wind": 1.6, "td": 9.2}, {"m": "Mayıs", "tDay": 20.0, "tNight": 13.4, "ghi": 4.76, "wind": 1.3, "td": 10.0}, {"m": "Haziran", "tDay": 24.5, "tNight": 17.6, "ghi": 4.95, "wind": 1.2, "td": 17.5}, {"m": "Temmuz", "tDay": 27.5, "tNight": 20.6, "ghi": 4.79, "wind": 1.2, "td": 18.8}, {"m": "Ağustos", "tDay": 28.1, "tNight": 21.2, "ghi": 4.12, "wind": 1.1, "td": 19.6}, {"m": "Eylül", "tDay": 25.1, "tNight": 17.8, "ghi": 3.59, "wind": 1.2, "td": 16.2}, {"m": "Ekim", "tDay": 21.0, "tNight": 14.1, "ghi": 2.65, "wind": 1.2, "td": 13.9}, {"m": "Kasım", "tDay": 16.5, "tNight": 9.6, "ghi": 1.99, "wind": 1.3, "td": 7.6}, {"m": "Aralık", "tDay": 13.1, "tNight": 6.8, "ghi": 1.54, "wind": 1.9, "td": 1.3}]}, "tunceli": {"name": "Tunceli", "refAlt": 981, "lat": 39.1058, "lon": 39.5408, "station": 17165, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 3.8, "tNight": -4.6, "ghi": 1.8, "wind": 1.2, "td": -5.3}, {"m": "Şubat", "tDay": 5.8, "tNight": -3.4, "ghi": 2.81, "wind": 1.2, "td": -3.5}, {"m": "Mart", "tDay": 12.1, "tNight": 1.5, "ghi": 3.75, "wind": 1.4, "td": -1.8}, {"m": "Nisan", "tDay": 18.5, "tNight": 6.3, "ghi": 4.9, "wind": 1.6, "td": 2.5}, {"m": "Mayıs", "tDay": 24.3, "tNight": 10.2, "ghi": 6.29, "wind": 1.4, "td": 3.8}, {"m": "Haziran", "tDay": 30.7, "tNight": 14.7, "ghi": 7.93, "wind": 1.7, "td": 7.3}, {"m": "Temmuz", "tDay": 35.5, "tNight": 19.1, "ghi": 8.15, "wind": 1.7, "td": 7.6}, {"m": "Ağustos", "tDay": 36.0, "tNight": 19.0, "ghi": 7.2, "wind": 1.6, "td": 5.7}, {"m": "Eylül", "tDay": 30.8, "tNight": 13.5, "ghi": 5.85, "wind": 1.5, "td": 4.0}, {"m": "Ekim", "tDay": 23.2, "tNight": 8.6, "ghi": 3.86, "wind": 1.3, "td": 5.5}, {"m": "Kasım", "tDay": 13.9, "tNight": 1.9, "ghi": 2.58, "wind": 1.2, "td": -0.4}, {"m": "Aralık", "tDay": 6.0, "tNight": -2.1, "ghi": 1.82, "wind": 1.3, "td": -5.6}]}, "usak": {"name": "Uşak", "refAlt": 919, "lat": 38.6712, "lon": 29.404, "station": 17188, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 7.3, "tNight": -1.1, "ghi": 2.09, "wind": 2.2, "td": -1.7}, {"m": "Şubat", "tDay": 8.9, "tNight": -0.3, "ghi": 2.97, "wind": 2.0, "td": -0.7}, {"m": "Mart", "tDay": 12.5, "tNight": 1.8, "ghi": 4.08, "wind": 2.1, "td": -0.2}, {"m": "Nisan", "tDay": 17.0, "tNight": 5.4, "ghi": 5.47, "wind": 2.1, "td": 1.3}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.6, "ghi": 6.45, "wind": 2.2, "td": 5.2}, {"m": "Haziran", "tDay": 27.3, "tNight": 13.2, "ghi": 7.28, "wind": 2.0, "td": 9.9}, {"m": "Temmuz", "tDay": 31.2, "tNight": 16.3, "ghi": 7.94, "wind": 2.5, "td": 9.8}, {"m": "Ağustos", "tDay": 31.5, "tNight": 16.6, "ghi": 7.13, "wind": 2.3, "td": 10.6}, {"m": "Eylül", "tDay": 26.8, "tNight": 12.5, "ghi": 5.7, "wind": 1.9, "td": 8.9}, {"m": "Ekim", "tDay": 20.9, "tNight": 8.5, "ghi": 3.98, "wind": 2.0, "td": 4.1}, {"m": "Kasım", "tDay": 14.6, "tNight": 3.8, "ghi": 2.77, "wind": 2.0, "td": 0.2}, {"m": "Aralık", "tDay": 9.2, "tNight": 0.7, "ghi": 2.06, "wind": 2.1, "td": 2.3}]}, "van": {"name": "Van", "refAlt": 1675, "lat": 38.4693, "lon": 43.346, "station": 17172, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 2.9, "tNight": -6.0, "ghi": 2.23, "wind": 1.4, "td": -9.7}, {"m": "Şubat", "tDay": 3.5, "tNight": -5.2, "ghi": 3.26, "wind": 1.5, "td": -7.4}, {"m": "Mart", "tDay": 7.5, "tNight": -1.2, "ghi": 4.13, "wind": 1.4, "td": -5.1}, {"m": "Nisan", "tDay": 13.2, "tNight": 3.6, "ghi": 5.42, "wind": 1.7, "td": -0.1}, {"m": "Mayıs", "tDay": 18.6, "tNight": 8.0, "ghi": 6.58, "wind": 1.5, "td": 4.2}, {"m": "Haziran", "tDay": 24.3, "tNight": 12.3, "ghi": 7.81, "wind": 1.5, "td": 6.9}, {"m": "Temmuz", "tDay": 28.3, "tNight": 16.0, "ghi": 7.81, "wind": 1.6, "td": 8.4}, {"m": "Ağustos", "tDay": 28.8, "tNight": 16.2, "ghi": 7.03, "wind": 1.6, "td": 7.1}, {"m": "Eylül", "tDay": 24.4, "tNight": 12.0, "ghi": 5.81, "wind": 1.4, "td": 5.5}, {"m": "Ekim", "tDay": 17.8, "tNight": 6.8, "ghi": 3.89, "wind": 1.3, "td": 4.2}, {"m": "Kasım", "tDay": 10.3, "tNight": 0.9, "ghi": 2.69, "wind": 1.3, "td": 0.7}, {"m": "Aralık", "tDay": 5.2, "tNight": -3.6, "ghi": 2.03, "wind": 1.3, "td": -3.5}]}, "yalova": {"name": "Yalova", "refAlt": 4, "lat": 40.6589, "lon": 29.2796, "station": 17119, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 10.3, "tNight": 3.7, "ghi": 1.55, "wind": 1.8, "td": 4.5}, {"m": "Şubat", "tDay": 11.2, "tNight": 3.9, "ghi": 2.21, "wind": 1.9, "td": 6.1}, {"m": "Mart", "tDay": 13.5, "tNight": 5.2, "ghi": 3.31, "wind": 2.0, "td": 4.1}, {"m": "Nisan", "tDay": 17.6, "tNight": 8.3, "ghi": 4.87, "wind": 2.7, "td": 5.9}, {"m": "Mayıs", "tDay": 22.5, "tNight": 12.8, "ghi": 5.94, "wind": 1.7, "td": 12.8}, {"m": "Haziran", "tDay": 27.1, "tNight": 16.9, "ghi": 6.81, "wind": 2.3, "td": 15.7}, {"m": "Temmuz", "tDay": 29.8, "tNight": 19.1, "ghi": 7.18, "wind": 2.3, "td": 16.9}, {"m": "Ağustos", "tDay": 30.1, "tNight": 19.6, "ghi": 6.32, "wind": 2.6, "td": 16.0}, {"m": "Eylül", "tDay": 26.2, "tNight": 16.1, "ghi": 4.71, "wind": 2.4, "td": 15.1}, {"m": "Ekim", "tDay": 21.1, "tNight": 12.7, "ghi": 2.98, "wind": 2.0, "td": 13.1}, {"m": "Kasım", "tDay": 16.3, "tNight": 8.4, "ghi": 2.07, "wind": 2.2, "td": 8.7}, {"m": "Aralık", "tDay": 12.0, "tNight": 5.5, "ghi": 1.5, "wind": 2.3, "td": 3.8}]}, "yozgat": {"name": "Yozgat", "refAlt": 1301, "lat": 39.8243, "lon": 34.8159, "station": 17140, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 2.8, "tNight": -4.8, "ghi": 1.61, "wind": 2.0, "td": -3.1}, {"m": "Şubat", "tDay": 4.7, "tNight": -4.1, "ghi": 2.54, "wind": 2.1, "td": -4.0}, {"m": "Mart", "tDay": 9.1, "tNight": -0.8, "ghi": 3.69, "wind": 2.6, "td": -2.3}, {"m": "Nisan", "tDay": 14.5, "tNight": 3.5, "ghi": 5.14, "wind": 2.5, "td": -1.6}, {"m": "Mayıs", "tDay": 19.5, "tNight": 7.8, "ghi": 6.06, "wind": 2.0, "td": 8.2}, {"m": "Haziran", "tDay": 23.6, "tNight": 11.3, "ghi": 6.98, "wind": 2.3, "td": 9.0}, {"m": "Temmuz", "tDay": 27.1, "tNight": 13.8, "ghi": 7.6, "wind": 3.3, "td": 8.6}, {"m": "Ağustos", "tDay": 27.5, "tNight": 14.2, "ghi": 6.92, "wind": 3.6, "td": 9.1}, {"m": "Eylül", "tDay": 23.7, "tNight": 10.4, "ghi": 5.45, "wind": 2.8, "td": 5.3}, {"m": "Ekim", "tDay": 17.8, "tNight": 6.3, "ghi": 3.66, "wind": 2.3, "td": -0.3}, {"m": "Kasım", "tDay": 10.7, "tNight": 0.5, "ghi": 2.48, "wind": 1.8, "td": 0.5}, {"m": "Aralık", "tDay": 4.9, "tNight": -2.6, "ghi": 1.7, "wind": 2.4, "td": -0.9}]}, "zonguldak": {"name": "Zonguldak", "refAlt": 135, "lat": 41.4492, "lon": 31.7779, "station": 17022, "altSrc": "MGM", "tPeriod": "1991-2020", "qcHours": 0, "months": [{"m": "Ocak", "tDay": 9.2, "tNight": 3.8, "ghi": 1.36, "wind": 2.6, "td": 2.6}, {"m": "Şubat", "tDay": 9.7, "tNight": 3.6, "ghi": 2.09, "wind": 3.5, "td": -0.9}, {"m": "Mart", "tDay": 11.7, "tNight": 5.2, "ghi": 3.1, "wind": 3.2, "td": 0.2}, {"m": "Nisan", "tDay": 15.2, "tNight": 8.3, "ghi": 4.67, "wind": 2.4, "td": 6.5}, {"m": "Mayıs", "tDay": 19.3, "tNight": 12.6, "ghi": 5.67, "wind": 2.2, "td": 11.0}, {"m": "Haziran", "tDay": 23.6, "tNight": 16.5, "ghi": 6.4, "wind": 2.4, "td": 14.5}, {"m": "Temmuz", "tDay": 25.8, "tNight": 18.8, "ghi": 6.84, "wind": 3.2, "td": 15.7}, {"m": "Ağustos", "tDay": 26.2, "tNight": 19.2, "ghi": 6.14, "wind": 3.1, "td": 17.7}, {"m": "Eylül", "tDay": 23.2, "tNight": 16.1, "ghi": 4.47, "wind": 2.9, "td": 14.2}, {"m": "Ekim", "tDay": 19.2, "tNight": 12.8, "ghi": 2.84, "wind": 2.4, "td": 12.9}, {"m": "Kasım", "tDay": 15.2, "tNight": 8.9, "ghi": 1.97, "wind": 2.6, "td": 8.1}, {"m": "Aralık", "tDay": 11.5, "tNight": 5.7, "ghi": 1.37, "wind": 2.2, "td": 1.8}]}};
+    // Buharlaşma latent ısısı (kJ/kg)
+    const LATENT_HEAT = 2430.0;
+
+    // Carrier/ASHRAE tipi buharlaşma bağıntısı: w = A·Δp·(a + b·v) / Y  [kg/s]
+    // Δp kPa, A m², Y kJ/kg → buharlaşma ısı kaybı q = w·Y = A·Δp·(a + b·v)  [kW]
+    function getEvapHeatKw(a, b, v, deltaP_kPa, area) {
+      return (a + b * v) * deltaP_kPa * area;
+    }
+
+    function evapKwToKgPerHour(qKw) {
+      return qKw * 3600.0 / LATENT_HEAT;
+    }
+
+    // Sayısal girdi okuma: alan boş veya geçersizse varsayılan döner; 0 geçerli bir değerdir
+    function readNum(id, fallback) {
+      const v = parseFloat(document.getElementById(id).value);
+      return Number.isFinite(v) ? v : fallback;
+    }
+
+    function getSatVaporPressure(tC) {
+      return 6.112 * Math.exp((17.67 * tC) / (tC + 243.5));
+    }
+
+    // Verilen hava sıcaklığında buhar basıncı: doyma basıncını aşamaz (gece yoğuşma, %100 bağıl nem)
+    function getVaporPressureAt(tC, pVapor) {
+      return Math.min(pVapor, getSatVaporPressure(tC));
+    }
+
+    // Çiy noktası (°C): Magnus bağıntısının buhar basıncından tersi
+    function getDewPointFromVapor(pVapor) {
+      const g = Math.log(Math.max(0.01, pVapor) / 6.112);
+      return (243.5 * g) / (17.67 - g);
+    }
+
+    // Açık gökyüzü sıcaklığı (°C): Berdahl & Martin (1984) gökyüzü yayıcılığı
+    // ε_gök = 0.711 + 0.56·(Tçiy/100) + 0.73·(Tçiy/100)², T_gök = T_hava · ε_gök^0.25
+    function getSkyTemp(tAirC, pVapor) {
+      const td = getDewPointFromVapor(getVaporPressureAt(tAirC, pVapor)) / 100.0;
+      const epsSky = Math.min(1.0, 0.711 + 0.56 * td + 0.73 * td * td);
+      return (tAirC + 273.15) * Math.pow(epsSky, 0.25) - 273.15;
+    }
+
+    // Gece havuz örtüsü: buharlaşmanın %85'ini keser; taşınım ve ışınım örtünün ısıl direncinden geçer
+    const COVER_EVAP_FACTOR = 0.15;
+    const COVER_R = { bubble: 0.10, foam: 0.30 }; // m²K/W (kabul)
+
+    // Örtülü yüzeyde taşınım ve ışınım (kW). Örtü dış yüzey sıcaklığı T_s, enerji dengesinden
+    // (T_su − T_s)/R = h_c·(T_s − T_hava) + ε·σ·(T_s⁴ − T_gök⁴) ikiye bölme yöntemiyle bulunur.
+    function getCoveredConvRadKw(area, v, tWater, tAir, pVapor, rCover) {
+      const hc = 2.8 + 3.0 * v;
+      const tSky = getSkyTemp(tAir, pVapor) + 273.15;
+      const outflow = ts => hc * (ts - tAir) + WATER_EMISSIVITY * STEFAN_BOLTZMANN * (Math.pow(ts + 273.15, 4) - Math.pow(tSky, 4));
+      let lo = Math.min(tAir, tSky - 273.15) - 10.0, hi = tWater;
+      for (let i = 0; i < 60; i++) {
+        const mid = (lo + hi) / 2.0;
+        if ((tWater - mid) / rCover > outflow(mid)) lo = mid; else hi = mid;
+      }
+      const ts = (lo + hi) / 2.0;
+      return {
+        conv: (hc * (ts - tAir) * area) / 1000.0,
+        rad: (WATER_EMISSIVITY * STEFAN_BOLTZMANN * (Math.pow(ts + 273.15, 4) - Math.pow(tSky, 4)) * area) / 1000.0
+      };
+    }
+
+    // Tamamlama suyu ısıtması (kW): buharlaşan su + ek taze su, şebeke sıcaklığından havuz sıcaklığına
+    function getMakeupHeatKw(evapKw, extraLps, tWater, tMains) {
+      const kgPerS = evapKwToKgPerHour(evapKw) / 3600.0 + extraLps;
+      return kgPerS * 4.186 * Math.max(0, tWater - tMains);
+    }
+
+    // Ayın temsili günü (Klein, 1977) ve astronomik gün uzunluğu (saat)
+    // δ = 23.45·sin(360·(284 + n)/365) (Cooper, 1969), N = (2/15)·acos(−tan φ · tan δ)
+    const REP_DAY_OF_MONTH = [17, 16, 16, 15, 15, 11, 17, 16, 15, 15, 14, 10];
+    const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    function getDayLengthHours(latDeg, monthIdx) {
+      let n = REP_DAY_OF_MONTH[monthIdx];
+      for (let i = 0; i < monthIdx; i++) n += DAYS_IN_MONTH[i];
+      const rad = Math.PI / 180.0;
+      const decl = 23.45 * Math.sin(rad * 360.0 * (284 + n) / 365.0);
+      const x = Math.max(-1, Math.min(1, -Math.tan(latDeg * rad) * Math.tan(decl * rad)));
+      return (2.0 / 15.0) * Math.acos(x) / rad;
+    }
+
+    const WATER_EMISSIVITY = 0.95;
+    const STEFAN_BOLTZMANN = 5.67e-8; // W/m²K⁴
+
+    // Açık havuz: rüzgarla taşınım, McAdams/Watmuff h = 2.8 + 3.0·v [W/m²K]  → kW
+    function getOutdoorConvKw(area, v, tWater, tAir) {
+      return ((2.8 + 3.0 * v) * area * (tWater - tAir)) / 1000.0;
+    }
+
+    // Açık havuz: su yüzeyinden açık gökyüzüne uzun dalga ışınım, q = ε·σ·(T_su⁴ − T_gök⁴)  → kW
+    function getSkyRadiationKw(area, tWater, tAir, pVapor) {
+      const tw = tWater + 273.15;
+      const ts = getSkyTemp(tAir, pVapor) + 273.15;
+      return (WATER_EMISSIVITY * STEFAN_BOLTZMANN * area * (Math.pow(tw, 4) - Math.pow(ts, 4))) / 1000.0;
+    }
+
+    function getWindCoeff(shelterPct) {
+      const s = Math.max(0, Math.min(100, shelterPct)) / 100.0;
+      return 1.0 - 0.70 * s - 0.30 * Math.pow(s, 2);
+    }
+
+    function onWindPresetChange() {
+      const val = document.getElementById('windPreset').value;
+      if (val !== 'custom') {
+        document.getElementById('shelterPct').value = val;
+        onShelterPctInput();
+      }
+    }
+
+    function onShelterPctInput() {
+      const sVal = readNum('shelterPct', 0);
+      const k = getWindCoeff(sVal);
+      document.getElementById('kWindVal').value = `k = ${k.toFixed(3)}`;
+      document.getElementById('kWindVal_txt').innerText = `k = ${k.toFixed(3)}`;
+      document.getElementById('shelterPct_txt').innerText = `%${sVal} Kapalılık (k = ${k.toFixed(3)})`;
+      
+      const preset = document.getElementById('windPreset');
+      let matched = false;
+      for (let i = 0; i < preset.options.length; i++) {
+        if (preset.options[i].value === String(sVal)) {
+          preset.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) preset.value = 'custom';
+      syncPrintValues();
+      calculate();
+    }
+
+    function setWarmupHours(h) {
+      document.getElementById('warmupHours').value = h;
+      ['btn24', 'btn48', 'btn72', 'btn96'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) b.classList.remove('active');
+      });
+      const targetBtn = document.getElementById('btn' + h);
+      if (targetBtn) targetBtn.classList.add('active');
+      syncPrintValues();
+      calculate();
+    }
+
+    // "Hazırlayan" alanı yalnızca bu tarayıcıda saklanır (tarayıcı izin vermezse sessizce atlanır)
+    const PREPARED_BY_KEY = 'havuzHesap.preparedBy';
+
+    function onPreparedByInput() {
+      try { localStorage.setItem(PREPARED_BY_KEY, document.getElementById('preparedBy').value); } catch (e) {}
+      syncPrintValues();
+    }
+
+    function loadPreparedBy() {
+      try {
+        const v = localStorage.getItem(PREPARED_BY_KEY);
+        if (v) document.getElementById('preparedBy').value = v;
+      } catch (e) {}
+    }
+
+    function syncPrintValues() {
+      const map = [
+        ['poolType', 'poolType_txt'],
+        ['citySelect', 'citySelect_txt'],
+        ['seasonStart', 'seasonStart_txt'],
+        ['seasonEnd', 'seasonEnd_txt'],
+        ['activeMonthSelect', 'activeMonthSelect_txt'],
+        ['windPreset', 'windPreset_txt'],
+        ['solarEfficiency', 'solarEfficiency_txt'],
+        ['poolCover', 'poolCover_txt']
+      ];
+      map.forEach(([selId, txtId]) => {
+        const el = document.getElementById(selId);
+        const txt = document.getElementById(txtId);
+        if (el && txt && el.selectedIndex >= 0) {
+          txt.innerText = el.options[el.selectedIndex].text;
+        }
+      });
+
+      const area = readNum('area', 0);
+      document.getElementById('area_txt').innerText = area.toLocaleString('tr-TR') + " m²";
+
+      const depth = readNum('depth', 0);
+      document.getElementById('depth_txt').innerText = depth.toFixed(2) + " m";
+
+      const vol = area * depth;
+      document.getElementById('volDisplay_txt').innerText = vol.toLocaleString('tr-TR', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " m³";
+
+      const tWater = readNum('tWater', 28);
+      document.getElementById('tWater_txt').innerText = tWater.toFixed(1) + " °C";
+
+      const freshFlow = readNum('freshFlow', 0);
+      document.getElementById('freshFlow_txt').innerText = freshFlow.toFixed(2) + " lt/sn";
+
+      const alt = readNum('altitude', 0);
+      document.getElementById('altitude_txt').innerText = alt + " m";
+
+      const curTDay = readNum('curTDay', 0);
+      document.getElementById('curTDay_txt').innerText = curTDay.toFixed(1) + " °C";
+
+      const curTNight = readNum('curTNight', 0);
+      document.getElementById('curTNight_txt').innerText = curTNight.toFixed(1) + " °C";
+
+      const curSolar = readNum('curSolar', 0);
+      document.getElementById('curSolar_txt').innerText = curSolar.toFixed(2) + " kWh/m²·gün";
+
+      const curWind = readNum('curWind', 0);
+      document.getElementById('curWind_txt').innerText = curWind.toFixed(1) + " m/s";
+
+      const curTd = readNum('curTd', 0);
+      document.getElementById('curTd_txt').innerText = curTd.toFixed(1) + " °C";
+      const pTd = getSatVaporPressure(curTd);
+      const rhDay = Math.min(100, 100 * pTd / getSatVaporPressure(curTDay));
+      const rhNight = Math.min(100, 100 * pTd / getSatVaporPressure(curTNight));
+      document.getElementById('tdHint').innerText = `Bağıl nem: gündüz %${Math.round(rhDay)}, gece %${Math.round(rhNight)}`;
+
+      const shelterPct = readNum('shelterPct', 0);
+      const kWind = getWindCoeff(shelterPct);
+      document.getElementById('shelterPct_txt').innerText = `%${shelterPct} Kapalılık (k = ${kWind.toFixed(3)})`;
+
+      const nTol = readNum('nightTolerance', 0);
+      document.getElementById('nightTolerance_txt').innerText = nTol.toFixed(1) + " °C";
+
+      document.getElementById('projectName_txt').innerText = document.getElementById('projectName').value.trim() || '-';
+      document.getElementById('preparedBy_txt').innerText = document.getElementById('preparedBy').value.trim() || '-';
+
+      const uDesc = document.getElementById('usageDesc').value || 'Yüzme / Rekreasyon';
+      document.getElementById('usageDesc_txt').innerText = uDesc;
+
+      const iDesc = document.getElementById('inertiaDesc').value || 'Yüksek';
+      document.getElementById('inertiaDesc_txt').innerText = iDesc;
+
+      // Kapalı havuz girdileri
+      const inAir = readNum('indoorTAir', 20);
+      document.getElementById('indoorTAir_txt').innerText = inAir.toFixed(1) + " °C";
+
+      const inRh = readNum('indoorRh', 60);
+      document.getElementById('indoorRh_txt').innerText = "%" + inRh;
+
+      const inWind = readNum('indoorWind', 0.15);
+      document.getElementById('indoorWind_txt').innerText = inWind.toFixed(2) + " m/s";
+
+      const inFresh = readNum('indoorTFresh', 15);
+      document.getElementById('indoorTFresh_txt').innerText = inFresh.toFixed(1) + " °C";
+
+      const wHours = Math.max(1, readNum('warmupHours', 48));
+      document.getElementById('warmupHours_txt').innerText = wHours + " Saat";
+
+      const wRate = Math.max(0, (tWater - inFresh) / wHours);
+      document.getElementById('warmupRateVal').value = `${wRate.toFixed(2)} °C/saat`;
+      document.getElementById('warmupRateVal_txt').innerText = `${wRate.toFixed(2)} °C/saat`;
+    }
+
+    function populateCitySelect() {
+      const sel = document.getElementById('citySelect');
+      sel.innerHTML = '';
+      const sortedKeys = Object.keys(CITIES).sort((a, b) => CITIES[a].name.localeCompare(CITIES[b].name, 'tr'));
+      sortedKeys.forEach(code => {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = CITIES[code].name;
+        if (code === 'antalya') opt.selected = true;
+        sel.appendChild(opt);
+      });
+      updateAltitudeHint();
+    }
+
+    function updateAltitudeHint() {
+      const code = document.getElementById('citySelect').value || 'antalya';
+      const city = CITIES[code];
+      if (city) {
+        document.getElementById('altHint').innerText = `İl referans rakımı: ${city.refAlt} m`;
+      }
+    }
+
+    // Rapor kodu ve tarihi raporun hazırlandığı güne göre üretilir
+    function updateReportFooter(prefix) {
+      const d = new Date();
+      const code = `${prefix}-${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('footerCode').innerText = `Rapor Kodu: ${code} | Tarih: ${d.toLocaleDateString('tr-TR')}`;
+    }
+
+    function onPoolTypeChange() {
+      const pType = document.getElementById('poolType').value;
+      if (pType === 'indoor') {
+        document.getElementById('outdoorLocationCard').style.display = 'none';
+        document.getElementById('dynamicFactorsCard').style.display = 'none';
+        document.getElementById('seasonCard').style.display = 'none';
+
+        document.getElementById('indoorLocationCard').style.display = 'block';
+        document.getElementById('indoorCriteriaCard').style.display = 'block';
+        document.getElementById('indoorSimCard').style.display = 'block';
+
+        document.getElementById('detailTitle').innerText = '5. KAPALI HAVUZ DETAYLI TERMODİNAMİK KAYIP DAĞILIMI (SÜREKLİ REJİM)';
+        document.getElementById('mainReportSub').innerText = 'VDI 2089 / ASHRAE Kapalı Mahal Termodinamik & İlk Isıtma Simülasyonu';
+        updateReportFooter('KH');
+      } else {
+        document.getElementById('outdoorLocationCard').style.display = 'block';
+        document.getElementById('dynamicFactorsCard').style.display = 'block';
+        document.getElementById('seasonCard').style.display = 'block';
+
+        document.getElementById('indoorLocationCard').style.display = 'none';
+        document.getElementById('indoorCriteriaCard').style.display = 'none';
+        document.getElementById('indoorSimCard').style.display = 'none';
+
+        document.getElementById('detailTitle').innerText = '5. REFERANS AYI DETAYLI TERMODİNAMİK KAYIP VE KAZANÇ DAĞILIMI';
+        document.getElementById('mainReportSub').innerText = 'VDI 2089 / ASHRAE Termodinamik & Sezonluk İklim Simülasyonu';
+        updateReportFooter('HY');
+      }
+      syncPrintValues();
+      calculate();
+    }
+
+    // İl değiştiğinde saha rakımı ilin referans rakımına getirilir (elle değiştirilebilir)
+    function onCityChange() {
+      const city = CITIES[document.getElementById('citySelect').value];
+      if (city) document.getElementById('altitude').value = city.refAlt;
+      onCityOrAltChange();
+    }
+
+    function onCityOrAltChange() {
+      updateAltitudeHint();
+      updateActiveMonthList();
+      onActiveMonthChange();
+    }
+
+    function onSeasonChange() {
+      updateActiveMonthList();
+      onActiveMonthChange();
+    }
+
+    function updateActiveMonthList() {
+      const startIdx = parseInt(document.getElementById('seasonStart').value);
+      const endIdx = parseInt(document.getElementById('seasonEnd').value);
+      const sel = document.getElementById('activeMonthSelect');
+      const curVal = parseInt(sel.value);
+      sel.innerHTML = '';
+
+      const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", 
+                          "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+      let selectedSet = false;
+      for (let i = startIdx; i <= endIdx; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = monthNames[i];
+        if (i === curVal || (i === 3 && !selectedSet)) {
+          opt.selected = true;
+          selectedSet = true;
+        }
+        sel.appendChild(opt);
+      }
+      syncPrintValues();
+    }
+
+    function onActiveMonthChange() {
+      const code = document.getElementById('citySelect').value || 'antalya';
+      const city = CITIES[code];
+      const targetAlt = readNum('altitude', (city ? city.refAlt : 0));
+      const deltaAlt = targetAlt - (city ? city.refAlt : 0);
+      const deltaT = -0.0065 * deltaAlt;
+      const solarBoost = 1.0 + (0.08 * (targetAlt / 1000.0));
+
+      const activeIdx = readNum('activeMonthSelect', 3);
+      if (city && city.months[activeIdx]) {
+        const m = city.months[activeIdx];
+        document.getElementById('curTDay').value = (m.tDay + deltaT).toFixed(1);
+        document.getElementById('curTNight').value = (m.tNight + deltaT).toFixed(1);
+        document.getElementById('curSolar').value = (m.ghi * solarBoost).toFixed(2);
+        document.getElementById('curWind').value = m.wind.toFixed(1);
+        document.getElementById('curTd').value = m.td.toFixed(1);
+      }
+      syncPrintValues();
+      calculate();
+    }
+
+    function calculate() {
+      const pType = document.getElementById('poolType').value;
+      const area = readNum('area', 0);
+      const depth = readNum('depth', 0);
+      const vol = area * depth;
+      document.getElementById('volDisplay').value = vol.toFixed(1) + " m³";
+      document.getElementById('inertiaDesc').value = `Yüksek (${Math.round(vol).toLocaleString('tr-TR')} Ton Su)`;
+      document.getElementById('inertiaDesc_txt').innerText = `Yüksek (${Math.round(vol).toLocaleString('tr-TR')} Ton Su)`;
+
+      const tWater = readNum('tWater', 28);
+      const freshFlow = readNum('freshFlow', 0);
+
+      if (pType === 'indoor') {
+        calculateIndoor(area, depth, vol, tWater, freshFlow);
+      } else {
+        calculateOutdoor(area, depth, vol, tWater, freshFlow);
+      }
+    }
+
+    function calculateIndoor(area, depth, vol, tWater, freshFlow) {
+      const tAir = readNum('indoorTAir', 20);
+      const rh = readNum('indoorRh', 60);
+      const vAir = readNum('indoorWind', 0.15);
+      const tFresh = readNum('indoorTFresh', 15.0);
+      const warmupHours = Math.max(1, readNum('warmupHours', 48));
+
+      // Buharlaşma hesabı (VDI 2089 / ASHRAE standart iç mahal formülü)
+      const pWs = getSatVaporPressure(tWater);
+      const pWa = (rh / 100.0) * getSatVaporPressure(tAir);
+      const deltaP_kPa = Math.max(0, (pWs - pWa) / 10.0);
+
+      const qEvap = getEvapHeatKw(0.0888, 0.0782, vAir, deltaP_kPa, area); // kW (Gizli Isı)
+      const mEvap = evapKwToKgPerHour(qEvap); // kg/h
+
+      // Konveksiyon ve Radyasyon (Mahal havasına ısı geçişi)
+      const qConvRad = Math.max(0, ((2.8 + 3.0 * vAir + 5.5) * area * (tWater - tAir)) / 1000.0);
+
+      // Taban ve Duvar İletimi (Kondüksiyon)
+      const aWet = area + (4.0 * Math.sqrt(area) * depth);
+      const qCond = (0.85 * aWet * Math.max(0, tWater - 15.0)) / 1000.0;
+
+      // Tamamlama Suyu Isıtması (buharlaşan su + ek taze su)
+      const qFresh = getMakeupHeatKw(qEvap, freshFlow, tWater, tFresh);
+
+      // Toplam Sürekli İşletme (Rejim) Yükü
+      const totalSteady = qEvap + qConvRad + qCond + qFresh;
+      const qSensible = qConvRad + qCond + qFresh;
+
+      // İlk Isıtma (Warm-Up) Yükü
+      const eWaterKwh = (vol * 1000 * 4.186 * Math.max(0, tWater - tFresh)) / 3600.0;
+      const pWaterHeating = eWaterKwh / warmupHours;
+      const pAvgLossDuringWarmup = totalSteady * 0.45;
+      const warmupKw = pWaterHeating + pAvgLossDuringWarmup;
+
+      const finalRejim = Math.round(totalSteady);
+      const finalWarmup = Math.round(warmupKw);
+
+      // Başlıklar ve Metinler
+      document.getElementById('res1Title').innerText = "SÜREKLİ İŞLETME (REJİM) KAPASİTESİ";
+      document.getElementById('outTheoryKw').innerText = finalRejim.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outTheoryKcal').innerText = Math.round(finalRejim * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res1Sub').innerHTML = `Mahal sıcaklığı (<strong>${tAir.toFixed(1)}°C</strong>), bağıl nem (<strong>%${rh}</strong>) ve su sıcaklığı dengesinde havuzun sürekli sıcak tutulması için gereken net dizayn gücü.`;
+
+      document.getElementById('res2Title').innerText = "İLK ISITMA (WARM-UP) KAPASİTESİ";
+      document.getElementById('outOptKw').innerText = finalWarmup.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outOptKcal').innerText = Math.round(finalWarmup * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res2Sub').innerHTML = `Havuzun ilk dolumda ${tFresh.toFixed(1)}°C'den <strong>${tWater.toFixed(1)}°C</strong>'ye belirlenen sürede (<strong>${warmupHours} saat</strong>) şartlandırılması için gereken geçici kapasite.`;
+
+      // İkincil Göstergeler
+      document.getElementById('sec1Title').innerText = "Nem Alma Santrali Nem Yükü";
+      document.getElementById('outSec1').innerText = mEvap.toFixed(1) + " kg/h";
+      document.getElementById('outSec1').style.color = "var(--c-warn)";
+      document.getElementById('sec1Sub').innerText = `Günlük: ${Math.round(mEvap * 24).toLocaleString('tr-TR')} kg/gün`;
+
+      document.getElementById('sec2Title').innerText = "Gizli Isı Kaybı (Latent)";
+      document.getElementById('outSec2').innerText = Math.round(qEvap).toLocaleString('tr-TR') + " kW";
+      document.getElementById('outSec2').style.color = "var(--c-primary)";
+      document.getElementById('sec2Sub').innerText = `${Math.round(qEvap * 860).toLocaleString('tr-TR')} kcal/h buharlaşma`;
+
+      document.getElementById('sec3Title').innerText = "Duyulur Isı Kaybı (Sensible)";
+      document.getElementById('outSec3').innerText = Math.round(qSensible).toLocaleString('tr-TR') + " kW";
+      document.getElementById('sec3Sub').innerText = "Konveksiyon, iletim ve taze su";
+
+      const poolFlow = finalRejim / (1.163 * 5.0);
+      document.getElementById('sec4Title').innerText = "Havuz Devresi Debisi";
+      document.getElementById('outSec4').innerText = poolFlow.toFixed(1) + " m³/h";
+      document.getElementById('sec4Sub').innerText = "Rejim sirkülasyonu (ΔT = 5°C)";
+
+      // Isınma Hızı Alanı
+      const wRate = Math.max(0, (tWater - tFresh) / warmupHours);
+      document.getElementById('warmupRateVal').value = `${wRate.toFixed(2)} °C/saat`;
+      document.getElementById('warmupRateVal_txt').innerText = `${wRate.toFixed(2)} °C/saat`;
+
+      // Kapalı Havuz Simülasyonu Tablosu ve Grafiği
+      renderIndoorSimulation(vol, tWater, tFresh, totalSteady, warmupHours);
+
+      // Detaylı Kayıp Tablosu
+      renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady, tFresh);
+    }
+
+    function renderIndoorSimulation(vol, tWater, tFresh, totalSteady, activeHours) {
+      const hoursList = [24, 48, 72, 96];
+      if (!hoursList.includes(activeHours)) {
+        hoursList.push(activeHours);
+        hoursList.sort((a, b) => a - b);
+      }
+
+      const simResults = [];
+      let tableHtml = '';
+
+      hoursList.forEach(h => {
+        const eWaterKwh = (vol * 1000 * 4.186 * Math.max(0, tWater - tFresh)) / 3600.0;
+        const pWater = eWaterKwh / h;
+        const pLoss = totalSteady * 0.45;
+        const pTotal = pWater + pLoss;
+        const rate = (tWater - tFresh) / h;
+        const ratio = (pTotal / totalSteady) * 100;
+        const isSelected = (h === activeHours);
+
+        let note = '';
+        if (h === 24) note = 'Hızlı İlk Isıtma (Yüksek Pik Güç)';
+        else if (h === 48) note = 'Standart İlk Isıtma (Önerilen Süre)';
+        else if (h === 72) note = 'Ekonomik İlk Isıtma (Dengeli Ekipman)';
+        else if (h === 96) note = 'Düşük Yatırım (Uzun Süreli Isıtma)';
+        else note = `${h} Saatlik Özel Simülasyon`;
+
+        simResults.push({ hours: h, pTotal, rate, ratio, isSelected, note });
+
+        tableHtml += `
+          <tr class="${isSelected ? 'peak-month' : ''}">
+            <td><strong>${h} Saat</strong> ${isSelected ? '<span class="badge-status-indoor" style="margin-left:4px;">Seçili</span>' : ''}</td>
+            <td class="num">${rate.toFixed(2)} °C/saat</td>
+            <td class="num" style="font-weight:800; color:${isSelected ? 'var(--c-warn)' : 'var(--corp-slate)'};">${Math.round(pTotal).toLocaleString('tr-TR')} kW</td>
+            <td class="num">${Math.round(pTotal * 860).toLocaleString('tr-TR')} kcal/h</td>
+            <td class="num" style="font-weight:700;">%${Math.round(ratio)}</td>
+            <td style="text-align:center; font-size:0.70rem;">${note}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('indoorWarmupTableBody').innerHTML = tableHtml;
+      drawIndoorWarmupChart(simResults, totalSteady);
+    }
+
+    function drawIndoorWarmupChart(results, steadyKw) {
+      const canvas = document.getElementById('indoorWarmupChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const maxVal = Math.max(...results.map(r => r.pTotal), steadyKw * 1.2) * 1.15;
+      const startX = 65;
+      const chartHeight = 135;
+      const zeroY = 160;
+      const availableWidth = canvas.width - startX - 40;
+      const barWidth = Math.min(55, (availableWidth / results.length) - 25);
+
+      // Grid Lines
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = zeroY - (chartHeight * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(startX, y);
+        ctx.lineTo(canvas.width - 20, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.textAlign = 'right';
+        const labelVal = Math.round(maxVal * (i / 4));
+        ctx.fillText(labelVal + ' kW', startX - 8, y + 4);
+      }
+
+      // Rejim Kapasitesi Çizgisi (Kırmızı Kesik Çizgi)
+      const steadyY = zeroY - (steadyKw / maxVal) * chartHeight;
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(startX, steadyY);
+      ctx.lineTo(canvas.width - 20, steadyY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#dc2626';
+      ctx.font = 'bold 10px -apple-system, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`Sürekli Rejim: ${Math.round(steadyKw)} kW`, canvas.width - 24, steadyY - 5);
+
+      // Bars
+      results.forEach((r, idx) => {
+        const x = startX + idx * (barWidth + 30) + 20;
+        const bHeight = (r.pTotal / maxVal) * chartHeight;
+        const y = zeroY - bHeight;
+
+        const grad = ctx.createLinearGradient(0, y, 0, zeroY);
+        if (r.isSelected) {
+          grad.addColorStop(0, '#d97706');
+          grad.addColorStop(1, '#fbbf24');
+        } else {
+          grad.addColorStop(0, '#0d9488');
+          grad.addColorStop(1, '#2dd4bf');
+        }
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, bHeight, [5, 5, 0, 0]);
+        ctx.fill();
+
+        // Value above bar
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(Math.round(r.pTotal) + ' kW', x + barWidth / 2, y - 6);
+
+        // Hour Label
+        ctx.fillStyle = r.isSelected ? '#d97706' : '#1e293b';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(r.hours + ' Saat', x + barWidth / 2, zeroY + 18);
+      });
+      ctx.textAlign = 'left';
+    }
+
+    function renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady, tFresh) {
+      document.getElementById('lossTableHead').innerHTML = `
+        <tr>
+          <th style="width:36%;">Termodinamik Kalem</th>
+          <th class="num" style="width:20%;">Isı Yükü (kW)</th>
+          <th class="num" style="width:24%;">Isı Yükü (kcal/h)</th>
+          <th class="num" style="width:20%;">Rejim Payı (%)</th>
+        </tr>
+      `;
+
+      const items = [
+        { name: "Buharlaşma Isı Kaybı (Gizli Isı - Latent)", kw: qEvap, note: "Havuzdan salon havasına buharlaşma" },
+        { name: "Konveksiyon ve Radyasyon Isı Kaybı", kw: qConvRad, note: "Sudan mahal havasına ısı transferi" },
+        { name: "Taban ve Duvar İletimi (Kondüksiyon)", kw: qCond, note: "Toprak / zemin yapısına ısı geçişi" },
+        { name: "Tamamlama Suyu Isıtması", kw: qFresh, note: `Buharlaşan ve ek taze suyun ${tFresh.toFixed(1)}°C'den ısıtılması` }
+      ];
+
+      let html = '';
+      items.forEach(it => {
+        const pct = totalSteady > 0 ? (it.kw / totalSteady) * 100 : 0;
+        html += `
+          <tr>
+            <td><strong>${it.name}</strong> <div style="font-size:0.65rem; color:var(--text-muted);">${it.note}</div></td>
+            <td class="num" style="font-weight:700;">${it.kw.toFixed(1)} kW</td>
+            <td class="num">${Math.round(it.kw * 860).toLocaleString('tr-TR')} kcal/h</td>
+            <td class="num" style="font-weight:700; color:var(--c-primary);">%${pct.toFixed(1)}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+        <tr style="background:#f1f5f9; border-top:2px solid var(--border);">
+          <td><strong>TOPLAM SÜREKLİ İŞLETME (REJİM) YÜKÜ</strong></td>
+          <td class="num" style="font-weight:900; color:var(--c-primary); font-size:0.82rem;">${totalSteady.toFixed(1)} kW</td>
+          <td class="num" style="font-weight:800;">${Math.round(totalSteady * 860).toLocaleString('tr-TR')} kcal/h</td>
+          <td class="num" style="font-weight:900; color:var(--c-primary);">%100.0</td>
+        </tr>
+      `;
+
+      document.getElementById('lossTableBody').innerHTML = html;
+    }
+
+    function calculateOutdoor(area, depth, vol, tWater, freshFlow) {
+      const code = document.getElementById('citySelect').value || 'antalya';
+      const city = CITIES[code];
+      const startIdx = parseInt(document.getElementById('seasonStart').value);
+      const endIdx = parseInt(document.getElementById('seasonEnd').value);
+
+      // Hibrit Rüzgar Modeli Katsayısı
+      const shelterPct = readNum('shelterPct', 0);
+      const kWind = getWindCoeff(shelterPct);
+      document.getElementById('kWindVal').value = `k = ${kWind.toFixed(3)}`;
+      document.getElementById('kWindVal_txt').innerText = `k = ${kWind.toFixed(3)}`;
+
+      const nightTol = readNum('nightTolerance', 0.0);
+      const solarEff = parseFloat(document.getElementById('solarEfficiency').value);
+      const coverType = document.getElementById('poolCover').value;
+      const hasCover = coverType !== 'no';
+
+      const targetAlt = readNum('altitude', city.refAlt);
+      const deltaAlt = targetAlt - city.refAlt;
+      const deltaT = -0.0065 * deltaAlt;
+      const solarBoost = 1.0 + (0.08 * (targetAlt / 1000.0));
+
+      // Aktif seçili ay
+      const activeIdx = readNum('activeMonthSelect', startIdx);
+
+      // Gün uzunluğu ilin enlemine ve aya göre hesaplanır
+      const lat = city.lat !== undefined ? city.lat : 39.0;
+      const activeDayH = getDayLengthHours(lat, activeIdx);
+      const activeNightH = 24.0 - activeDayH;
+
+      // Termal kütle tamponu: V·ρ·cp·ΔT_tolerans [kWh], gece süresine yayılarak kW'a çevrilir
+      const bufferKwh = (vol * 1000 * 4.186 * nightTol) / 3600.0;
+      const activeBufferKw = bufferKwh / activeNightH;
+      document.getElementById('bufferMax').value = `${Math.round(activeBufferKw)} kW (Maksimum)`;
+      document.getElementById('bufferMax_txt').innerText = `${Math.round(activeBufferKw)} kW (Maksimum)`;
+
+      // Su seviyesi efektif rüzgar göstergesi
+      const baseWindLive = readNum('curWind', 2.7);
+      const effWindLive = baseWindLive * kWind;
+      document.getElementById('effectiveWindHint').innerText = `Efektif su rüzgarı: ${effWindLive.toFixed(2)} m/s`;
+      document.getElementById('vEffVal').value = `${effWindLive.toFixed(2)} m/s`;
+      document.getElementById('vEffVal_txt').innerText = `${effWindLive.toFixed(2)} m/s`;
+
+      // Zemin sıcaklığı: ilin yıllık ortalama hava sıcaklığı (rakım düzeltmeli). Şebeke suyu da bu sıcaklıkta kabul edilir.
+      const tGround = city.months.reduce((sum, mo) => sum + (mo.tDay + mo.tNight) / 2.0, 0) / 12.0 + deltaT;
+      const tFresh = tGround;
+      const pWs = getSatVaporPressure(tWater);
+      const aWet = area + (4.0 * Math.sqrt(area) * depth);
+      const qCond = (0.85 * aWet * Math.max(0, tWater - tGround)) / 1000.0;
+
+      let peakTheoryKw = 0;
+      let peakOptimizedKw = 0;
+      let peakMonthName = "";
+      const seasonResults = [];
+
+      for (let i = startIdx; i <= endIdx; i++) {
+        const m = city.months[i];
+        
+        // Aktif ayda kullanıcının kutulardaki canlı girdileri kullanılır
+        let tDay, tNight, solarGHI, baseWind, td;
+        if (i === activeIdx) {
+          tDay = parseFloat(document.getElementById('curTDay').value);
+          tNight = parseFloat(document.getElementById('curTNight').value);
+          solarGHI = parseFloat(document.getElementById('curSolar').value);
+          baseWind = parseFloat(document.getElementById('curWind').value);
+          td = parseFloat(document.getElementById('curTd').value);
+        } else {
+          tDay = m.tDay + deltaT;
+          tNight = m.tNight + deltaT;
+          solarGHI = m.ghi * solarBoost;
+          baseWind = m.wind;
+          td = m.td;
+        }
+
+        const effWind = baseWind * kWind;
+        const dayH = getDayLengthHours(lat, i);
+        const nightH = 24.0 - dayH;
+        const thermalBufferKw = bufferKwh / nightH;
+
+        // 1. Teori Gece Kaybı (VDI standardı: sıfır koruma, tam rüzgar, örtüsüz)
+        // Dış havanın buhar basıncı çiy noktasından bulunur; gün içinde sabit kabul edilir
+        const pVapor = getSatVaporPressure(td);
+        const pWaNight = getVaporPressureAt(tNight, pVapor);
+        const dpNight = Math.max(0, (pWs - pWaNight) / 10.0);
+        const evapTheory = getEvapHeatKw(0.09, 0.09, baseWind, dpNight, area);
+        const convTheory = getOutdoorConvKw(area, baseWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
+        const freshTheory = getMakeupHeatKw(evapTheory, freshFlow, tWater, tFresh);
+        const totalTheoryNight = Math.max(0, evapTheory + convTheory + qCond + freshTheory);
+
+        // 2. Saha Gerçekliği Gece Kaybı (Hibrit rüzgar katsayısı + örtü)
+        let evapRealNight = getEvapHeatKw(0.09, 0.09, effWind, dpNight, area);
+        let convRealNight;
+        if (hasCover) {
+          evapRealNight *= COVER_EVAP_FACTOR;
+          const cov = getCoveredConvRadKw(area, effWind, tWater, tNight, pVapor, COVER_R[coverType]);
+          convRealNight = cov.conv + cov.rad;
+        } else {
+          convRealNight = getOutdoorConvKw(area, effWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
+        }
+        const freshNight = getMakeupHeatKw(evapRealNight, freshFlow, tWater, tFresh);
+        const totalRealNight = Math.max(0, evapRealNight + convRealNight + qCond + freshNight);
+
+        // 3. Gündüz Kaybı ve Güneş Kazancı
+        const pWaDay = getVaporPressureAt(tDay, pVapor);
+        const dpDay = Math.max(0, (pWs - pWaDay) / 10.0);
+        const evapDay = getEvapHeatKw(0.09, 0.09, effWind, dpDay, area);
+        const convDay = getOutdoorConvKw(area, effWind, tWater, tDay) + getSkyRadiationKw(area, tWater, tDay, pVapor);
+        const freshDay = getMakeupHeatKw(evapDay, freshFlow, tWater, tFresh);
+        const totalDayLoss = Math.max(0, evapDay + convDay + qCond + freshDay);
+
+        // Günlük ışınım (kWh/m²·gün) gündüz süresine yayılarak ortalama güneş kazancına (kW) çevrilir
+        const solarGain = (area * solarGHI * 0.85 * solarEff) / dayH;
+        const daySurplusKw = solarGain - totalDayLoss;
+
+        // 24 Saatlik Isıl Denge (ısıtıcı 24 saat sabit güçte çalışır)
+        // Su sıcaklığı [ayar − tolerans, ayar] bandında kalır; güneş fazlası suyu ayar değerinin
+        // üstüne çıkaramaz, bu nedenle termal tampon günlük enerjiyi azaltmaz, yalnız salınımı karşılar.
+        // a) Günlük enerji dengesi: gece kaybı × gece süresi − gündüz net fazlası × gündüz süresi
+        const pDailyKw = (totalRealNight * nightH - daySurplusKw * dayH) / 24.0;
+        // b) Gece düşüşü toleransı aşamaz
+        const pNightLimitKw = totalRealNight - bufferKwh / nightH;
+        // c) Gündüz güneş kaybı karşılamıyorsa gündüz düşüşü de toleransı aşamaz
+        const pDayLimitKw = -daySurplusKw - bufferKwh / dayH;
+        const netNeededKw = Math.max(0, pDailyKw, pNightLimitKw, pDayLimitKw);
+
+        // Gece kaybının ısıtıcı yerine su kütlesinden karşılanan kısmı
+        const usedBufferKw = Math.min(thermalBufferKw, Math.max(0, totalRealNight - netNeededKw));
+
+        if (totalTheoryNight > peakTheoryKw) peakTheoryKw = totalTheoryNight;
+        if (netNeededKw > peakOptimizedKw) {
+          peakOptimizedKw = netNeededKw;
+          peakMonthName = m.m;
+        }
+
+        seasonResults.push({
+          month: m.m,
+          dayH,
+          tDay,
+          tNight,
+          solarGain,
+          totalRealNight,
+          usedBufferKw,
+          thermalBufferKw,
+          netNightNeeded: netNeededKw,
+          totalTheoryNight
+        });
+      }
+
+      const activeData = seasonResults.find(r => r.month === city.months[activeIdx].m);
+
+      const finalTheory = Math.round(peakTheoryKw);
+      const finalOpt = Math.round(peakOptimizedKw);
+
+      // Başlıklar ve Metinler
+      document.getElementById('res1Title').innerText = "KLASİK TEORİK PİK YÜK";
+      document.getElementById('outTheoryKw').innerText = finalTheory.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outTheoryKcal').innerText = Math.round(finalTheory * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res1Sub').innerHTML = `Sıfır güneş, sıfır tolerans ve açık rüzgar koşullarında teorik ekstrem gece piki. (Şartname referansı)`;
+
+      document.getElementById('res2Title').innerText = "ÖNERİLEN SİSTEM DİZAYN GÜCÜ";
+      document.getElementById('outOptKw').innerText = finalOpt.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outOptKcal').innerText = Math.round(finalOpt * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res2Sub').innerHTML = `24 saat sürekli çalışma esaslı net dizayn kapasitesi. Günlük ısı dengesi sağlanır ve su sıcaklığı, gece izin verilen soğuma bandının dışına çıkmaz.`;
+
+      // İkincil Göstergeler
+      const solKw = activeData ? Math.round(activeData.solarGain) : 0;
+      const bufKw = activeData ? Math.round(activeData.usedBufferKw) : 0;
+
+      document.getElementById('sec1Title').innerText = "Gündüz Güneş Kazancı";
+      document.getElementById('outSec1').innerText = solKw.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outSec1').style.color = "var(--c-warn)";
+      document.getElementById('sec1Sub').innerText = "Bedava güneş enerjisi";
+
+      document.getElementById('sec2Title').innerText = "Termal Kütle Tamponu";
+      document.getElementById('outSec2').innerText = bufKw.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outSec2').style.color = "var(--c-primary)";
+      document.getElementById('sec2Sub').innerText = "Gece sağlanan rezerv";
+
+      const curTDay = parseFloat(document.getElementById('curTDay').value);
+      const curTNight = parseFloat(document.getElementById('curTNight').value);
+      const curWind = effWindLive;
+      const curTd = parseFloat(document.getElementById('curTd').value);
+
+      const curVapor = getSatVaporPressure(curTd);
+      const pWa1 = getVaporPressureAt(curTDay, curVapor);
+      const pWa2 = getVaporPressureAt(curTNight, curVapor);
+      const qEvD = getEvapHeatKw(0.09, 0.09, curWind, Math.max(0, pWs - pWa1) / 10.0, area);
+      let qEvN = getEvapHeatKw(0.09, 0.09, curWind, Math.max(0, pWs - pWa2) / 10.0, area);
+      if (hasCover) qEvN *= COVER_EVAP_FACTOR;
+      const dailyEvapKg = (evapKwToKgPerHour(qEvD) * activeDayH) + (evapKwToKgPerHour(qEvN) * activeNightH);
+
+      document.getElementById('sec3Title').innerText = "Günlük Buharlaşan Su";
+      document.getElementById('outSec3').innerText = Math.round(dailyEvapKg).toLocaleString('tr-TR') + " kg/gün";
+      document.getElementById('sec3Sub').innerText = "24 saatlik su kaybı";
+
+      const poolFlow = finalOpt / (1.163 * 5.0);
+      document.getElementById('sec4Title').innerText = "Havuz Devresi Debisi";
+      document.getElementById('outSec4').innerText = poolFlow.toFixed(1) + " m³/h";
+      document.getElementById('sec4Sub').innerText = "Sirkülasyon (ΔT = 5°C)";
+
+      renderSeasonTable(seasonResults, peakMonthName);
+      drawSeasonChart(seasonResults);
+
+      const qCvD = getOutdoorConvKw(area, curWind, tWater, curTDay);
+      const qRadD = getSkyRadiationKw(area, tWater, curTDay, curVapor);
+      let qCvN = getOutdoorConvKw(area, curWind, tWater, curTNight);
+      let qRadN = getSkyRadiationKw(area, tWater, curTNight, curVapor);
+      if (hasCover) {
+        const cov = getCoveredConvRadKw(area, curWind, tWater, curTNight, curVapor, COVER_R[coverType]);
+        qCvN = cov.conv;
+        qRadN = cov.rad;
+      }
+      const qFrD = getMakeupHeatKw(qEvD, freshFlow, tWater, tFresh);
+      const qFrN = getMakeupHeatKw(qEvN, freshFlow, tWater, tFresh);
+
+      renderOutdoorLossTable([
+        { name: "Buharlaşma Isı Kaybı", day: qEvD, night: qEvN },
+        { name: "Konveksiyon (Rüzgarla Taşınım)", day: qCvD, night: qCvN },
+        { name: "Gökyüzüne Işınım (Açık Gök)", day: qRadD, night: qRadN },
+        { name: `Taban ve Duvar İletimi (zemin ${tGround.toFixed(1)} °C)`, day: qCond, night: qCond },
+        { name: `Tamamlama Suyu Isıtması (buharlaşan + ek, ${tFresh.toFixed(1)} °C'den)`, day: qFrD, night: qFrN },
+        { name: "☀️ Güneş Işınımı Kazancı (Gündüz)", day: -solKw, night: 0, isGain: true },
+        // Tampon gece kullanılır, gündüz geri yüklenir: günlük enerji dengesine etkisi yoktur
+        { name: "🛡️ Termal Kütle Tamponu (Gece)", day: 0, night: -bufKw, isGain: true, noDaily: true }
+      ], activeDayH, activeNightH);
+    }
+
+    function renderSeasonTable(results, peakName) {
+      let html = '';
+      results.forEach(r => {
+        const isPeak = r.month === peakName && r.netNightNeeded > 0;
+        const statusHtml = r.netNightNeeded > 0 
+          ? `<span class="badge-status-req">${Math.round(r.netNightNeeded)} kW İhtiyaç</span>`
+          : `<span class="badge-status-ok">Güneş Yeterli</span>`;
+
+        html += `
+          <tr class="${isPeak ? 'peak-month' : ''}">
+            <td>
+              <strong>${r.month}</strong>
+              <span style="font-size:0.65rem; color:var(--text-muted);">(gün ${r.dayH.toFixed(1)} h)</span>
+              ${isPeak ? '<span class="badge" style="background:#d97706; color:#fff; font-size:0.60rem; margin-left:4px;">PİK AY</span>' : ''}
+            </td>
+            <td class="num">${r.tDay.toFixed(1)}° / ${r.tNight.toFixed(1)}°C</td>
+            <td class="num" style="color:var(--corp-green); font-weight:700;">+${Math.round(r.solarGain)}</td>
+            <td class="num">${Math.round(r.totalRealNight)}</td>
+            <td class="num" style="color:var(--c-primary); font-weight:700;">-${Math.round(r.usedBufferKw)}</td>
+            <td class="num" style="font-weight:800; color:${r.netNightNeeded > 0 ? 'var(--c-warn)' : 'var(--corp-slate)'};">
+              ${Math.round(r.netNightNeeded)} kW
+            </td>
+            <td style="text-align:center;">${statusHtml}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('seasonTableBody').innerHTML = html;
+    }
+
+    function drawSeasonChart(results) {
+      const canvas = document.getElementById('seasonChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const maxVal = Math.max(...results.map(r => r.netNightNeeded), 50) * 1.25;
+      const startX = 65;
+      const chartHeight = 140;
+      const zeroY = 165;
+      const availableWidth = canvas.width - startX - 30;
+      const barWidth = Math.min(48, (availableWidth / results.length) - 18);
+
+      // Grid Lines
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = zeroY - (chartHeight * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(startX, y);
+        ctx.lineTo(canvas.width - 20, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.textAlign = 'right';
+        const labelVal = Math.round(maxVal * (i / 4));
+        ctx.fillText(labelVal + ' kW', startX - 8, y + 4);
+      }
+
+      // Bars
+      results.forEach((r, idx) => {
+        const x = startX + idx * (barWidth + 20) + 16;
+        const bHeight = (r.netNightNeeded / maxVal) * chartHeight;
+        const y = zeroY - bHeight;
+
+        if (r.netNightNeeded > 0) {
+          const grad = ctx.createLinearGradient(0, y, 0, zeroY);
+          grad.addColorStop(0, '#d97706');
+          grad.addColorStop(1, '#fbbf24');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, bHeight, [5, 5, 0, 0]);
+          ctx.fill();
+
+          // Value above bar
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(Math.round(r.netNightNeeded), x + barWidth / 2, y - 6);
+        } else {
+          // Clean 0 kW badge
+          ctx.fillStyle = '#dcfce7';
+          ctx.beginPath();
+          ctx.roundRect(x, zeroY - 24, barWidth, 24, [4, 4, 0, 0]);
+          ctx.fill();
+          ctx.fillStyle = '#15803d';
+          ctx.font = 'bold 10px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('0 kW', x + barWidth / 2, zeroY - 8);
+        }
+
+        // Month Label
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(r.month.substring(0, 3), x + barWidth / 2, zeroY + 18);
+      });
+      ctx.textAlign = 'left';
+    }
+
+    function renderOutdoorLossTable(items, dayH, nightH) {
+      document.getElementById('lossTableHead').innerHTML = `
+        <tr>
+          <th>Termodinamik Kalem</th>
+          <th class="num">Gündüz (kW)</th>
+          <th class="num">Gece (kW)</th>
+          <th class="num">Günlük Enerji (kWh/gün)</th>
+        </tr>
+      `;
+
+      let html = '';
+      let dailyTotal = 0;
+      items.forEach(it => {
+        const isGain = it.isGain;
+        const daily = it.noDaily ? 0 : it.day * dayH + it.night * nightH;
+        dailyTotal += daily;
+        const dailyCell = it.noDaily
+          ? '<span style="font-weight:400; color:var(--text-muted);">0 (gündüz geri yüklenir)</span>'
+          : `${Math.round(daily).toLocaleString('tr-TR')} kWh`;
+        html += `
+          <tr>
+            <td><strong>${it.name}</strong></td>
+            <td class="num" style="${isGain ? 'color:var(--corp-green); font-weight:700;' : ''}">${it.day ? it.day.toFixed(1) : '-'}</td>
+            <td class="num" style="${isGain ? 'color:var(--c-primary); font-weight:700;' : ''}">${it.night ? it.night.toFixed(1) : '-'}</td>
+            <td class="num" style="font-weight:700; color:${daily < 0 ? 'var(--corp-green)' : 'var(--corp-slate)'};">
+              ${dailyCell}
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+        <tr style="background:#f1f5f9; border-top:2px solid var(--border);">
+          <td><strong>GÜNLÜK NET ISI DENGESİ</strong>
+            <div style="font-size:0.65rem; color:var(--text-muted);">Gündüz ${dayH.toFixed(1)} h, gece ${nightH.toFixed(1)} h · 24 saat ortalaması ${(dailyTotal / 24).toFixed(1)} kW</div></td>
+          <td class="num">-</td>
+          <td class="num">-</td>
+          <td class="num" style="font-weight:900; color:var(--c-primary); font-size:0.82rem;">${Math.round(dailyTotal).toLocaleString('tr-TR')} kWh</td>
+        </tr>
+      `;
+      document.getElementById('lossTableBody').innerHTML = html;
+    }
+
+    // Service worker yalnızca web sunucusundan (GitHub Pages) açıldığında kaydedilir
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+
+    window.onload = function() {
+      loadPreparedBy();
+      populateCitySelect();
+      updateReportFooter('HY');
+      updateActiveMonthList();
+      onActiveMonthChange();
+    };
+  </script>
 </body>
 </html>
