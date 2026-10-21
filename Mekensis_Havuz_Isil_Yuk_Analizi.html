@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAVUZ ISIL YÜK HESAP RAPORU - MEKENSİS MÜHENDİSLİK</title>
+  <style>
+    :root {
+      --corp-dark: #0f172a;
+      --corp-slate: #1e293b;
+      --corp-blue: #0284c7;
+      --corp-blue-light: #e0f2fe;
+      --corp-orange: #ea580c;
+      --corp-orange-light: #ffedd5;
+      --corp-green: #16a34a;
+      --corp-green-light: #dcfce7;
+      --corp-red: #dc2626;
+      --corp-red-light: #fee2e2;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.35;
+      font-size: 12.5px;
+      padding-bottom: 40px;
+    }
+    /* Top Corporate Banner */
+    header {
+      background: var(--corp-dark);
+      color: white;
+      padding: 10px 24px;
+      border-bottom: 3px solid var(--corp-blue);
+    }
+    .header-content {
+      max-width: 1060px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-titles {
+      text-align: right;
+    }
+    .header-titles h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
+    }
+    .header-titles p {
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+    /* Container */
+    .container {
+      max-width: 1060px;
+      margin: 10px auto;
+      padding: 0 12px;
+    }
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title {
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--corp-slate);
+      border-bottom: 1.5px solid var(--border-light);
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--corp-blue-light);
+      color: var(--corp-blue);
+      text-transform: none;
+    }
+    /* Grids */
+    .form-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .form-grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .input-group label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--corp-slate);
+      margin-bottom: 2px;
+    }
+    .input-group input, .input-group select {
+      padding: 4px 7px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--corp-dark);
+      background-color: #fff;
+      outline: none;
+      transition: border-color 0.15s ease-in-out;
+    }
+    .input-group input:focus, .input-group select:focus {
+      border-color: var(--corp-blue);
+    }
+    .input-hint {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    /* Results Big Boxes */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .result-box {
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .result-box.theoretical {
+      background: #f1f5f9;
+      border: 1.5px solid #cbd5e1;
+    }
+    .result-box.optimized {
+      background: #eff6ff;
+      border: 2px solid var(--corp-blue);
+      box-shadow: 0 4px 10px -2px rgba(2, 132, 199, 0.15);
+    }
+    .result-box h3 {
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .result-box.theoretical h3 {
+      color: var(--corp-slate);
+    }
+    .result-box.optimized h3 {
+      color: var(--corp-blue);
+    }
+    .cap-display-kw {
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+    .result-box.theoretical .cap-display-kw {
+      color: var(--corp-slate);
+    }
+    .result-box.optimized .cap-display-kw {
+      color: var(--corp-blue);
+    }
+    .cap-display-kcal {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .cap-sub {
+      font-size: 0.68rem;
+      color: var(--corp-slate);
+      line-height: 1.25;
+    }
+    /* Secondary Metrics Strip */
+    .secondary-metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .metric-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    .metric-card.highlight {
+      border-color: var(--corp-blue);
+      background: #f0f9ff;
+    }
+    .metric-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .metric-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--corp-slate);
+    }
+    .metric-unit {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+    }
+    th, td {
+      padding: 4px 6px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 800;
+      color: var(--corp-slate);
+      border-top: 1px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
+      white-space: normal;
+    }
+    td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    tr.peak-month {
+      background-color: var(--corp-orange-light);
+      font-weight: 700;
+    }
+    tr.peak-month td {
+      color: #9a3412;
+      border-bottom: 1.5px solid #fdba74;
+    }
+    .badge-status-ok {
+      background: var(--corp-green-light);
+      color: var(--corp-green);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      display: inline-block;
+    }
+    .badge-status-req {
+      background: var(--corp-orange-light);
+      color: var(--corp-orange);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      display: inline-block;
+    }
+    .badge-status-indoor {
+      background: var(--corp-blue-light);
+      color: var(--corp-blue);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      display: inline-block;
+    }
+    /* Quick Warmup Buttons */
+    .quick-btn-group {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .quick-btn {
+      flex: 1;
+      padding: 2px 4px;
+      font-size: 0.70rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #f8fafc;
+      color: var(--corp-blue);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-btn:hover {
+      background: #e0f2fe;
+      border-color: var(--corp-blue);
+    }
+    .quick-btn.active {
+      background: var(--corp-blue);
+      color: #ffffff;
+      border-color: var(--corp-blue);
+    }
+    /* Print values container */
+    .print-only-val {
+      display: none;
+    }
+    /* Action Buttons */
+    .action-bar {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--corp-blue);
+      color: white;
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--corp-slate);
+    }
+    .footer-stamp {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    /* Strict A4 Page Split & Print Perfection */
+    @page {
+      margin: 10mm 12mm 10mm 12mm;
+      size: A4 portrait;
+    }
+    @media print {
+      body {
+        padding: 0;
+        background: #fff;
+      }
+      header {
+        position: static !important;
+        display: block !important;
+        background: #0f172a !important;
+        color: white !important;
+        padding: 12px 18px !important;
+        border-bottom: 3px solid #0284c7 !important;
+        margin-bottom: 8px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .action-bar, .input-hint, .quick-btn-group {
+        display: none !important;
+      }
+      /* Container must be block in print for page-break to work properly */
+      .container {
+        display: block !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .card {
+        border: 1px solid #cbd5e1;
+        box-shadow: none;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        margin-bottom: 8px;
+        padding: 10px 14px;
+      }
+      /* Guaranteed 2nd page break directly on #seasonCard and #indoorSimCard */
+      #seasonCard, #indoorSimCard {
+        break-before: page !important;
+        page-break-before: always !important;
+        margin-top: 15px !important;
+      }
+      .form-grid-4 {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+      }
+      .form-grid-5 {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 6px !important;
+      }
+      .results-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      /* Hide form interactive controls and display clean report values */
+      select, .hide-in-print {
+        display: none !important;
+      }
+      .print-only-val {
+        display: block !important;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.84rem;
+        padding: 1px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MEKENSİS KURUMSAL RAPOR BAŞLIĞI -->
+  <header>
+    <div class="header-content">
+      <div style="display:flex; align-items:center;">
+        <svg width="150" height="42" viewBox="0 0 150 42" style="display:block;" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="22" font-size="24" font-weight="900" fill="#ea580c" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" letter-spacing="1">MEKENSİS</text>
+          <text x="0" y="38" font-size="16.5" font-weight="800" fill="#0284c7" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" letter-spacing="3.5">MÜHENDİSLİK</text>
+        </svg>
+      </div>
+      <div class="header-titles">
+        <h1 id="mainReportHeader">HAVUZ ISIL YÜK HESAP RAPORU</h1>
+        <p id="mainReportSub">VDI 2089 / ASHRAE Termodinamik & Sezonluk İklim Simülasyonu</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. HAVUZ GEOMETRİSİ VE BOYUTLANDIRMA -->
+    <div class="card">
+      <div class="card-title">
+        <span>1. HAVUZ GEOMETRİSİ VE BOYUTLANDIRMA</span>
+        <span class="badge">Tesis Verileri</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label>Havuz Konumu</label>
+          <select id="poolType" onchange="syncPrintValues(); onPoolTypeChange();">
+            <option value="outdoor" selected>Açık Havuz</option>
+            <option value="indoor">Kapalı Havuz</option>
+          </select>
+          <div class="print-only-val" id="poolType_txt">Açık Havuz</div>
+        </div>
+        <div class="input-group">
+          <label>Su Yüzey Alanı (m²)</label>
+          <input type="number" id="area" value="2000" min="5" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="area_txt">2,000 m²</div>
+          <div class="input-hint">Su aynası net yüzeyi</div>
+        </div>
+        <div class="input-group">
+          <label>Ortalama Derinlik (m)</label>
+          <input type="number" id="depth" value="1.5" min="0.5" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="depth_txt">1.50 m</div>
+          <div class="input-hint">Ortalama su yüksekliği</div>
+        </div>
+        <div class="input-group">
+          <label>Hesaplanan Su Hacmi</label>
+          <input type="text" id="volDisplay" value="3000.0 m³" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="print-only-val" id="volDisplay_txt">3,000.0 m³</div>
+          <div class="input-hint">3,000 Ton su kütlesi</div>
+        </div>
+      </div>
+
+      <div class="form-grid-4" style="margin-top:4px;">
+        <div class="input-group">
+          <label>Hedef Su Sıcaklığı</label>
+          <input type="number" id="tWater" value="28" min="15" max="45" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="tWater_txt">28.0 °C</div>
+          <div class="input-hint">Dizayn su sıcaklığı</div>
+        </div>
+        <div class="input-group">
+          <label>Taze Su Tamamlama</label>
+          <input type="number" id="freshFlow" value="0.05" min="0" max="20" step="0.05" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="freshFlow_txt">0.05 lt/sn</div>
+          <div class="input-hint">0.05 lt/sn tamamlama</div>
+        </div>
+        <div class="input-group">
+          <label>Kullanım Şekli</label>
+          <input type="text" id="usageDesc" value="Yüzme / Rekreasyon" oninput="syncPrintValues();" style="background:#f8fafc;" class="hide-in-print">
+          <div class="print-only-val" id="usageDesc_txt">Yüzme / Rekreasyon</div>
+          <div class="input-hint">Genel tesis tanımı</div>
+        </div>
+        <div class="input-group">
+          <label>Termal Atalet</label>
+          <input type="text" id="inertiaDesc" value="Yüksek (3,000 Ton Su)" readonly style="background:#f1f5f9;" class="hide-in-print">
+          <div class="print-only-val" id="inertiaDesc_txt">Yüksek (3,000 Ton Su)</div>
+          <div class="input-hint">Termal akümülasyon</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. LOKASYON, RAKIM VE İŞLETME SEZONU (AÇIK HAVUZ İÇİN) -->
+    <div class="card" id="outdoorLocationCard">
+      <div class="card-title">
+        <span>2. LOKASYON, RAKIM VE İŞLETME SEZONU</span>
+        <span class="badge" id="locBadge">81 İl & MGM Atlası</span>
+      </div>
+
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label style="color:var(--corp-blue);">🏙️ İl Seçimi</label>
+          <select id="citySelect" onchange="syncPrintValues(); onCityOrAltChange();">
+            <!-- JS -->
+          </select>
+          <div class="print-only-val" id="citySelect_txt">Antalya</div>
+        </div>
+        <div class="input-group">
+          <label>🏔️ Saha / Havuz Rakımı (m)</label>
+          <input type="number" id="altitude" value="5" min="0" max="3000" step="5" oninput="syncPrintValues(); onCityOrAltChange();" class="hide-in-print">
+          <div class="print-only-val" id="altitude_txt">5 m</div>
+          <div class="input-hint" id="altHint">İl referans rakımı: 5 m</div>
+        </div>
+        <div class="input-group">
+          <label style="color:var(--corp-orange);">📅 Sezon Başlangıcı</label>
+          <select id="seasonStart" onchange="syncPrintValues(); onSeasonChange();">
+            <option value="0">Ocak</option>
+            <option value="1">Şubat</option>
+            <option value="2">Mart</option>
+            <option value="3" selected>Nisan</option>
+            <option value="4">Mayıs</option>
+            <option value="5">Haziran</option>
+          </select>
+          <div class="print-only-val" id="seasonStart_txt">Nisan</div>
+        </div>
+        <div class="input-group">
+          <label style="color:var(--corp-orange);">📅 Sezon Bitişi</label>
+          <select id="seasonEnd" onchange="syncPrintValues(); onSeasonChange();">
+            <option value="8">Eylül</option>
+            <option value="9" selected>Ekim</option>
+            <option value="10">Kasım</option>
+            <option value="11">Aralık</option>
+          </select>
+          <div class="print-only-val" id="seasonEnd_txt">Ekim</div>
+        </div>
+      </div>
+
+      <!-- DETAYLI İNCELENEN REFERANS AYI GİRDİLERİ -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:10px 12px; margin-top:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.75rem; font-weight:700; color:var(--corp-slate);">
+            🔍 Detaylı İncelenen Referans Ayı:
+          </span>
+          <select id="activeMonthSelect" style="padding:3px 8px; font-size:0.78rem; font-weight:700; color:var(--corp-blue); width:auto;" onchange="syncPrintValues(); onActiveMonthChange();">
+            <!-- JS -->
+          </select>
+          <span class="print-only-val" id="activeMonthSelect_txt" style="color:var(--corp-blue); font-weight:800;">Nisan</span>
+        </div>
+
+        <div class="form-grid-5">
+          <div class="input-group">
+            <label>Gündüz Dış (°C)</label>
+            <input type="number" id="curTDay" value="23.8" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curTDay_txt">23.8 °C</div>
+            <div class="input-hint">Ortalama gündüz</div>
+          </div>
+          <div class="input-group">
+            <label>Gece Dış (°C)</label>
+            <input type="number" id="curTNight" value="14.2" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curTNight_txt">14.2 °C</div>
+            <div class="input-hint">Serin gece piki</div>
+          </div>
+          <div class="input-group">
+            <label>Güneş (W/m²)</label>
+            <input type="number" id="curSolar" value="540" min="0" max="1200" step="10" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curSolar_txt">540 W/m²</div>
+            <div class="input-hint">GHI ışınımı</div>
+          </div>
+          <div class="input-group">
+            <label>MGM Rüzgarı (m/s)</label>
+            <input type="number" id="curWind" value="2.7" min="0" max="20" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curWind_txt">2.7 m/s</div>
+            <div class="input-hint">İstasyon rüzgarı (elle girilir)</div>
+          </div>
+          <div class="input-group">
+            <label>Bağıl Nem (% RH)</label>
+            <input type="number" id="curRh" value="65" min="10" max="100" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+            <div class="print-only-val" id="curRh_txt">%65</div>
+            <div class="input-hint">Aylık ortalama</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. KAPALI HAVUZ İÇ MAHAL VE ŞARTLANDIRMA PARAMETRELERİ (KAPALI HAVUZ İÇİN) -->
+    <div class="card" id="indoorLocationCard" style="display:none;">
+      <div class="card-title">
+        <span>2. KAPALI HAVUZ İÇ MAHAL VE ŞARTLANDIRMA PARAMETRELERİ</span>
+        <span class="badge" style="background:#eff6ff; color:#0284c7;">Kapalı Mahal Ortamı</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label style="color:var(--corp-blue);">🌡️ Mahal Hava Sıcaklığı (°C)</label>
+          <input type="number" id="indoorTAir" value="20" min="10" max="40" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorTAir_txt">20.0 °C</div>
+          <div class="input-hint">Mahal sıcaklığı (elle girilir)</div>
+        </div>
+        <div class="input-group">
+          <label style="color:var(--corp-blue);">💧 Mahal Bağıl Nemi (% RH)</label>
+          <input type="number" id="indoorRh" value="60" min="20" max="95" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorRh_txt">%60</div>
+          <div class="input-hint">VDI 2089: %50 - %65</div>
+        </div>
+        <div class="input-group">
+          <label>💨 İç Ortam Hava Hızı (m/s)</label>
+          <input type="number" id="indoorWind" value="0.15" min="0.05" max="1.5" step="0.05" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorWind_txt">0.15 m/s</div>
+          <div class="input-hint">Durgun konfor: 0.10 - 0.20 m/s</div>
+        </div>
+        <div class="input-group">
+          <label>🚰 Doldurma / Şebeke Suyu (°C)</label>
+          <input type="number" id="indoorTFresh" value="15.0" min="5" max="25" step="0.5" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="indoorTFresh_txt">15.0 °C</div>
+          <div class="input-hint">İlk dolum su sıcaklığı</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. DİNAMİK SAHA VE MİKROKLİMA FAKTÖRLERİ (AÇIK HAVUZ İÇİN) -->
+    <div class="card" id="dynamicFactorsCard">
+      <div class="card-title">
+        <span>3. DİNAMİK SAHA VE MİKROKLİMA FAKTÖRLERİ</span>
+        <span class="badge" style="background:#fef3c7; color:#b45309;">Saha Gerçekliği & İhale Optimizasyonu</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label>Çevre Rüzgar Koruması (Hibrit)</label>
+          <select id="windPreset" onchange="onWindPresetChange()">
+            <option value="0">Açık Saha / Düzlük (Korumasız — %0 Kapalı)</option>
+            <option value="25">Tek Cephesi Kapalı / Duvarlı (~%25 Kapalı)</option>
+            <option value="50" selected>Bahçe İçi / Peyzajlı / L Tipi (~%50 Kapalı)</option>
+            <option value="75">Yapılar Arası / U Tipi Avlu (~%75 Kapalı)</option>
+            <option value="90">İç Avlu / Atrium / Çukur Kot (~%90 Kapalı)</option>
+            <option value="custom">Özel Kapalılık Oranı Girişi</option>
+          </select>
+          <div class="print-only-val" id="windPreset_txt">Bahçe İçi / Peyzajlı / L Tipi (~%50 Kapalı)</div>
+          <div class="input-hint" id="effectiveWindHint">Efektif su rüzgarı: 1.35 m/s</div>
+        </div>
+
+        <div class="input-group">
+          <label>Çevre Kapalılık Oranı (%)</label>
+          <input type="number" id="shelterPct" value="50" min="0" max="100" step="5" oninput="onShelterPctInput()" class="hide-in-print">
+          <div class="print-only-val" id="shelterPct_txt">%50 Kapalılık (k = 0.500)</div>
+          <div class="input-hint">Serbest elle girilebilir (%)</div>
+        </div>
+
+        <div class="input-group">
+          <label>Gece İzin Verilen Soğuma (°C)</label>
+          <input type="number" id="nightTolerance" value="1.2" min="0.0" max="5.0" step="0.1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="nightTolerance_txt">1.2 °C</div>
+          <div class="input-hint">Termal tampon sağlar (elle girilir)</div>
+        </div>
+
+        <div class="input-group">
+          <label>Güneş Radyasyonu Etkinliği</label>
+          <select id="solarEfficiency" onchange="syncPrintValues(); calculate();">
+            <option value="1.0" selected>Açık Güneşli (%100 Katkı)</option>
+            <option value="0.6">Parçalı Bulutlu (%60 Katkı)</option>
+            <option value="0.2">Kapalı / Yağmurlu (%20 Katkı)</option>
+            <option value="0.0">Sıfır Güneş (Geleneksel Güvenli Tasarım)</option>
+          </select>
+          <div class="print-only-val" id="solarEfficiency_txt">Açık Güneşli (%100 Katkı)</div>
+          <div class="input-hint">Gündüz suyun güneş emilimi</div>
+        </div>
+      </div>
+
+      <div class="form-grid-4" style="margin-top:4px;">
+        <div class="input-group">
+          <label>Gece Havuz Örtüsü</label>
+          <select id="poolCover" onchange="syncPrintValues(); calculate();">
+            <option value="no" selected>Yok (Açık Yüzey)</option>
+            <option value="yes">Var (%85 Buharlaşma Kilidi)</option>
+          </select>
+          <div class="print-only-val" id="poolCover_txt">Yok (Açık Yüzey)</div>
+          <div class="input-hint">Termal battaniye</div>
+        </div>
+        <div class="input-group">
+          <label>Aerodinamik Rüzgar Katsayısı</label>
+          <div class="print-only-val" id="kWindVal_txt">k = 0.500</div>
+          <input type="text" id="kWindVal" value="k = 0.500" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="input-hint">Otomatik hesaplanan çarpan</div>
+        </div>
+        <div class="input-group">
+          <label>Hesapta Kullanılan Su Rüzgarı</label>
+          <div class="print-only-val" id="vEffVal_txt">1.35 m/s</div>
+          <input type="text" id="vEffVal" value="1.35 m/s" readonly style="background:#eff6ff; color:var(--corp-blue); font-weight:800;" class="hide-in-print">
+          <div class="input-hint">v_su = v_MGM × k</div>
+        </div>
+        <div class="input-group">
+          <label>Termal Kütle Rezervi</label>
+          <div class="print-only-val" id="bufferMax_txt">419 kW (Maksimum)</div>
+          <input type="text" id="bufferMax" value="419 kW (Maksimum)" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="input-hint">3,000 Ton suyun akümülasyonu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. VDI 2089 İŞLETME VE İLK ISITMA (WARM-UP) KRİTERLERİ (KAPALI HAVUZ İÇİN) -->
+    <div class="card" id="indoorCriteriaCard" style="display:none;">
+      <div class="card-title">
+        <span>3. VDI 2089 İŞLETME VE İLK ISITMA (WARM-UP) KRİTERLERİ</span>
+        <span class="badge" style="background:#eff6ff; color:#0284c7;">Standart & İlk Isıtma</span>
+      </div>
+      <div class="form-grid-4">
+        <div class="input-group">
+          <label style="color:var(--corp-orange);">⏱️ İlk Isıtma Süresi (Saat)</label>
+          <input type="number" id="warmupHours" value="48" min="12" max="168" step="1" oninput="syncPrintValues(); calculate();" class="hide-in-print">
+          <div class="print-only-val" id="warmupHours_txt">48 Saat</div>
+          <div class="quick-btn-group hide-in-print">
+            <button type="button" class="quick-btn" id="btn24" onclick="setWarmupHours(24)">24h</button>
+            <button type="button" class="quick-btn active" id="btn48" onclick="setWarmupHours(48)">48h</button>
+            <button type="button" class="quick-btn" id="btn72" onclick="setWarmupHours(72)">72h</button>
+            <button type="button" class="quick-btn" id="btn96" onclick="setWarmupHours(96)">96h</button>
+          </div>
+          <div class="input-hint">İlk şartlandırma süresi</div>
+        </div>
+        <div class="input-group">
+          <label>📈 Saatlik Isınma Hızı</label>
+          <input type="text" id="warmupRateVal" value="0.27 °C/saat" readonly style="background:#f1f5f9; font-weight:700;" class="hide-in-print">
+          <div class="print-only-val" id="warmupRateVal_txt">0.27 °C/saat</div>
+          <div class="input-hint">ΔT / Süre artışı</div>
+        </div>
+        <div class="input-group">
+          <label>🌬️ Hava Dağıtım Tipi</label>
+          <input type="text" value="Durgun / Konfor (VDI 2089)" readonly style="background:#f1f5f9;" class="hide-in-print">
+          <div class="print-only-val">Durgun / Konfor (VDI 2089)</div>
+          <div class="input-hint">Düşük hava türbülansı</div>
+        </div>
+        <div class="input-group">
+          <label>🏊 Kullanım Şekli & Aktivite</label>
+          <input type="text" value="Yüzme / Rekreasyon" readonly style="background:#f1f5f9;" class="hide-in-print">
+          <div class="print-only-val">Yüzme / Rekreasyon</div>
+          <div class="input-hint">VDI 2089 aktivite faktörü</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ANA KAPASİTE SONUÇLARI -->
+    <div class="results-grid">
+      <div class="result-box theoretical">
+        <h3 id="res1Title">KLASİK TEORİK PİK YÜK</h3>
+        <div class="cap-display-kw" id="outTheoryKw">0 kW</div>
+        <div class="cap-display-kcal" id="outTheoryKcal">0 kcal/h</div>
+        <div class="cap-sub" id="res1Sub">Sıfır güneş, sıfır tolerans ve açık rüzgar koşullarında teorik ekstrem gece piki. (Şartname referansı)</div>
+      </div>
+
+      <div class="result-box optimized">
+        <h3 id="res2Title">ÖNERİLEN SİSTEM DİZAYN GÜCÜ</h3>
+        <div class="cap-display-kw" id="outOptKw">0 kW</div>
+        <div class="cap-display-kcal" id="outOptKcal">0 kcal/h</div>
+        <div class="cap-sub" id="res2Sub">Dinamik iklim şartları, mikroklima koruması ve termal kütle sönümlemesi optimize edilmiş net dizayn kapasitesi.</div>
+      </div>
+    </div>
+
+    <!-- İKİNCİL GÖSTERGELER -->
+    <div class="secondary-metrics-strip">
+      <div class="metric-card">
+        <div class="metric-title" id="sec1Title">Gündüz Güneş Kazancı</div>
+        <div class="metric-val" id="outSec1" style="color:var(--corp-orange);">0 kW</div>
+        <div class="metric-unit" id="sec1Sub">Bedava güneş enerjisi</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" id="sec2Title">Termal Kütle Tamponu</div>
+        <div class="metric-val" id="outSec2" style="color:var(--corp-blue);">0 kW</div>
+        <div class="metric-unit" id="sec2Sub">Gece sağlanan rezerv</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" id="sec3Title">Günlük Buharlaşan Su</div>
+        <div class="metric-val" id="outSec3">0 kg/gün</div>
+        <div class="metric-unit" id="sec3Sub">24 saatlik su kaybı</div>
+      </div>
+      <div class="metric-card highlight">
+        <div class="metric-title" id="sec4Title">Havuz Devresi Debisi</div>
+        <div class="metric-val" id="outSec4">0 m³/h</div>
+        <div class="metric-unit" id="sec4Sub">Sirkülasyon (ΔT = 5°C)</div>
+      </div>
+    </div>
+
+    <!-- 4. SEZONLUK AYLIK ISI DENGESİ VE İŞLETME PROFİLİ (AÇIK HAVUZ İÇİN 2. SAYFA BAŞLANGICI) -->
+    <div class="card" id="seasonCard">
+      <div class="card-title">
+        <span>4. SEZONLUK AYLIK ISI DENGESİ VE İŞLETME PROFİLİ</span>
+        <span class="badge" id="seasonBadge">Sezon Analizi</span>
+      </div>
+      <div class="table-container">
+        <table class="season-table">
+          <thead>
+            <tr>
+              <th style="width:14%;">Ay</th>
+              <th style="width:22%; text-align:right;">Dış Hava (Gündüz / Gece)</th>
+              <th style="width:11%; text-align:right;">Güneş</th>
+              <th style="width:13%; text-align:right;">Gece Kaybı</th>
+              <th style="width:14%; text-align:right;">Termal Tampon</th>
+              <th style="width:13%; text-align:right;">Net Güç</th>
+              <th style="width:13%; text-align:center;">Durum</th>
+            </tr>
+          </thead>
+          <tbody id="seasonTableBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px; text-align:center;">
+        <canvas id="seasonChart" width="760" height="220" style="max-width:100%; height:auto;"></canvas>
+      </div>
+    </div>
+
+    <!-- 4. İLK ISITMA SÜRESİ SİMÜLASYONU VE KAPASİTE ANALİZİ (KAPALI HAVUZ İÇİN 2. SAYFA BAŞLANGICI) -->
+    <div class="card" id="indoorSimCard" style="display:none;">
+      <div class="card-title">
+        <span>4. İLK ISITMA SÜRESİ SİMÜLASYONU VE KAPASİTE ANALİZİ</span>
+        <span class="badge" style="background:#eff6ff; color:#0284c7;">Warm-Up & Süre Analizi</span>
+      </div>
+      <div class="table-container">
+        <table class="season-table">
+          <thead>
+            <tr>
+              <th style="width:18%;">İlk Isıtma Süresi</th>
+              <th style="width:16%; text-align:right;">Isınma Hızı</th>
+              <th style="width:16%; text-align:right;">Gerekli Güç (kW)</th>
+              <th style="width:18%; text-align:right;">Gerekli Güç (kcal/h)</th>
+              <th style="width:16%; text-align:right;">Rejim Gücüne Oranı</th>
+              <th style="width:16%; text-align:center;">Mühendislik Değerlendirmesi</th>
+            </tr>
+          </thead>
+          <tbody id="indoorWarmupTableBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px; text-align:center;">
+        <canvas id="indoorWarmupChart" width="760" height="200" style="max-width:100%; height:auto;"></canvas>
+      </div>
+    </div>
+
+    <!-- 5. ANLIK DETAYLI KAYIP KALEMLERİ -->
+    <div class="card" id="detailCard">
+      <div class="card-title">
+        <span id="detailTitle">5. REFERANS AYI DETAYLI TERMODİNAMİK KAYIP VE KAZANÇ DAĞILIMI</span>
+        <span class="badge" id="detailBadge">Termodinamik Döküm</span>
+      </div>
+      <div class="table-container">
+        <table class="detail-table">
+          <thead id="lossTableHead">
+            <tr>
+              <th>Termodinamik Kalem</th>
+              <th class="num">Gündüz (kW)</th>
+              <th class="num">Gece (kW)</th>
+              <th class="num">Net Etki (kW)</th>
+            </tr>
+          </thead>
+          <tbody id="lossTableBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-stamp">
+        <div><strong>MEKENSİS MÜHENDİSLİK SAN. VE TİC. LTD. ŞTİ.</strong> | Mekanik Tesisat & Isı Pompası Sistemleri</div>
+        <div id="footerCode">Rapor Kodu: MEK-HY-2026/08 | Tarih: 18.09.2026</div>
+      </div>
+    </div>
+
+    <!-- BUTONLAR -->
+    <div class="action-bar">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Raporu Yazdır / PDF Kaydet</button>
+      <button class="btn btn-primary" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆️ Yukarı Dön</button>
+    </div>
+
+  </div>
+
+  <script>
+    const CITIES = {"adana": {"name": "Adana", "refAlt": 23, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 6.5, "solarW": 310, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 16.6, "tNight": 7.9, "solarW": 380, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 19.9, "tNight": 10.8, "solarW": 460, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 23.8, "tNight": 14.2, "solarW": 540, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 28.3, "tNight": 18.1, "solarW": 620, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 32.2, "tNight": 21.5, "solarW": 690, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 34.5, "tNight": 23.5, "solarW": 710, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 34.1, "tNight": 23.2, "solarW": 660, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 30.6, "tNight": 20.1, "solarW": 560, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 25.7, "tNight": 15.9, "solarW": 450, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 20.9, "tNight": 11.6, "solarW": 350, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 16.6, "tNight": 7.9, "solarW": 280, "wind": 3.1, "rh": 71}]}, "adiyaman": {"name": "Adıyaman", "refAlt": 669, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "afyon": {"name": "Afyonkarahisar", "refAlt": 1021, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 280, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 350, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 440, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 520, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 610, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 680, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 700, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 650, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 550, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 430, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 320, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 250, "wind": 2.3, "rh": 73}]}, "agri": {"name": "Ağrı", "refAlt": 1632, "months": [{"m": "Ocak", "tDay": -4.0, "tNight": -14.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": -1.5, "tNight": -12.0, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 3.9, "tNight": -7.6, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 10.2, "tNight": -2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 17.4, "tNight": 3.3, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 23.7, "tNight": 8.4, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 27.5, "tNight": 11.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 26.9, "tNight": 11.0, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 21.2, "tNight": 6.4, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 13.3, "tNight": 0.0, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 5.4, "tNight": -6.4, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": -1.5, "tNight": -12.0, "solarW": 230, "wind": 2.3, "rh": 73}]}, "aksaray": {"name": "Aksaray", "refAlt": 980, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "amasya": {"name": "Amasya", "refAlt": 411, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "ankara": {"name": "Ankara", "refAlt": 938, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "antalya": {"name": "Antalya", "refAlt": 5, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 6.5, "solarW": 310, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 16.6, "tNight": 7.9, "solarW": 380, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 19.9, "tNight": 10.8, "solarW": 460, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 23.8, "tNight": 14.2, "solarW": 540, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 28.3, "tNight": 18.1, "solarW": 620, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 32.2, "tNight": 21.5, "solarW": 690, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 34.5, "tNight": 23.5, "solarW": 710, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 34.1, "tNight": 23.2, "solarW": 660, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 30.6, "tNight": 20.1, "solarW": 560, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 25.7, "tNight": 15.9, "solarW": 450, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 20.9, "tNight": 11.6, "solarW": 350, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 16.6, "tNight": 7.9, "solarW": 280, "wind": 3.1, "rh": 71}]}, "ardahan": {"name": "Ardahan", "refAlt": 1829, "months": [{"m": "Ocak", "tDay": -4.0, "tNight": -14.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": -1.5, "tNight": -12.0, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 3.9, "tNight": -7.6, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 10.2, "tNight": -2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 17.4, "tNight": 3.3, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 23.7, "tNight": 8.4, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 27.5, "tNight": 11.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 26.9, "tNight": 11.0, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 21.2, "tNight": 6.4, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 13.3, "tNight": 0.0, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 5.4, "tNight": -6.4, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": -1.5, "tNight": -12.0, "solarW": 230, "wind": 2.3, "rh": 73}]}, "artvin": {"name": "Artvin", "refAlt": 345, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "aydin": {"name": "Aydın", "refAlt": 65, "months": [{"m": "Ocak", "tDay": 12.5, "tNight": 5.5, "solarW": 280, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 14.2, "tNight": 6.8, "solarW": 350, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 17.8, "tNight": 9.6, "solarW": 440, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 22.0, "tNight": 12.9, "solarW": 520, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 26.8, "tNight": 16.7, "solarW": 610, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 31.0, "tNight": 20.0, "solarW": 680, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 33.5, "tNight": 22.0, "solarW": 700, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 33.1, "tNight": 21.7, "solarW": 650, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 29.3, "tNight": 18.7, "solarW": 550, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 24.1, "tNight": 14.6, "solarW": 430, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 18.8, "tNight": 10.4, "solarW": 320, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 14.2, "tNight": 6.8, "solarW": 250, "wind": 3.1, "rh": 71}]}, "balikesir": {"name": "Balıkesir", "refAlt": 145, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "bartin": {"name": "Bartın", "refAlt": 25, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "batman": {"name": "Batman", "refAlt": 540, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "bayburt": {"name": "Bayburt", "refAlt": 1555, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "bilecik": {"name": "Bilecik", "refAlt": 513, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "bingol": {"name": "Bingöl", "refAlt": 1151, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "bitlis": {"name": "Bitlis", "refAlt": 1545, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "bolu": {"name": "Bolu", "refAlt": 726, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "burdur": {"name": "Burdur", "refAlt": 950, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "bursa": {"name": "Bursa", "refAlt": 100, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "canakkale": {"name": "Çanakkale", "refAlt": 6, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "cankiri": {"name": "Çankırı", "refAlt": 751, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "corum": {"name": "Çorum", "refAlt": 772, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "denizli": {"name": "Denizli", "refAlt": 354, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 3.0, "solarW": 280, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 12.9, "tNight": 4.4, "solarW": 350, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 17.0, "tNight": 7.5, "solarW": 440, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 21.8, "tNight": 11.1, "solarW": 520, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 27.3, "tNight": 15.2, "solarW": 610, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 32.1, "tNight": 18.8, "solarW": 680, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 35.0, "tNight": 21.0, "solarW": 700, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 34.5, "tNight": 20.6, "solarW": 650, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 30.2, "tNight": 17.4, "solarW": 550, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 24.2, "tNight": 12.9, "solarW": 430, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 18.2, "tNight": 8.4, "solarW": 320, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 12.9, "tNight": 4.4, "solarW": 250, "wind": 2.3, "rh": 73}]}, "diyarbakir": {"name": "Diyarbakır", "refAlt": 675, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "duzce": {"name": "Düzce", "refAlt": 160, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "edirne": {"name": "Edirne", "refAlt": 48, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "elazig": {"name": "Elazığ", "refAlt": 1067, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 230, "wind": 2.3, "rh": 73}]}, "erzincan": {"name": "Erzincan", "refAlt": 1185, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "erzurum": {"name": "Erzurum", "refAlt": 1758, "months": [{"m": "Ocak", "tDay": -4.0, "tNight": -14.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": -1.5, "tNight": -12.0, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 3.9, "tNight": -7.6, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 10.2, "tNight": -2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 17.4, "tNight": 3.3, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 23.7, "tNight": 8.4, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 27.5, "tNight": 11.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 26.9, "tNight": 11.0, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 21.2, "tNight": 6.4, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 13.3, "tNight": 0.0, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 5.4, "tNight": -6.4, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": -1.5, "tNight": -12.0, "solarW": 230, "wind": 2.3, "rh": 73}]}, "eskisehir": {"name": "Eskişehir", "refAlt": 788, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "gaziantep": {"name": "Gaziantep", "refAlt": 850, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "giresun": {"name": "Giresun", "refAlt": 10, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "gumushane": {"name": "Gümüşhane", "refAlt": 1210, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "hakkari": {"name": "Hakkari", "refAlt": 1720, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "hatay": {"name": "Hatay", "refAlt": 85, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 6.5, "solarW": 310, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 16.6, "tNight": 7.9, "solarW": 380, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 19.9, "tNight": 10.8, "solarW": 460, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 23.8, "tNight": 14.2, "solarW": 540, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 28.3, "tNight": 18.1, "solarW": 620, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 32.2, "tNight": 21.5, "solarW": 690, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 34.5, "tNight": 23.5, "solarW": 710, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 34.1, "tNight": 23.2, "solarW": 660, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 30.6, "tNight": 20.1, "solarW": 560, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 25.7, "tNight": 15.9, "solarW": 450, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 20.9, "tNight": 11.6, "solarW": 350, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 16.6, "tNight": 7.9, "solarW": 280, "wind": 3.1, "rh": 71}]}, "igdir": {"name": "Iğdır", "refAlt": 850, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 230, "wind": 2.3, "rh": 73}]}, "isparta": {"name": "Isparta", "refAlt": 1035, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "istanbul": {"name": "İstanbul", "refAlt": 30, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "izmir": {"name": "İzmir", "refAlt": 15, "months": [{"m": "Ocak", "tDay": 12.5, "tNight": 5.5, "solarW": 280, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 14.2, "tNight": 6.8, "solarW": 350, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 17.8, "tNight": 9.6, "solarW": 440, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 22.0, "tNight": 12.9, "solarW": 520, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 26.8, "tNight": 16.7, "solarW": 610, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 31.0, "tNight": 20.0, "solarW": 680, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 33.5, "tNight": 22.0, "solarW": 700, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 33.1, "tNight": 21.7, "solarW": 650, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 29.3, "tNight": 18.7, "solarW": 550, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 24.1, "tNight": 14.6, "solarW": 430, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 18.8, "tNight": 10.4, "solarW": 320, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 14.2, "tNight": 6.8, "solarW": 250, "wind": 3.1, "rh": 71}]}, "kahramanmaras": {"name": "Kahramanmaraş", "refAlt": 568, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "karabuk": {"name": "Karabük", "refAlt": 280, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "karaman": {"name": "Karaman", "refAlt": 1033, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "kars": {"name": "Kars", "refAlt": 1768, "months": [{"m": "Ocak", "tDay": -4.0, "tNight": -14.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": -1.5, "tNight": -12.0, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 3.9, "tNight": -7.6, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 10.2, "tNight": -2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 17.4, "tNight": 3.3, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 23.7, "tNight": 8.4, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 27.5, "tNight": 11.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 26.9, "tNight": 11.0, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 21.2, "tNight": 6.4, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 13.3, "tNight": 0.0, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 5.4, "tNight": -6.4, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": -1.5, "tNight": -12.0, "solarW": 230, "wind": 2.3, "rh": 73}]}, "kastamonu": {"name": "Kastamonu", "refAlt": 775, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "kayseri": {"name": "Kayseri", "refAlt": 1050, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 220, "wind": 2.3, "rh": 73}]}, "kilis": {"name": "Kilis", "refAlt": 640, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "kirikkale": {"name": "Kırıkkale", "refAlt": 718, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "kirklareli": {"name": "Kırklareli", "refAlt": 203, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "kirsehir": {"name": "Kırşehir", "refAlt": 985, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "kocaeli": {"name": "Kocaeli", "refAlt": 28, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "konya": {"name": "Konya", "refAlt": 1020, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "kutahya": {"name": "Kütahya", "refAlt": 969, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 280, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 350, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 440, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 520, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 610, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 680, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 700, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 650, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 550, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 430, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 320, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 250, "wind": 2.3, "rh": 73}]}, "malatya": {"name": "Malatya", "refAlt": 964, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 230, "wind": 2.3, "rh": 73}]}, "manisa": {"name": "Manisa", "refAlt": 71, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 3.0, "solarW": 280, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 12.9, "tNight": 4.4, "solarW": 350, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 17.0, "tNight": 7.5, "solarW": 440, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 21.8, "tNight": 11.1, "solarW": 520, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 27.3, "tNight": 15.2, "solarW": 610, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 32.1, "tNight": 18.8, "solarW": 680, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 35.0, "tNight": 21.0, "solarW": 700, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 34.5, "tNight": 20.6, "solarW": 650, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 30.2, "tNight": 17.4, "solarW": 550, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 24.2, "tNight": 12.9, "solarW": 430, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 18.2, "tNight": 8.4, "solarW": 320, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 12.9, "tNight": 4.4, "solarW": 250, "wind": 2.3, "rh": 73}]}, "mardin": {"name": "Mardin", "refAlt": 1083, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "mersin": {"name": "Mersin", "refAlt": 10, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 6.5, "solarW": 310, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 16.6, "tNight": 7.9, "solarW": 380, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 19.9, "tNight": 10.8, "solarW": 460, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 23.8, "tNight": 14.2, "solarW": 540, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 28.3, "tNight": 18.1, "solarW": 620, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 32.2, "tNight": 21.5, "solarW": 690, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 34.5, "tNight": 23.5, "solarW": 710, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 34.1, "tNight": 23.2, "solarW": 660, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 30.6, "tNight": 20.1, "solarW": 560, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 25.7, "tNight": 15.9, "solarW": 450, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 20.9, "tNight": 11.6, "solarW": 350, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 16.6, "tNight": 7.9, "solarW": 280, "wind": 3.1, "rh": 71}]}, "mugla": {"name": "Muğla", "refAlt": 660, "months": [{"m": "Ocak", "tDay": 12.5, "tNight": 5.5, "solarW": 280, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 14.2, "tNight": 6.8, "solarW": 350, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 17.8, "tNight": 9.6, "solarW": 440, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 22.0, "tNight": 12.9, "solarW": 520, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 26.8, "tNight": 16.7, "solarW": 610, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 31.0, "tNight": 20.0, "solarW": 680, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 33.5, "tNight": 22.0, "solarW": 700, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 33.1, "tNight": 21.7, "solarW": 650, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 29.3, "tNight": 18.7, "solarW": 550, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 24.1, "tNight": 14.6, "solarW": 430, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 18.8, "tNight": 10.4, "solarW": 320, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 14.2, "tNight": 6.8, "solarW": 250, "wind": 3.1, "rh": 71}]}, "mus": {"name": "Muş", "refAlt": 1320, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "nevsehir": {"name": "Nevşehir", "refAlt": 1260, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "nigde": {"name": "Niğde", "refAlt": 1229, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 220, "wind": 2.3, "rh": 73}]}, "ordu": {"name": "Ordu", "refAlt": 5, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "osmaniye": {"name": "Osmaniye", "refAlt": 125, "months": [{"m": "Ocak", "tDay": 15.0, "tNight": 6.5, "solarW": 310, "wind": 3.2, "rh": 70}, {"m": "Şubat", "tDay": 16.6, "tNight": 7.9, "solarW": 380, "wind": 3.2, "rh": 68}, {"m": "Mart", "tDay": 19.9, "tNight": 10.8, "solarW": 460, "wind": 3.0, "rh": 66}, {"m": "Nisan", "tDay": 23.8, "tNight": 14.2, "solarW": 540, "wind": 2.7, "rh": 65}, {"m": "Mayıs", "tDay": 28.3, "tNight": 18.1, "solarW": 620, "wind": 2.5, "rh": 60}, {"m": "Haziran", "tDay": 32.2, "tNight": 21.5, "solarW": 690, "wind": 2.6, "rh": 55}, {"m": "Temmuz", "tDay": 34.5, "tNight": 23.5, "solarW": 710, "wind": 2.8, "rh": 56}, {"m": "Ağustos", "tDay": 34.1, "tNight": 23.2, "solarW": 660, "wind": 2.7, "rh": 59}, {"m": "Eylül", "tDay": 30.6, "tNight": 20.1, "solarW": 560, "wind": 2.5, "rh": 58}, {"m": "Ekim", "tDay": 25.7, "tNight": 15.9, "solarW": 450, "wind": 2.6, "rh": 63}, {"m": "Kasım", "tDay": 20.9, "tNight": 11.6, "solarW": 350, "wind": 2.8, "rh": 67}, {"m": "Aralık", "tDay": 16.6, "tNight": 7.9, "solarW": 280, "wind": 3.1, "rh": 71}]}, "rize": {"name": "Rize", "refAlt": 6, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "sakarya": {"name": "Sakarya", "refAlt": 31, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "samsun": {"name": "Samsun", "refAlt": 20, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "sanliurfa": {"name": "Şanlıurfa", "refAlt": 518, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "siirt": {"name": "Siirt", "refAlt": 895, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "sinop": {"name": "Sinop", "refAlt": 15, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "sivas": {"name": "Sivas", "refAlt": 1285, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 220, "wind": 2.3, "rh": 73}]}, "sirnak": {"name": "Şırnak", "refAlt": 1400, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 1.5, "solarW": 300, "wind": 2.4, "rh": 68}, {"m": "Şubat", "tDay": 11.4, "tNight": 3.3, "solarW": 370, "wind": 2.6, "rh": 64}, {"m": "Mart", "tDay": 16.5, "tNight": 7.2, "solarW": 470, "wind": 2.8, "rh": 55}, {"m": "Nisan", "tDay": 22.5, "tNight": 11.8, "solarW": 560, "wind": 2.7, "rh": 48}, {"m": "Mayıs", "tDay": 29.4, "tNight": 17.1, "solarW": 650, "wind": 2.5, "rh": 38}, {"m": "Haziran", "tDay": 35.4, "tNight": 21.7, "solarW": 720, "wind": 2.4, "rh": 28}, {"m": "Temmuz", "tDay": 39.0, "tNight": 24.5, "solarW": 730, "wind": 2.5, "rh": 24}, {"m": "Ağustos", "tDay": 38.4, "tNight": 24.0, "solarW": 680, "wind": 2.4, "rh": 26}, {"m": "Eylül", "tDay": 33.0, "tNight": 19.9, "solarW": 580, "wind": 2.2, "rh": 30}, {"m": "Ekim", "tDay": 25.5, "tNight": 14.2, "solarW": 460, "wind": 2.1, "rh": 42}, {"m": "Kasım", "tDay": 18.0, "tNight": 8.4, "solarW": 340, "wind": 2.2, "rh": 56}, {"m": "Aralık", "tDay": 11.4, "tNight": 3.3, "solarW": 270, "wind": 2.3, "rh": 69}]}, "tekirdag": {"name": "Tekirdağ", "refAlt": 37, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "tokat": {"name": "Tokat", "refAlt": 623, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 220, "wind": 2.3, "rh": 73}]}, "trabzon": {"name": "Trabzon", "refAlt": 30, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}, "tunceli": {"name": "Tunceli", "refAlt": 940, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 230, "wind": 2.3, "rh": 73}]}, "usak": {"name": "Uşak", "refAlt": 919, "months": [{"m": "Ocak", "tDay": 4.5, "tNight": -3.0, "solarW": 280, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 6.6, "tNight": -1.5, "solarW": 350, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 11.1, "tNight": 1.8, "solarW": 440, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 16.4, "tNight": 5.6, "solarW": 520, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 22.5, "tNight": 9.9, "solarW": 610, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 27.8, "tNight": 13.7, "solarW": 680, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 31.0, "tNight": 16.0, "solarW": 700, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 30.5, "tNight": 15.6, "solarW": 650, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 25.7, "tNight": 12.2, "solarW": 550, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 19.1, "tNight": 7.5, "solarW": 430, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 12.4, "tNight": 2.7, "solarW": 320, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 6.6, "tNight": -1.5, "solarW": 250, "wind": 2.3, "rh": 73}]}, "van": {"name": "Van", "refAlt": 1727, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 260, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 330, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 430, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 500, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 580, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 660, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 680, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 630, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 540, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 410, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 290, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 230, "wind": 2.3, "rh": 73}]}, "yalova": {"name": "Yalova", "refAlt": 2, "months": [{"m": "Ocak", "tDay": 9.0, "tNight": 3.5, "solarW": 210, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 10.6, "tNight": 4.8, "solarW": 280, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 14.1, "tNight": 7.5, "solarW": 370, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.2, "tNight": 10.7, "solarW": 460, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.9, "tNight": 14.4, "solarW": 550, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 27.0, "tNight": 17.6, "solarW": 620, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 29.5, "tNight": 19.5, "solarW": 630, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 29.1, "tNight": 19.2, "solarW": 580, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 25.4, "tNight": 16.3, "solarW": 470, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.3, "tNight": 12.3, "solarW": 350, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.1, "tNight": 8.3, "solarW": 240, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 10.6, "tNight": 4.8, "solarW": 180, "wind": 3.1, "rh": 76}]}, "yozgat": {"name": "Yozgat", "refAlt": 1300, "months": [{"m": "Ocak", "tDay": 1.5, "tNight": -6.5, "solarW": 250, "wind": 2.4, "rh": 72}, {"m": "Şubat", "tDay": 3.7, "tNight": -4.9, "solarW": 320, "wind": 2.6, "rh": 68}, {"m": "Mart", "tDay": 8.5, "tNight": -1.5, "solarW": 420, "wind": 2.8, "rh": 60}, {"m": "Nisan", "tDay": 14.1, "tNight": 2.5, "solarW": 490, "wind": 2.7, "rh": 55}, {"m": "Mayıs", "tDay": 20.5, "tNight": 7.1, "solarW": 570, "wind": 2.5, "rh": 50}, {"m": "Haziran", "tDay": 26.1, "tNight": 11.1, "solarW": 640, "wind": 2.4, "rh": 42}, {"m": "Temmuz", "tDay": 29.5, "tNight": 13.5, "solarW": 660, "wind": 2.5, "rh": 38}, {"m": "Ağustos", "tDay": 28.9, "tNight": 13.1, "solarW": 610, "wind": 2.4, "rh": 38}, {"m": "Eylül", "tDay": 23.9, "tNight": 9.5, "solarW": 510, "wind": 2.2, "rh": 42}, {"m": "Ekim", "tDay": 16.9, "tNight": 4.5, "solarW": 390, "wind": 2.1, "rh": 52}, {"m": "Kasım", "tDay": 9.9, "tNight": -0.5, "solarW": 280, "wind": 2.2, "rh": 65}, {"m": "Aralık", "tDay": 3.7, "tNight": -4.9, "solarW": 220, "wind": 2.3, "rh": 73}]}, "zonguldak": {"name": "Zonguldak", "refAlt": 10, "months": [{"m": "Ocak", "tDay": 11.0, "tNight": 4.5, "solarW": 180, "wind": 3.2, "rh": 75}, {"m": "Şubat", "tDay": 12.3, "tNight": 5.7, "solarW": 240, "wind": 3.2, "rh": 74}, {"m": "Mart", "tDay": 15.1, "tNight": 8.2, "solarW": 320, "wind": 3.0, "rh": 72}, {"m": "Nisan", "tDay": 18.4, "tNight": 11.2, "solarW": 400, "wind": 2.7, "rh": 70}, {"m": "Mayıs", "tDay": 22.2, "tNight": 14.7, "solarW": 490, "wind": 2.5, "rh": 68}, {"m": "Haziran", "tDay": 25.5, "tNight": 17.7, "solarW": 550, "wind": 2.6, "rh": 65}, {"m": "Temmuz", "tDay": 27.5, "tNight": 19.5, "solarW": 560, "wind": 2.8, "rh": 66}, {"m": "Ağustos", "tDay": 27.2, "tNight": 19.2, "solarW": 510, "wind": 2.7, "rh": 68}, {"m": "Eylül", "tDay": 24.2, "tNight": 16.5, "solarW": 410, "wind": 2.5, "rh": 70}, {"m": "Ekim", "tDay": 20.1, "tNight": 12.8, "solarW": 300, "wind": 2.6, "rh": 73}, {"m": "Kasım", "tDay": 15.9, "tNight": 9.0, "solarW": 210, "wind": 2.8, "rh": 75}, {"m": "Aralık", "tDay": 12.3, "tNight": 5.7, "solarW": 160, "wind": 3.1, "rh": 76}]}};
+
+    function getSatVaporPressure(tC) {
+      return 6.112 * Math.exp((17.67 * tC) / (tC + 243.5));
+    }
+
+    function getWindCoeff(shelterPct) {
+      const s = Math.max(0, Math.min(100, shelterPct)) / 100.0;
+      return 1.0 - 0.70 * s - 0.30 * Math.pow(s, 2);
+    }
+
+    function onWindPresetChange() {
+      const val = document.getElementById('windPreset').value;
+      if (val !== 'custom') {
+        document.getElementById('shelterPct').value = val;
+        onShelterPctInput();
+      }
+    }
+
+    function onShelterPctInput() {
+      const sVal = parseFloat(document.getElementById('shelterPct').value) || 0;
+      const k = getWindCoeff(sVal);
+      document.getElementById('kWindVal').value = `k = ${k.toFixed(3)}`;
+      document.getElementById('kWindVal_txt').innerText = `k = ${k.toFixed(3)}`;
+      document.getElementById('shelterPct_txt').innerText = `%${sVal} Kapalılık (k = ${k.toFixed(3)})`;
+      
+      const preset = document.getElementById('windPreset');
+      let matched = false;
+      for (let i = 0; i < preset.options.length; i++) {
+        if (preset.options[i].value === String(sVal)) {
+          preset.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) preset.value = 'custom';
+      syncPrintValues();
+      calculate();
+    }
+
+    function setWarmupHours(h) {
+      document.getElementById('warmupHours').value = h;
+      ['btn24', 'btn48', 'btn72', 'btn96'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) b.classList.remove('active');
+      });
+      const targetBtn = document.getElementById('btn' + h);
+      if (targetBtn) targetBtn.classList.add('active');
+      syncPrintValues();
+      calculate();
+    }
+
+    function syncPrintValues() {
+      const map = [
+        ['poolType', 'poolType_txt'],
+        ['citySelect', 'citySelect_txt'],
+        ['seasonStart', 'seasonStart_txt'],
+        ['seasonEnd', 'seasonEnd_txt'],
+        ['activeMonthSelect', 'activeMonthSelect_txt'],
+        ['windPreset', 'windPreset_txt'],
+        ['solarEfficiency', 'solarEfficiency_txt'],
+        ['poolCover', 'poolCover_txt']
+      ];
+      map.forEach(([selId, txtId]) => {
+        const el = document.getElementById(selId);
+        const txt = document.getElementById(txtId);
+        if (el && txt && el.selectedIndex >= 0) {
+          txt.innerText = el.options[el.selectedIndex].text;
+        }
+      });
+
+      const area = parseFloat(document.getElementById('area').value) || 0;
+      document.getElementById('area_txt').innerText = area.toLocaleString('tr-TR') + " m²";
+
+      const depth = parseFloat(document.getElementById('depth').value) || 0;
+      document.getElementById('depth_txt').innerText = depth.toFixed(2) + " m";
+
+      const vol = area * depth;
+      document.getElementById('volDisplay_txt').innerText = vol.toLocaleString('tr-TR', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " m³";
+
+      const tWater = parseFloat(document.getElementById('tWater').value) || 28;
+      document.getElementById('tWater_txt').innerText = tWater.toFixed(1) + " °C";
+
+      const freshFlow = parseFloat(document.getElementById('freshFlow').value) || 0;
+      document.getElementById('freshFlow_txt').innerText = freshFlow.toFixed(2) + " lt/sn";
+
+      const alt = parseFloat(document.getElementById('altitude').value) || 0;
+      document.getElementById('altitude_txt').innerText = alt + " m";
+
+      const curTDay = parseFloat(document.getElementById('curTDay').value) || 0;
+      document.getElementById('curTDay_txt').innerText = curTDay.toFixed(1) + " °C";
+
+      const curTNight = parseFloat(document.getElementById('curTNight').value) || 0;
+      document.getElementById('curTNight_txt').innerText = curTNight.toFixed(1) + " °C";
+
+      const curSolar = parseFloat(document.getElementById('curSolar').value) || 0;
+      document.getElementById('curSolar_txt').innerText = curSolar + " W/m²";
+
+      const curWind = parseFloat(document.getElementById('curWind').value) || 0;
+      document.getElementById('curWind_txt').innerText = curWind.toFixed(1) + " m/s";
+
+      const curRh = parseFloat(document.getElementById('curRh').value) || 0;
+      document.getElementById('curRh_txt').innerText = "%" + curRh;
+
+      const shelterPct = parseFloat(document.getElementById('shelterPct').value) || 0;
+      const kWind = getWindCoeff(shelterPct);
+      document.getElementById('shelterPct_txt').innerText = `%${shelterPct} Kapalılık (k = ${kWind.toFixed(3)})`;
+
+      const nTol = parseFloat(document.getElementById('nightTolerance').value) || 0;
+      document.getElementById('nightTolerance_txt').innerText = nTol.toFixed(1) + " °C";
+
+      const uDesc = document.getElementById('usageDesc').value || 'Yüzme / Rekreasyon';
+      document.getElementById('usageDesc_txt').innerText = uDesc;
+
+      const iDesc = document.getElementById('inertiaDesc').value || 'Yüksek';
+      document.getElementById('inertiaDesc_txt').innerText = iDesc;
+
+      // Kapalı havuz girdileri
+      const inAir = parseFloat(document.getElementById('indoorTAir').value) || 20;
+      document.getElementById('indoorTAir_txt').innerText = inAir.toFixed(1) + " °C";
+
+      const inRh = parseFloat(document.getElementById('indoorRh').value) || 60;
+      document.getElementById('indoorRh_txt').innerText = "%" + inRh;
+
+      const inWind = parseFloat(document.getElementById('indoorWind').value) || 0.15;
+      document.getElementById('indoorWind_txt').innerText = inWind.toFixed(2) + " m/s";
+
+      const inFresh = parseFloat(document.getElementById('indoorTFresh').value) || 15;
+      document.getElementById('indoorTFresh_txt').innerText = inFresh.toFixed(1) + " °C";
+
+      const wHours = parseFloat(document.getElementById('warmupHours').value) || 48;
+      document.getElementById('warmupHours_txt').innerText = wHours + " Saat";
+
+      const wRate = Math.max(0, (tWater - inFresh) / wHours);
+      document.getElementById('warmupRateVal').value = `${wRate.toFixed(2)} °C/saat`;
+      document.getElementById('warmupRateVal_txt').innerText = `${wRate.toFixed(2)} °C/saat`;
+    }
+
+    function populateCitySelect() {
+      const sel = document.getElementById('citySelect');
+      sel.innerHTML = '';
+      const sortedKeys = Object.keys(CITIES).sort((a, b) => CITIES[a].name.localeCompare(CITIES[b].name, 'tr'));
+      sortedKeys.forEach(code => {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = CITIES[code].name;
+        if (code === 'antalya') opt.selected = true;
+        sel.appendChild(opt);
+      });
+      updateAltitudeHint();
+    }
+
+    function updateAltitudeHint() {
+      const code = document.getElementById('citySelect').value || 'antalya';
+      const city = CITIES[code];
+      if (city) {
+        document.getElementById('altHint').innerText = `İl referans rakımı: ${city.refAlt} m`;
+      }
+    }
+
+    function onPoolTypeChange() {
+      const pType = document.getElementById('poolType').value;
+      if (pType === 'indoor') {
+        document.getElementById('outdoorLocationCard').style.display = 'none';
+        document.getElementById('dynamicFactorsCard').style.display = 'none';
+        document.getElementById('seasonCard').style.display = 'none';
+
+        document.getElementById('indoorLocationCard').style.display = 'block';
+        document.getElementById('indoorCriteriaCard').style.display = 'block';
+        document.getElementById('indoorSimCard').style.display = 'block';
+
+        document.getElementById('detailTitle').innerText = '5. KAPALI HAVUZ DETAYLI TERMODİNAMİK KAYIP DAĞILIMI (SÜREKLİ REJİM)';
+        document.getElementById('mainReportSub').innerText = 'VDI 2089 / ASHRAE Kapalı Mahal Termodinamik & İlk Isıtma Simülasyonu';
+        document.getElementById('footerCode').innerText = 'Rapor Kodu: MEK-KH-2026/08 | Tarih: 18.09.2026';
+      } else {
+        document.getElementById('outdoorLocationCard').style.display = 'block';
+        document.getElementById('dynamicFactorsCard').style.display = 'block';
+        document.getElementById('seasonCard').style.display = 'block';
+
+        document.getElementById('indoorLocationCard').style.display = 'none';
+        document.getElementById('indoorCriteriaCard').style.display = 'none';
+        document.getElementById('indoorSimCard').style.display = 'none';
+
+        document.getElementById('detailTitle').innerText = '5. REFERANS AYI DETAYLI TERMODİNAMİK KAYIP VE KAZANÇ DAĞILIMI';
+        document.getElementById('mainReportSub').innerText = 'VDI 2089 / ASHRAE Termodinamik & Sezonluk İklim Simülasyonu';
+        document.getElementById('footerCode').innerText = 'Rapor Kodu: MEK-HY-2026/08 | Tarih: 18.09.2026';
+      }
+      syncPrintValues();
+      calculate();
+    }
+
+    function onCityOrAltChange() {
+      updateAltitudeHint();
+      updateActiveMonthList();
+      onActiveMonthChange();
+    }
+
+    function onSeasonChange() {
+      updateActiveMonthList();
+      onActiveMonthChange();
+    }
+
+    function updateActiveMonthList() {
+      const startIdx = parseInt(document.getElementById('seasonStart').value);
+      const endIdx = parseInt(document.getElementById('seasonEnd').value);
+      const sel = document.getElementById('activeMonthSelect');
+      const curVal = parseInt(sel.value);
+      sel.innerHTML = '';
+
+      const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", 
+                          "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+      let selectedSet = false;
+      for (let i = startIdx; i <= endIdx; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = monthNames[i];
+        if (i === curVal || (i === 3 && !selectedSet)) {
+          opt.selected = true;
+          selectedSet = true;
+        }
+        sel.appendChild(opt);
+      }
+      syncPrintValues();
+    }
+
+    function onActiveMonthChange() {
+      const code = document.getElementById('citySelect').value || 'antalya';
+      const city = CITIES[code];
+      const targetAlt = parseFloat(document.getElementById('altitude').value) || (city ? city.refAlt : 0);
+      const deltaAlt = targetAlt - (city ? city.refAlt : 0);
+      const deltaT = -0.0065 * deltaAlt;
+      const solarBoost = 1.0 + (0.08 * (targetAlt / 1000.0));
+
+      const activeIdx = parseInt(document.getElementById('activeMonthSelect').value) || 3;
+      if (city && city.months[activeIdx]) {
+        const m = city.months[activeIdx];
+        document.getElementById('curTDay').value = (m.tDay + deltaT).toFixed(1);
+        document.getElementById('curTNight').value = (m.tNight + deltaT).toFixed(1);
+        document.getElementById('curSolar').value = Math.round(m.solarW * solarBoost);
+        document.getElementById('curWind').value = m.wind.toFixed(1);
+        document.getElementById('curRh').value = m.rh;
+      }
+      syncPrintValues();
+      calculate();
+    }
+
+    function calculate() {
+      const pType = document.getElementById('poolType').value;
+      const area = parseFloat(document.getElementById('area').value) || 0;
+      const depth = parseFloat(document.getElementById('depth').value) || 0;
+      const vol = area * depth;
+      document.getElementById('volDisplay').value = vol.toFixed(1) + " m³";
+      document.getElementById('inertiaDesc').value = `Yüksek (${Math.round(vol).toLocaleString('tr-TR')} Ton Su)`;
+      document.getElementById('inertiaDesc_txt').innerText = `Yüksek (${Math.round(vol).toLocaleString('tr-TR')} Ton Su)`;
+
+      const tWater = parseFloat(document.getElementById('tWater').value) || 28;
+      const freshFlow = parseFloat(document.getElementById('freshFlow').value) || 0;
+
+      if (pType === 'indoor') {
+        calculateIndoor(area, depth, vol, tWater, freshFlow);
+      } else {
+        calculateOutdoor(area, depth, vol, tWater, freshFlow);
+      }
+    }
+
+    function calculateIndoor(area, depth, vol, tWater, freshFlow) {
+      const tAir = parseFloat(document.getElementById('indoorTAir').value) || 20;
+      const rh = parseFloat(document.getElementById('indoorRh').value) || 60;
+      const vAir = parseFloat(document.getElementById('indoorWind').value) || 0.15;
+      const tFresh = parseFloat(document.getElementById('indoorTFresh').value) || 15.0;
+      const warmupHours = parseFloat(document.getElementById('warmupHours').value) || 48;
+
+      // Buharlaşma hesabı (VDI 2089 / ASHRAE standart iç mahal formülü)
+      const pWs = getSatVaporPressure(tWater);
+      const pWa = (rh / 100.0) * getSatVaporPressure(tAir);
+      const deltaP_kPa = Math.max(0, (pWs - pWa) / 10.0);
+
+      const mEvap = (0.0888 + 0.0782 * vAir) * deltaP_kPa * area; // kg/h
+      const qEvap = (mEvap * 2430.0) / 3600.0; // kW (Gizli Isı)
+
+      // Konveksiyon ve Radyasyon (Mahal havasına ısı geçişi)
+      const qConvRad = Math.max(0, ((2.8 + 3.0 * vAir + 5.5) * area * (tWater - tAir)) / 1000.0);
+
+      // Taban ve Duvar İletimi (Kondüksiyon)
+      const aWet = area + (4.0 * Math.sqrt(area) * depth);
+      const qCond = (0.85 * aWet * Math.max(0, tWater - 15.0)) / 1000.0;
+
+      // Taze Su Tamamlama Isıtması
+      const qFresh = freshFlow * 4.186 * Math.max(0, tWater - tFresh);
+
+      // Toplam Sürekli İşletme (Rejim) Yükü
+      const totalSteady = qEvap + qConvRad + qCond + qFresh;
+      const qSensible = qConvRad + qCond + qFresh;
+
+      // İlk Isıtma (Warm-Up) Yükü
+      const eWaterKwh = (vol * 1000 * 4.186 * Math.max(0, tWater - tFresh)) / 3600.0;
+      const pWaterHeating = eWaterKwh / warmupHours;
+      const pAvgLossDuringWarmup = totalSteady * 0.45;
+      const warmupKw = pWaterHeating + pAvgLossDuringWarmup;
+
+      const finalRejim = Math.round(totalSteady);
+      const finalWarmup = Math.round(warmupKw);
+
+      // Başlıklar ve Metinler
+      document.getElementById('res1Title').innerText = "SÜREKLİ İŞLETME (REJİM) KAPASİTESİ";
+      document.getElementById('outTheoryKw').innerText = finalRejim.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outTheoryKcal').innerText = Math.round(finalRejim * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res1Sub').innerHTML = `Mahal sıcaklığı (<strong>${tAir.toFixed(1)}°C</strong>), bağıl nem (<strong>%${rh}</strong>) ve su sıcaklığı dengesinde havuzun sürekli sıcak tutulması için gereken net dizayn gücü.`;
+
+      document.getElementById('res2Title').innerText = "İLK ISITMA (WARM-UP) KAPASİTESİ";
+      document.getElementById('outOptKw').innerText = finalWarmup.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outOptKcal').innerText = Math.round(finalWarmup * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res2Sub').innerHTML = `Havuzun ilk dolumda 15°C'den <strong>${tWater.toFixed(1)}°C</strong>'ye belirlenen sürede (<strong>${warmupHours} saat</strong>) şartlandırılması için gereken geçici kapasite.`;
+
+      // İkincil Göstergeler
+      document.getElementById('sec1Title').innerText = "Nem Alma Santrali Nem Yükü";
+      document.getElementById('outSec1').innerText = mEvap.toFixed(1) + " kg/h";
+      document.getElementById('outSec1').style.color = "var(--corp-orange)";
+      document.getElementById('sec1Sub').innerText = `Günlük: ${Math.round(mEvap * 24).toLocaleString('tr-TR')} kg/gün`;
+
+      document.getElementById('sec2Title').innerText = "Gizli Isı Kaybı (Latent)";
+      document.getElementById('outSec2').innerText = Math.round(qEvap).toLocaleString('tr-TR') + " kW";
+      document.getElementById('outSec2').style.color = "var(--corp-blue)";
+      document.getElementById('sec2Sub').innerText = `${Math.round(qEvap * 860).toLocaleString('tr-TR')} kcal/h buharlaşma`;
+
+      document.getElementById('sec3Title').innerText = "Duyulur Isı Kaybı (Sensible)";
+      document.getElementById('outSec3').innerText = Math.round(qSensible).toLocaleString('tr-TR') + " kW";
+      document.getElementById('sec3Sub').innerText = "Konveksiyon, iletim ve taze su";
+
+      const poolFlow = finalRejim / (1.163 * 5.0);
+      document.getElementById('sec4Title').innerText = "Havuz Devresi Debisi";
+      document.getElementById('outSec4').innerText = poolFlow.toFixed(1) + " m³/h";
+      document.getElementById('sec4Sub').innerText = "Rejim sirkülasyonu (ΔT = 5°C)";
+
+      // Isınma Hızı Alanı
+      const wRate = Math.max(0, (tWater - tFresh) / warmupHours);
+      document.getElementById('warmupRateVal').value = `${wRate.toFixed(2)} °C/saat`;
+      document.getElementById('warmupRateVal_txt').innerText = `${wRate.toFixed(2)} °C/saat`;
+
+      // Kapalı Havuz Simülasyonu Tablosu ve Grafiği
+      renderIndoorSimulation(vol, tWater, tFresh, totalSteady, warmupHours);
+
+      // Detaylı Kayıp Tablosu
+      renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady);
+    }
+
+    function renderIndoorSimulation(vol, tWater, tFresh, totalSteady, activeHours) {
+      const hoursList = [24, 48, 72, 96];
+      if (!hoursList.includes(activeHours)) {
+        hoursList.push(activeHours);
+        hoursList.sort((a, b) => a - b);
+      }
+
+      const simResults = [];
+      let tableHtml = '';
+
+      hoursList.forEach(h => {
+        const eWaterKwh = (vol * 1000 * 4.186 * Math.max(0, tWater - tFresh)) / 3600.0;
+        const pWater = eWaterKwh / h;
+        const pLoss = totalSteady * 0.45;
+        const pTotal = pWater + pLoss;
+        const rate = (tWater - tFresh) / h;
+        const ratio = (pTotal / totalSteady) * 100;
+        const isSelected = (h === activeHours);
+
+        let note = '';
+        if (h === 24) note = 'Hızlı İlk Isıtma (Yüksek Pik Güç)';
+        else if (h === 48) note = 'Standart İlk Isıtma (Önerilen Süre)';
+        else if (h === 72) note = 'Ekonomik İlk Isıtma (Dengeli Ekipman)';
+        else if (h === 96) note = 'Düşük Yatırım (Uzun Süreli Isıtma)';
+        else note = `${h} Saatlik Özel Simülasyon`;
+
+        simResults.push({ hours: h, pTotal, rate, ratio, isSelected, note });
+
+        tableHtml += `
+          <tr class="${isSelected ? 'peak-month' : ''}">
+            <td><strong>${h} Saat</strong> ${isSelected ? '<span class="badge-status-indoor" style="margin-left:4px;">Seçili</span>' : ''}</td>
+            <td class="num">${rate.toFixed(2)} °C/saat</td>
+            <td class="num" style="font-weight:800; color:${isSelected ? 'var(--corp-orange)' : 'var(--corp-slate)'};">${Math.round(pTotal).toLocaleString('tr-TR')} kW</td>
+            <td class="num">${Math.round(pTotal * 860).toLocaleString('tr-TR')} kcal/h</td>
+            <td class="num" style="font-weight:700;">%${Math.round(ratio)}</td>
+            <td style="text-align:center; font-size:0.70rem;">${note}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('indoorWarmupTableBody').innerHTML = tableHtml;
+      drawIndoorWarmupChart(simResults, totalSteady);
+    }
+
+    function drawIndoorWarmupChart(results, steadyKw) {
+      const canvas = document.getElementById('indoorWarmupChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const maxVal = Math.max(...results.map(r => r.pTotal), steadyKw * 1.2) * 1.15;
+      const startX = 65;
+      const chartHeight = 135;
+      const zeroY = 160;
+      const availableWidth = canvas.width - startX - 40;
+      const barWidth = Math.min(55, (availableWidth / results.length) - 25);
+
+      // Grid Lines
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = zeroY - (chartHeight * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(startX, y);
+        ctx.lineTo(canvas.width - 20, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.textAlign = 'right';
+        const labelVal = Math.round(maxVal * (i / 4));
+        ctx.fillText(labelVal + ' kW', startX - 8, y + 4);
+      }
+
+      // Rejim Kapasitesi Çizgisi (Kırmızı Kesik Çizgi)
+      const steadyY = zeroY - (steadyKw / maxVal) * chartHeight;
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(startX, steadyY);
+      ctx.lineTo(canvas.width - 20, steadyY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#dc2626';
+      ctx.font = 'bold 10px -apple-system, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`Sürekli Rejim: ${Math.round(steadyKw)} kW`, canvas.width - 24, steadyY - 5);
+
+      // Bars
+      results.forEach((r, idx) => {
+        const x = startX + idx * (barWidth + 30) + 20;
+        const bHeight = (r.pTotal / maxVal) * chartHeight;
+        const y = zeroY - bHeight;
+
+        const grad = ctx.createLinearGradient(0, y, 0, zeroY);
+        if (r.isSelected) {
+          grad.addColorStop(0, '#ea580c');
+          grad.addColorStop(1, '#fb923c');
+        } else {
+          grad.addColorStop(0, '#0284c7');
+          grad.addColorStop(1, '#38bdf8');
+        }
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, bHeight, [5, 5, 0, 0]);
+        ctx.fill();
+
+        // Value above bar
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(Math.round(r.pTotal) + ' kW', x + barWidth / 2, y - 6);
+
+        // Hour Label
+        ctx.fillStyle = r.isSelected ? '#ea580c' : '#1e293b';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(r.hours + ' Saat', x + barWidth / 2, zeroY + 18);
+      });
+      ctx.textAlign = 'left';
+    }
+
+    function renderIndoorLossTable(qEvap, qConvRad, qCond, qFresh, totalSteady) {
+      document.getElementById('lossTableHead').innerHTML = `
+        <tr>
+          <th style="width:36%;">Termodinamik Kalem</th>
+          <th class="num" style="width:20%;">Isı Yükü (kW)</th>
+          <th class="num" style="width:24%;">Isı Yükü (kcal/h)</th>
+          <th class="num" style="width:20%;">Rejim Payı (%)</th>
+        </tr>
+      `;
+
+      const items = [
+        { name: "Buharlaşma Isı Kaybı (Gizli Isı - Latent)", kw: qEvap, note: "Havuzdan salon havasına buharlaşma" },
+        { name: "Konveksiyon ve Radyasyon Isı Kaybı", kw: qConvRad, note: "Sudan mahal havasına ısı transferi" },
+        { name: "Taban ve Duvar İletimi (Kondüksiyon)", kw: qCond, note: "Toprak / zemin yapısına ısı geçişi" },
+        { name: "Taze Su Tamamlama Isıtması", kw: qFresh, note: "Eksilen suyun 15°C'den ısıtılması" }
+      ];
+
+      let html = '';
+      items.forEach(it => {
+        const pct = totalSteady > 0 ? (it.kw / totalSteady) * 100 : 0;
+        html += `
+          <tr>
+            <td><strong>${it.name}</strong> <div style="font-size:0.65rem; color:var(--text-muted);">${it.note}</div></td>
+            <td class="num" style="font-weight:700;">${it.kw.toFixed(1)} kW</td>
+            <td class="num">${Math.round(it.kw * 860).toLocaleString('tr-TR')} kcal/h</td>
+            <td class="num" style="font-weight:700; color:var(--corp-blue);">%${pct.toFixed(1)}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+        <tr style="background:#f1f5f9; border-top:2px solid var(--border);">
+          <td><strong>TOPLAM SÜREKLİ İŞLETME (REJİM) YÜKÜ</strong></td>
+          <td class="num" style="font-weight:900; color:var(--corp-blue); font-size:0.82rem;">${totalSteady.toFixed(1)} kW</td>
+          <td class="num" style="font-weight:800;">${Math.round(totalSteady * 860).toLocaleString('tr-TR')} kcal/h</td>
+          <td class="num" style="font-weight:900; color:var(--corp-blue);">%100.0</td>
+        </tr>
+      `;
+
+      document.getElementById('lossTableBody').innerHTML = html;
+    }
+
+    function calculateOutdoor(area, depth, vol, tWater, freshFlow) {
+      const code = document.getElementById('citySelect').value || 'antalya';
+      const city = CITIES[code];
+      const startIdx = parseInt(document.getElementById('seasonStart').value);
+      const endIdx = parseInt(document.getElementById('seasonEnd').value);
+
+      // Hibrit Rüzgar Modeli Katsayısı
+      const shelterPct = parseFloat(document.getElementById('shelterPct').value) || 0;
+      const kWind = getWindCoeff(shelterPct);
+      document.getElementById('kWindVal').value = `k = ${kWind.toFixed(3)}`;
+      document.getElementById('kWindVal_txt').innerText = `k = ${kWind.toFixed(3)}`;
+
+      const nightTol = parseFloat(document.getElementById('nightTolerance').value) || 0.0;
+      const solarEff = parseFloat(document.getElementById('solarEfficiency').value);
+      const hasCover = document.getElementById('poolCover').value === 'yes';
+
+      const targetAlt = parseFloat(document.getElementById('altitude').value) || city.refAlt;
+      const deltaAlt = targetAlt - city.refAlt;
+      const deltaT = -0.0065 * deltaAlt;
+      const solarBoost = 1.0 + (0.08 * (targetAlt / 1000.0));
+
+      // Termal kütle tamponu
+      const thermalBufferKw = (vol * 1000 * 4.186 * nightTol) / (10 * 3600.0);
+      document.getElementById('bufferMax').value = `${Math.round(thermalBufferKw)} kW (Maksimum)`;
+      document.getElementById('bufferMax_txt').innerText = `${Math.round(thermalBufferKw)} kW (Maksimum)`;
+
+      // Aktif seçili ay
+      const activeIdx = parseInt(document.getElementById('activeMonthSelect').value) || startIdx;
+
+      // Su seviyesi efektif rüzgar göstergesi
+      const baseWindLive = parseFloat(document.getElementById('curWind').value) || 2.7;
+      const effWindLive = baseWindLive * kWind;
+      document.getElementById('effectiveWindHint').innerText = `Efektif su rüzgarı: ${effWindLive.toFixed(2)} m/s`;
+      document.getElementById('vEffVal').value = `${effWindLive.toFixed(2)} m/s`;
+      document.getElementById('vEffVal_txt').innerText = `${effWindLive.toFixed(2)} m/s`;
+
+      const tFresh = 15.0;
+      const pWs = getSatVaporPressure(tWater);
+      const aWet = area + (4.0 * Math.sqrt(area) * depth);
+      const qCond = (0.85 * aWet * (tWater - 15.0)) / 1000.0;
+      const qFresh = freshFlow * 4.186 * (tWater - tFresh);
+
+      let peakTheoryKw = 0;
+      let peakOptimizedKw = 0;
+      let peakMonthName = "";
+      const seasonResults = [];
+
+      for (let i = startIdx; i <= endIdx; i++) {
+        const m = city.months[i];
+        
+        // Aktif ayda kullanıcının kutulardaki canlı girdileri kullanılır
+        let tDay, tNight, solarGHI, baseWind, rh;
+        if (i === activeIdx) {
+          tDay = parseFloat(document.getElementById('curTDay').value);
+          tNight = parseFloat(document.getElementById('curTNight').value);
+          solarGHI = parseFloat(document.getElementById('curSolar').value);
+          baseWind = parseFloat(document.getElementById('curWind').value);
+          rh = parseFloat(document.getElementById('curRh').value);
+        } else {
+          tDay = m.tDay + deltaT;
+          tNight = m.tNight + deltaT;
+          solarGHI = m.solarW * solarBoost;
+          baseWind = m.wind;
+          rh = m.rh;
+        }
+
+        const effWind = baseWind * kWind;
+
+        // 1. Teori Gece Kaybı (VDI standardı: sıfır koruma, tam rüzgar, örtüsüz)
+        const pWaNight = (rh / 100.0) * getSatVaporPressure(tNight);
+        const dpNight = Math.max(0, (pWs - pWaNight) / 10.0);
+        const evapTheory = (0.09 + 0.09 * baseWind) * dpNight * area * 2430.0 / 3600.0;
+        const convTheory = ((2.8 + 3.0 * baseWind + 5.5) * area * (tWater - tNight)) / 1000.0;
+        const totalTheoryNight = Math.max(0, evapTheory + convTheory + qCond + qFresh);
+
+        // 2. Saha Gerçekliği Gece Kaybı (Hibrit rüzgar katsayısı + örtü)
+        let evapRealNight = (0.09 + 0.09 * effWind) * dpNight * area * 2430.0 / 3600.0;
+        if (hasCover) evapRealNight *= 0.15;
+        const convRealNight = ((2.8 + 3.0 * effWind + 5.5) * area * (tWater - tNight)) / 1000.0;
+        const totalRealNight = Math.max(0, evapRealNight + convRealNight + qCond + qFresh);
+
+        // Fiilen kullanılan termal tampon
+        const usedBufferKw = Math.min(totalRealNight, thermalBufferKw);
+
+        // 3. Gündüz Kaybı ve Güneş Kazancı
+        const pWaDay = (rh / 100.0) * getSatVaporPressure(tDay);
+        const dpDay = Math.max(0, (pWs - pWaDay) / 10.0);
+        const evapDay = (0.09 + 0.09 * effWind) * dpDay * area * 2430.0 / 3600.0;
+        const convDay = ((2.8 + 3.0 * effWind + 5.5) * area * (tWater - tDay)) / 1000.0;
+        const totalDayLoss = Math.max(0, evapDay + convDay + qCond + qFresh);
+
+        const solarGain = (area * solarGHI * 0.85 * solarEff) / 1000.0;
+        const daySurplusKw = solarGain - totalDayLoss;
+
+        // 24 Saatlik Isıl Denge Kontrolü
+        const eDaySurplusKwh = Math.max(0, daySurplusKw) * 14.0;
+        const eNightDeficitKwh = Math.max(0, totalRealNight - usedBufferKw) * 10.0;
+
+        let netNeededKw = 0;
+        if (eDaySurplusKwh >= eNightDeficitKwh) {
+          netNeededKw = 0;
+        } else {
+          netNeededKw = (eNightDeficitKwh - eDaySurplusKwh) / 10.0;
+        }
+
+        if (totalTheoryNight > peakTheoryKw) peakTheoryKw = totalTheoryNight;
+        if (netNeededKw > peakOptimizedKw) {
+          peakOptimizedKw = netNeededKw;
+          peakMonthName = m.m;
+        }
+
+        seasonResults.push({
+          month: m.m,
+          tDay,
+          tNight,
+          solarGain,
+          totalRealNight,
+          usedBufferKw,
+          thermalBufferKw,
+          netNightNeeded: netNeededKw,
+          totalTheoryNight
+        });
+      }
+
+      const activeData = seasonResults.find(r => r.month === city.months[activeIdx].m);
+
+      const finalTheory = Math.round(peakTheoryKw);
+      const finalOpt = Math.round(peakOptimizedKw);
+
+      // Başlıklar ve Metinler
+      document.getElementById('res1Title').innerText = "KLASİK TEORİK PİK YÜK";
+      document.getElementById('outTheoryKw').innerText = finalTheory.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outTheoryKcal').innerText = Math.round(finalTheory * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res1Sub').innerHTML = `Sıfır güneş, sıfır tolerans ve açık rüzgar koşullarında teorik ekstrem gece piki. (Şartname referansı)`;
+
+      document.getElementById('res2Title').innerText = "ÖNERİLEN SİSTEM DİZAYN GÜCÜ";
+      document.getElementById('outOptKw').innerText = finalOpt.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outOptKcal').innerText = Math.round(finalOpt * 860).toLocaleString('tr-TR') + " kcal/h";
+      document.getElementById('res2Sub').innerHTML = `Dinamik iklim şartları, mikroklima koruması ve termal kütle sönümlemesi optimize edilmiş net dizayn kapasitesi.`;
+
+      // İkincil Göstergeler
+      const solKw = activeData ? Math.round(activeData.solarGain) : 0;
+      const bufKw = activeData ? Math.round(activeData.usedBufferKw) : 0;
+
+      document.getElementById('sec1Title').innerText = "Gündüz Güneş Kazancı";
+      document.getElementById('outSec1').innerText = solKw.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outSec1').style.color = "var(--corp-orange)";
+      document.getElementById('sec1Sub').innerText = "Bedava güneş enerjisi";
+
+      document.getElementById('sec2Title').innerText = "Termal Kütle Tamponu";
+      document.getElementById('outSec2').innerText = bufKw.toLocaleString('tr-TR') + " kW";
+      document.getElementById('outSec2').style.color = "var(--corp-blue)";
+      document.getElementById('sec2Sub').innerText = "Gece sağlanan rezerv";
+
+      const curTDay = parseFloat(document.getElementById('curTDay').value);
+      const curTNight = parseFloat(document.getElementById('curTNight').value);
+      const curWind = effWindLive;
+      const curRh = parseFloat(document.getElementById('curRh').value);
+
+      const pWa1 = (curRh / 100.0) * getSatVaporPressure(curTDay);
+      const pWa2 = (curRh / 100.0) * getSatVaporPressure(curTNight);
+      const mEvapD = (0.09 + 0.09 * curWind) * Math.max(0, pWs - pWa1)/10.0 * area;
+      let mEvapN = (0.09 + 0.09 * curWind) * Math.max(0, pWs - pWa2)/10.0 * area;
+      if (hasCover) mEvapN *= 0.15;
+      const dailyEvapKg = (mEvapD * 14) + (mEvapN * 10);
+
+      document.getElementById('sec3Title').innerText = "Günlük Buharlaşan Su";
+      document.getElementById('outSec3').innerText = Math.round(dailyEvapKg).toLocaleString('tr-TR') + " kg/gün";
+      document.getElementById('sec3Sub').innerText = "24 saatlik su kaybı";
+
+      const poolFlow = finalOpt / (1.163 * 5.0);
+      document.getElementById('sec4Title').innerText = "Havuz Devresi Debisi";
+      document.getElementById('outSec4').innerText = poolFlow.toFixed(1) + " m³/h";
+      document.getElementById('sec4Sub').innerText = "Sirkülasyon (ΔT = 5°C)";
+
+      renderSeasonTable(seasonResults, peakMonthName);
+      drawSeasonChart(seasonResults);
+
+      const qEvD = (mEvapD * 2430.0) / 3600.0;
+      const qEvN = (mEvapN * 2430.0) / 3600.0;
+      const qCvD = ((2.8 + 3.0 * curWind + 5.5) * area * (tWater - curTDay)) / 1000.0;
+      const qCvN = ((2.8 + 3.0 * curWind + 5.5) * area * (tWater - curTNight)) / 1000.0;
+
+      renderOutdoorLossTable([
+        { name: "Buharlaşma Isı Kaybı", day: qEvD, night: qEvN, net: qEvN },
+        { name: "Konveksiyon ve Radyasyon", day: qCvD, night: qCvN, net: qCvN },
+        { name: "Taban ve Duvar İletimi", day: qCond, night: qCond, net: qCond },
+        { name: "Taze Su Besleme Isıtması", day: qFresh, night: qFresh, net: qFresh },
+        { name: "☀️ Güneş Işınımı Kazancı (Gündüz)", day: -solKw, night: 0, net: -solKw, isGain: true },
+        { name: "🛡️ Termal Kütle Tamponu (Gece)", day: 0, night: -bufKw, net: -bufKw, isGain: true }
+      ]);
+    }
+
+    function renderSeasonTable(results, peakName) {
+      let html = '';
+      results.forEach(r => {
+        const isPeak = r.month === peakName && r.netNightNeeded > 0;
+        const statusHtml = r.netNightNeeded > 0 
+          ? `<span class="badge-status-req">${Math.round(r.netNightNeeded)} kW İhtiyaç</span>`
+          : `<span class="badge-status-ok">Güneş Yeterli</span>`;
+
+        html += `
+          <tr class="${isPeak ? 'peak-month' : ''}">
+            <td>
+              <strong>${r.month}</strong>
+              ${isPeak ? '<span class="badge" style="background:#ea580c; color:#fff; font-size:0.60rem; margin-left:4px;">PİK AY</span>' : ''}
+            </td>
+            <td class="num">${r.tDay.toFixed(1)}° / ${r.tNight.toFixed(1)}°C</td>
+            <td class="num" style="color:var(--corp-green); font-weight:700;">+${Math.round(r.solarGain)}</td>
+            <td class="num">${Math.round(r.totalRealNight)}</td>
+            <td class="num" style="color:var(--corp-blue); font-weight:700;">-${Math.round(r.usedBufferKw)}</td>
+            <td class="num" style="font-weight:800; color:${r.netNightNeeded > 0 ? 'var(--corp-orange)' : 'var(--corp-slate)'};">
+              ${Math.round(r.netNightNeeded)} kW
+            </td>
+            <td style="text-align:center;">${statusHtml}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('seasonTableBody').innerHTML = html;
+    }
+
+    function drawSeasonChart(results) {
+      const canvas = document.getElementById('seasonChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const maxVal = Math.max(...results.map(r => r.netNightNeeded), 50) * 1.25;
+      const startX = 65;
+      const chartHeight = 140;
+      const zeroY = 165;
+      const availableWidth = canvas.width - startX - 30;
+      const barWidth = Math.min(48, (availableWidth / results.length) - 18);
+
+      // Grid Lines
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = zeroY - (chartHeight * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(startX, y);
+        ctx.lineTo(canvas.width - 20, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.textAlign = 'right';
+        const labelVal = Math.round(maxVal * (i / 4));
+        ctx.fillText(labelVal + ' kW', startX - 8, y + 4);
+      }
+
+      // Bars
+      results.forEach((r, idx) => {
+        const x = startX + idx * (barWidth + 20) + 16;
+        const bHeight = (r.netNightNeeded / maxVal) * chartHeight;
+        const y = zeroY - bHeight;
+
+        if (r.netNightNeeded > 0) {
+          const grad = ctx.createLinearGradient(0, y, 0, zeroY);
+          grad.addColorStop(0, '#ea580c');
+          grad.addColorStop(1, '#fb923c');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, bHeight, [5, 5, 0, 0]);
+          ctx.fill();
+
+          // Value above bar
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(Math.round(r.netNightNeeded), x + barWidth / 2, y - 6);
+        } else {
+          // Clean 0 kW badge
+          ctx.fillStyle = '#dcfce7';
+          ctx.beginPath();
+          ctx.roundRect(x, zeroY - 24, barWidth, 24, [4, 4, 0, 0]);
+          ctx.fill();
+          ctx.fillStyle = '#15803d';
+          ctx.font = 'bold 10px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('0 kW', x + barWidth / 2, zeroY - 8);
+        }
+
+        // Month Label
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(r.month.substring(0, 3), x + barWidth / 2, zeroY + 18);
+      });
+      ctx.textAlign = 'left';
+    }
+
+    function renderOutdoorLossTable(items) {
+      document.getElementById('lossTableHead').innerHTML = `
+        <tr>
+          <th>Termodinamik Kalem</th>
+          <th class="num">Gündüz (kW)</th>
+          <th class="num">Gece (kW)</th>
+          <th class="num">Net Etki (kW)</th>
+        </tr>
+      `;
+
+      let html = '';
+      items.forEach(it => {
+        const isGain = it.isGain;
+        html += `
+          <tr>
+            <td><strong>${it.name}</strong></td>
+            <td class="num" style="${isGain ? 'color:var(--corp-green); font-weight:700;' : ''}">${it.day ? it.day.toFixed(1) : '-'}</td>
+            <td class="num" style="${isGain ? 'color:var(--corp-blue); font-weight:700;' : ''}">${it.night ? it.night.toFixed(1) : '-'}</td>
+            <td class="num" style="font-weight:700; color:${it.net < 0 ? 'var(--corp-green)' : 'var(--corp-slate)'};">
+              ${it.net.toFixed(1)} kW
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById('lossTableBody').innerHTML = html;
+    }
+
+    window.onload = function() {
+      populateCitySelect();
+      updateActiveMonthList();
+      onActiveMonthChange();
+    };
+  </script>
+</body>
+</html>
