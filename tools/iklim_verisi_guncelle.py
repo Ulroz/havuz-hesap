@@ -6,7 +6,8 @@ Kaynaklar
   - Gündüz / gece sıcaklığı   : MGM İllere Ait Mevsim Normalleri (1991-2020),
                                 ortalama en yüksek / ortalama en düşük sıcaklık; normal tablosu
                                 yayımlanmamış illerde MGM genel istatistik verisi (uzun dönem)
-  - Bağıl nem, rüzgar (10 m)  : PVGIS 5.3 tipik meteorolojik yıl (TMY, ERA5, 2005-2023), saatlik değerlerin aylık ortalaması
+  - Çiy noktası, rüzgar (10 m): PVGIS 5.3 tipik meteorolojik yıl (TMY, ERA5, 2005-2023); saatlik buhar basıncının
+                                ve rüzgarın aylık ortalaması, ortalama buhar basıncından çiy noktası
   - Güneş ışınımı (GHI)       : PVGIS 5.3 MRcalc, PVGIS-SARAH3 (2005-2023), yatay düzlem aylık ışınım
 
 Kullanım
@@ -18,6 +19,7 @@ import argparse
 import calendar
 import html
 import json
+import math
 import os
 import re
 import sys
@@ -37,6 +39,16 @@ QC_CONSTANT_HOURS = 24
 MGM_PAGE_NAME = {"Mersin": "ICEL"}
 
 UA = {"User-Agent": "Mekensis-Havuz-Hesap iklim verisi betigi"}
+
+
+# Magnus bağıntısı (programdaki getSatVaporPressure ile aynı sabitler), hPa
+def sat_vapor_pressure(t):
+    return 6.112 * math.exp(17.67 * t / (t + 243.5))
+
+
+def dew_point(p_vapor):
+    g = math.log(p_vapor / 6.112)
+    return 243.5 * g / (17.67 - g)
 
 
 def ascii_upper(name):
@@ -105,7 +117,10 @@ def mgm_temperatures(il, cache):
 
 
 def pvgis_tmy_monthly(key, lat, lon, cache):
-    """PVGIS tipik meteorolojik yıl (ERA5 + SARAH3, 2005-2023): saatlik nem ve rüzgarın aylık ortalaması."""
+    """PVGIS tipik meteorolojik yıl (ERA5 + SARAH3, 2005-2023): saatlik buhar basıncı ve rüzgarın aylık ortalaması.
+
+    Nem, saatlik sıcaklık ve bağıl nemden buhar basıncına çevrilerek ortalanır; aylık ortalama bağıl nem,
+    farklı kaynaktan gelen (MGM) sıcaklıklarla birleştirildiğinde buhar basıncını yanlış verir."""
     q = urllib.parse.urlencode({"lat": lat, "lon": lon, "outputformat": "json"})
     data = json.loads(fetch(f"https://re.jrc.ec.europa.eu/api/v5_3/tmy?{q}",
                             os.path.join(cache, f"tmy_{key}.json")))
@@ -124,13 +139,13 @@ def pvgis_tmy_monthly(key, lat, lon, cache):
     if bad:
         print(f"  {key}: {len(bad)} saatlik bozuk TMY verisi dışarıda bırakıldı", file=sys.stderr)
 
-    sums = {k: [0.0] * 12 for k in ("rh", "wind")}
+    sums = {k: [0.0] * 12 for k in ("pv", "wind")}
     counts = [0] * 12
     for idx, h in enumerate(hours):
         if idx in bad:
             continue
         m = int(h["time(UTC)"][4:6]) - 1
-        sums["rh"][m] += h["RH"]
+        sums["pv"][m] += h["RH"] / 100.0 * sat_vapor_pressure(h["T2m"])
         sums["wind"][m] += h["WS10m"]
         counts[m] += 1
     return ({k: [v[m] / counts[m] for m in range(12)] for k, v in sums.items()},
@@ -200,7 +215,7 @@ def main():
                 "tNight": norm["tMin"][i],
                 "ghi": round(ghi[i], 2),
                 "wind": round(tmy["wind"][i], 1),
-                "rh": int(round(tmy["rh"][i])),
+                "td": round(dew_point(tmy["pv"][i]), 1),
             } for i in range(12)],
         }
 
