@@ -913,6 +913,35 @@
       return 6.112 * Math.exp((17.67 * tC) / (tC + 243.5));
     }
 
+    // Çiy noktası (°C): Magnus bağıntısının tersi
+    function getDewPoint(tC, rh) {
+      const g = Math.log(Math.max(1, rh) / 100.0) + (17.67 * tC) / (tC + 243.5);
+      return (243.5 * g) / (17.67 - g);
+    }
+
+    // Açık gökyüzü sıcaklığı (°C): Berdahl & Martin (1984) gökyüzü yayıcılığı
+    // ε_gök = 0.711 + 0.56·(Tçiy/100) + 0.73·(Tçiy/100)², T_gök = T_hava · ε_gök^0.25
+    function getSkyTemp(tAirC, rh) {
+      const td = getDewPoint(tAirC, rh) / 100.0;
+      const epsSky = Math.min(1.0, 0.711 + 0.56 * td + 0.73 * td * td);
+      return (tAirC + 273.15) * Math.pow(epsSky, 0.25) - 273.15;
+    }
+
+    const WATER_EMISSIVITY = 0.95;
+    const STEFAN_BOLTZMANN = 5.67e-8; // W/m²K⁴
+
+    // Açık havuz: rüzgarla taşınım, McAdams/Watmuff h = 2.8 + 3.0·v [W/m²K]  → kW
+    function getOutdoorConvKw(area, v, tWater, tAir) {
+      return ((2.8 + 3.0 * v) * area * (tWater - tAir)) / 1000.0;
+    }
+
+    // Açık havuz: su yüzeyinden açık gökyüzüne uzun dalga ışınım, q = ε·σ·(T_su⁴ − T_gök⁴)  → kW
+    function getSkyRadiationKw(area, tWater, tAir, rh) {
+      const tw = tWater + 273.15;
+      const ts = getSkyTemp(tAir, rh) + 273.15;
+      return (WATER_EMISSIVITY * STEFAN_BOLTZMANN * area * (Math.pow(tw, 4) - Math.pow(ts, 4))) / 1000.0;
+    }
+
     function getWindCoeff(shelterPct) {
       const s = Math.max(0, Math.min(100, shelterPct)) / 100.0;
       return 1.0 - 0.70 * s - 0.30 * Math.pow(s, 2);
@@ -1500,20 +1529,20 @@
         const pWaNight = (rh / 100.0) * getSatVaporPressure(tNight);
         const dpNight = Math.max(0, (pWs - pWaNight) / 10.0);
         const evapTheory = getEvapHeatKw(0.09, 0.09, baseWind, dpNight, area);
-        const convTheory = ((2.8 + 3.0 * baseWind + 5.5) * area * (tWater - tNight)) / 1000.0;
+        const convTheory = getOutdoorConvKw(area, baseWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, rh);
         const totalTheoryNight = Math.max(0, evapTheory + convTheory + qCond + qFresh);
 
         // 2. Saha Gerçekliği Gece Kaybı (Hibrit rüzgar katsayısı + örtü)
         let evapRealNight = getEvapHeatKw(0.09, 0.09, effWind, dpNight, area);
         if (hasCover) evapRealNight *= 0.15;
-        const convRealNight = ((2.8 + 3.0 * effWind + 5.5) * area * (tWater - tNight)) / 1000.0;
+        const convRealNight = getOutdoorConvKw(area, effWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, rh);
         const totalRealNight = Math.max(0, evapRealNight + convRealNight + qCond + qFresh);
 
         // 3. Gündüz Kaybı ve Güneş Kazancı
         const pWaDay = (rh / 100.0) * getSatVaporPressure(tDay);
         const dpDay = Math.max(0, (pWs - pWaDay) / 10.0);
         const evapDay = getEvapHeatKw(0.09, 0.09, effWind, dpDay, area);
-        const convDay = ((2.8 + 3.0 * effWind + 5.5) * area * (tWater - tDay)) / 1000.0;
+        const convDay = getOutdoorConvKw(area, effWind, tWater, tDay) + getSkyRadiationKw(area, tWater, tDay, rh);
         const totalDayLoss = Math.max(0, evapDay + convDay + qCond + qFresh);
 
         const solarGain = (area * solarGHI * 0.85 * solarEff) / 1000.0;
@@ -1607,12 +1636,15 @@
       renderSeasonTable(seasonResults, peakMonthName);
       drawSeasonChart(seasonResults);
 
-      const qCvD = ((2.8 + 3.0 * curWind + 5.5) * area * (tWater - curTDay)) / 1000.0;
-      const qCvN = ((2.8 + 3.0 * curWind + 5.5) * area * (tWater - curTNight)) / 1000.0;
+      const qCvD = getOutdoorConvKw(area, curWind, tWater, curTDay);
+      const qCvN = getOutdoorConvKw(area, curWind, tWater, curTNight);
+      const qRadD = getSkyRadiationKw(area, tWater, curTDay, curRh);
+      const qRadN = getSkyRadiationKw(area, tWater, curTNight, curRh);
 
       renderOutdoorLossTable([
         { name: "Buharlaşma Isı Kaybı", day: qEvD, night: qEvN, net: qEvN },
-        { name: "Konveksiyon ve Radyasyon", day: qCvD, night: qCvN, net: qCvN },
+        { name: "Konveksiyon (Rüzgarla Taşınım)", day: qCvD, night: qCvN, net: qCvN },
+        { name: "Gökyüzüne Işınım (Açık Gök)", day: qRadD, night: qRadN, net: qRadN },
         { name: "Taban ve Duvar İletimi", day: qCond, night: qCond, net: qCond },
         { name: "Taze Su Besleme Isıtması", day: qFresh, night: qFresh, net: qFresh },
         { name: "☀️ Güneş Işınımı Kazancı (Gündüz)", day: -solKw, night: 0, net: -solKw, isGain: true },

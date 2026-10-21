@@ -61,7 +61,7 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 - Önerilen sistem dizayn gücü — kW ve kcal/h
 - Referans ay için güneş kazancı, ısıl tampon, günlük buharlaşan su miktarı (kg/gün) ve havuz devresi debisi (m³/h, ΔT = 5 °C)
 - Sezon boyunca aylık ısı dengesi tablosu ve grafiği (pik ay işaretli)
-- Referans ay için gündüz/gece kayıp ve kazanç dökümü (buharlaşma, taşınım + ışınım, taban/duvar iletimi, taze su, güneş, ısıl tampon)
+- Referans ay için gündüz/gece kayıp ve kazanç dökümü (buharlaşma, rüzgarla taşınım, açık gökyüzüne ışınım, taban/duvar iletimi, taze su, güneş, ısıl tampon)
 
 **Kapalı havuz**
 
