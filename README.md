@@ -37,7 +37,7 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 | Saha / havuz rakımı | m |
 | Sezon başlangıç ve bitiş ayı | – |
 | Detaylı incelenen referans ayı | – |
-| Referans ay için gündüz/gece dış sıcaklık, günlük güneş ışınımı, rüzgar hızı, bağıl nem (il verisinden gelir, elle değiştirilebilir) | °C, kWh/m²·gün, m/s, % |
+| Referans ay için gündüz/gece dış sıcaklık, günlük güneş ışınımı, rüzgar hızı, çiy noktası (il verisinden gelir, elle değiştirilebilir) | °C, kWh/m²·gün, m/s, °C |
 | Çevre rüzgar koruması / kapalılık oranı | % |
 | Gece izin verilen su soğuması | °C |
 | Güneş radyasyonu etkinliği (açık / parçalı / kapalı / sıfır) | – |
@@ -80,13 +80,15 @@ Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır 
 | İstasyon konumu ve rakımı (`refAlt`) | MGM il merkez istasyonu (servis.mgm.gov.tr). MGM kaydında rakımı 0 görünen Kahramanmaraş, Kocaeli, Rize ve Sinop için PVGIS'in arazi modeli (DEM) rakımı kullanılır. |
 | Gündüz / gece dış sıcaklığı | MGM İllere Ait Mevsim Normalleri (1991-2020): ortalama en yüksek / ortalama en düşük sıcaklık. İstanbul için normal tablosu yayımlanmadığından MGM genel istatistik verisi (1950-2025) kullanılır. |
 | Güneş ışınımı | PVGIS 5.3, PVGIS-SARAH3 uydu verisi (2005-2023), yatay düzlem günlük ortalama ışınımı (kWh/m²·gün). |
-| Rüzgar (10 m) ve bağıl nem | PVGIS 5.3 tipik meteorolojik yıl (TMY, ERA5 yeniden analiz verisi, 2005-2023), aylık ortalama. İstanbul ve Tekirdağ'ın TMY verisindeki bozuk Aralık bölümleri dışarıda bırakılır. |
+| Rüzgar (10 m) ve çiy noktası | PVGIS 5.3 tipik meteorolojik yıl (TMY, ERA5 yeniden analiz verisi, 2005-2023): aylık ortalama rüzgar; saatlik buhar basıncının aylık ortalamasından çiy noktası. İstanbul ve Tekirdağ'ın TMY verisindeki bozuk Aralık bölümleri dışarıda bırakılır. |
 
 Gündüz ve gece süreleri sabit değildir; her ay için ilin enlemine göre astronomik gün uzunluğu hesaplanır (Cooper deklinasyon bağıntısı, Klein temsili günleri). Güneş kazancı, günlük ışınımın gündüz süresine yayılmasıyla bulunur.
 
 İl seçildiğinde saha rakımı ilin istasyon rakımına getirilir. Farklı bir rakım girildiğinde sıcaklıklar 0,65 °C/100 m ile düzeltilir.
 
-Rüzgar ve nem, istasyon ölçümü değil ~25 km çözünürlüklü yeniden analiz (ERA5) verisidir. Özellikle kıyı illerinde istasyon değerlerinden sapabilir. Kesin değer gereken projelerde referans ay girdileri, MGM istasyon verisiyle elle düzeltilmelidir.
+Havadaki nem, gün içinde yaklaşık sabit kalan çiy noktası (buhar basıncı) ile ifade edilir; gündüz ve gece bağıl nemi bu değerden, o saatin sıcaklığına göre hesaplanır. Bağıl nem doğrudan kullanılmaz, çünkü farklı kaynaktan gelen (MGM) sıcaklıklarla birleştirildiğinde buhar basıncını hatalı verir.
+
+Rüzgar ve nem, istasyon ölçümü değil ~25 km çözünürlüklü yeniden analiz (ERA5) verisidir. Özellikle kıyı illerinde istasyon değerlerinden sapabilir. TMY her ay için tek bir tipik yılı seçtiğinden aylar arasında dalgalanma görülebilir (ör. Ankara Nisan çiy noktası Mart'tan düşüktür). Kesin değer gereken projelerde referans ay girdileri, MGM istasyon verisiyle elle düzeltilmelidir.
 
 Verilerin yeniden üretilmesi:
 
