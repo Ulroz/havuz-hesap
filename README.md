@@ -1,13 +1,13 @@
-# Mekensis Havuz Isıl Yük Hesabı
+# Havuz Isıl Yük Hesabı
 
-Mekensis Mühendislik tarafından geliştirilen, yüzme havuzlarının ısıtma kapasitesini hesaplayan ve yazdırılabilir rapor üreten bir hesap programıdır. Açık ve kapalı havuzlar için ayrı hesap modları bulunur.
+Yüzme havuzlarının ısıtma kapasitesini hesaplayan ve yazdırılabilir rapor üreten bir hesap programıdır. Açık ve kapalı havuzlar için ayrı hesap modları bulunur.
 
 - **Açık havuz:** Türkiye'nin 81 ili için aylık iklim verileri kullanılarak işletme sezonu boyunca her ayın gece ısı kaybı, gündüz güneş kazancı ve su kütlesinin ısıl tamponu hesaplanır; sezon içindeki en yüksek ısıtma ihtiyacı dizayn gücü olarak raporlanır.
 - **Kapalı havuz:** Mahal şartlarına göre sürekli işletme (rejim) yükü ile havuzun ilk dolumdan hedef sıcaklığa ısıtılması (ilk ısıtma) için gereken kapasite hesaplanır.
 
 ## Çalıştırma
 
-Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır (`Mekensis_Havuz_Isil_Yuk_Analizi.html`).
+Program, harici kütüphane veya sunucu gerektirmeyen tek bir HTML dosyasıdır (`index.html`).
 
 1. Dosya indirilir.
 2. Güncel bir tarayıcıda (Chrome, Edge, Firefox, Safari) çift tıklanarak açılır.
@@ -32,13 +32,19 @@ GitHub Pages sitesi, depo gizli olsa bile herkese açıktır. Pages'in gizli dep
 
 | Dosya | Görevi |
 |---|---|
-| `Mekensis_Havuz_Isil_Yuk_Analizi.html` | Programın kendisi (tek başına da çalışır) |
-| `index.html` | Web sitesinin giriş sayfası; programa yönlendirir |
+| `index.html` | Programın kendisi; web sitesinin giriş sayfası ve tek başına da çalışır |
 | `manifest.webmanifest`, `icons/` | Uygulama adı, rengi ve simgeleri (PWA) |
 | `sw.js` | Çevrimdışı çalışma için önbellek (service worker) |
 | `tools/iklim_verisi_guncelle.py` | İklim verisini kaynaklardan yeniden üreten betik |
 
 ## Girdiler
+
+**Rapor bilgileri (isteğe bağlı)**
+
+| Girdi | Açıklama |
+|---|---|
+| Proje adı | Yazdırılan raporda görünür |
+| Hazırlayan | Yazdırılan raporda görünür; bu tarayıcıda hatırlanır |
 
 **Ortak (havuz geometrisi)**
 
@@ -127,3 +133,6 @@ python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü>
 ## Not
 
 Hesap yöntemleri ve kabuller henüz bağımsız bir doğrulamadan geçmemiştir. Sonuçlar, proje kararlarında mühendislik değerlendirmesiyle birlikte kullanılmalıdır.
+
+---
+Hazırlayan: ulroz

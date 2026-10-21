@@ -11,7 +11,7 @@ Kaynaklar
   - Güneş ışınımı (GHI)       : PVGIS 5.3 MRcalc, PVGIS-SARAH3 (2005-2023), yatay düzlem aylık ışınım
 
 Kullanım
-  python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü> [--html Mekensis_Havuz_Isil_Yuk_Analizi.html]
+  python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü> [--html index.html]
 
 Ham yanıtlar önbellek klasörüne kaydedilir; tekrar çalıştırmada ağa çıkılmaz.
 """
@@ -38,7 +38,7 @@ QC_CONSTANT_HOURS = 24
 # MGM sayfa parametresi (m=) il adından farklı olanlar
 MGM_PAGE_NAME = {"Mersin": "ICEL"}
 
-UA = {"User-Agent": "Mekensis-Havuz-Hesap iklim verisi betigi"}
+UA = {"User-Agent": "Havuz-Isil-Yuk-Hesabi iklim verisi betigi"}
 
 
 # Magnus bağıntısı (programdaki getSatVaporPressure ile aynı sabitler), hPa
@@ -173,7 +173,7 @@ def existing_keys(html_text):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache", required=True)
-    ap.add_argument("--html", default="Mekensis_Havuz_Isil_Yuk_Analizi.html")
+    ap.add_argument("--html", default="index.html")
     ap.add_argument("--json-out", help="Üretilen veriyi ayrıca JSON olarak kaydet")
     args = ap.parse_args()
     os.makedirs(args.cache, exist_ok=True)
