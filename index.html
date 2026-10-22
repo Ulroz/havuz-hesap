@@ -758,7 +758,7 @@
           <label>Hesapta Kullanılan Su Rüzgarı</label>
           <div class="print-only-val" id="vEffVal_txt">1.35 m/s</div>
           <input type="text" id="vEffVal" value="1.35 m/s" readonly style="background:#f0fdfa; color:var(--c-primary); font-weight:800;" class="hide-in-print">
-          <div class="input-hint">v_su = v_10m × k</div>
+          <div class="input-hint">v_su (0,3 m) = v_10m × 0,68 × k</div>
         </div>
         <div class="input-group">
           <label>Termal Kütle Rezervi</label>
@@ -952,7 +952,7 @@
     // Buharlaşma latent ısısı (kJ/kg)
     const LATENT_HEAT = 2430.0;
 
-    // Carrier/ASHRAE tipi buharlaşma bağıntısı: w = A·Δp·(a + b·v) / Y  [kg/s]
+    // Carrier/ASHRAE tipi buharlaşma bağıntısı (kapalı havuz): w = A·Δp·(a + b·v) / Y  [kg/s]
     // Δp kPa, A m², Y kJ/kg → buharlaşma ısı kaybı q = w·Y = A·Δp·(a + b·v)  [kW]
     function getEvapHeatKw(a, b, v, deltaP_kPa, area) {
       return (a + b * v) * deltaP_kPa * area;
@@ -1036,7 +1036,43 @@
     const WATER_EMISSIVITY = 0.95;
     const STEFAN_BOLTZMANN = 5.67e-8; // W/m²K⁴
 
-    // Açık havuz: rüzgarla taşınım, McAdams/Watmuff h = 2.8 + 3.0·v [W/m²K]  → kW
+    // Açık havuz: rüzgarla taşınım, McAdams/Watmuff h = 2.8 + 3.0·v [W/m²K]  → kW (v: 0,3 m su yüzeyi rüzgârı)
+    // Rüzgâr yükseklik düzeltmesi: iklim verisindeki 10 m rüzgârı, su yüzeyinin 0,3 m üstüne indirilir.
+    // Logaritmik profil, açık su pürüzlülüğü z0 = 0,0002 m: ln(0,3/z0) / ln(10/z0) ≈ 0,68.
+    // Açık havuz buharlaşma bağıntısı 0,3 m'de ölçülen rüzgâra dayanır (Smith ve ark. 1999).
+    const WIND_Z0_WATER = 0.0002;
+    const WIND_HEIGHT_FACTOR = Math.log(0.3 / WIND_Z0_WATER) / Math.log(10.0 / WIND_Z0_WATER);
+
+    // Açık havuz buharlaşması: Shah (2014), ASHRAE Trans. 120(2), SE-14-001. Kullanılmayan açık havuzda
+    // doğal taşınım (Eş. 1), durgun hava (Eş. 2) ve rüzgârla zorlanmış taşınım (Eş. 7) değerlerinin en büyüğü alınır.
+    //   Eş. 1: E = 35·ρ_w·(ρ_a − ρ_w)^(1/3)·(W_w − W_a)
+    //   Eş. 2: E = 0,00005·(p_w − p_a)
+    //   Eş. 7: E = 0,00005·(u / 0,15)^0,7·(p_w − p_a)
+    // E kg/m²·h, p Pa, ρ nemli hava yoğunluğu kg/m³, W özgül nem kg/kg, u su yüzeyinin 0,3 m üstündeki rüzgâr m/s
+    const ATM_PRESSURE_PA = 101325.0;
+
+    function getMoistAirDensity(tC, pVaporPa) {
+      const T = tC + 273.15;
+      return (ATM_PRESSURE_PA - pVaporPa) / (287.05 * T) + pVaporPa / (461.5 * T);
+    }
+
+    function getHumidityRatio(pVaporPa) {
+      return 0.622 * pVaporPa / (ATM_PRESSURE_PA - pVaporPa);
+    }
+
+    // pVapor: dış havanın buhar basıncı (hPa), uSurface: 0,3 m rüzgârı (m/s)  → buharlaşma ısı kaybı kW
+    function getOutdoorEvapHeatKw(area, tWater, tAir, pVapor, uSurface) {
+      const pw = getSatVaporPressure(tWater) * 100.0;
+      const pa = getVaporPressureAt(tAir, pVapor) * 100.0;
+      const dp = Math.max(0, pw - pa);
+      const rhoW = getMoistAirDensity(tWater, pw);
+      const dRho = getMoistAirDensity(tAir, pa) - rhoW;
+      const eNatural = 35.0 * rhoW * Math.cbrt(Math.max(0, dRho)) * Math.max(0, getHumidityRatio(pw) - getHumidityRatio(pa));
+      const eStill = 0.00005 * dp;
+      const eWind = 0.00005 * Math.pow(Math.max(0, uSurface) / 0.15, 0.7) * dp;
+      return Math.max(eNatural, eStill, eWind) * area * LATENT_HEAT / 3600.0;
+    }
+
     function getOutdoorConvKw(area, v, tWater, tAir) {
       return ((2.8 + 3.0 * v) * area * (tWater - tAir)) / 1000.0;
     }
@@ -1628,9 +1664,9 @@
       document.getElementById('bufferMax').value = `${Math.round(activeBufferKw)} kW (Maksimum)`;
       document.getElementById('bufferMax_txt').innerText = `${Math.round(activeBufferKw)} kW (Maksimum)`;
 
-      // Su seviyesi efektif rüzgar göstergesi
+      // Su seviyesi efektif rüzgar göstergesi: 10 m rüzgârı 0,3 m'ye indirilir, çevre koruması uygulanır
       const baseWindLive = readNum('curWind', 2.7);
-      const effWindLive = baseWindLive * kWind;
+      const effWindLive = baseWindLive * WIND_HEIGHT_FACTOR * kWind;
       document.getElementById('effectiveWindHint').innerText = `Efektif su rüzgarı: ${effWindLive.toFixed(2)} m/s`;
       document.getElementById('vEffVal').value = `${effWindLive.toFixed(2)} m/s`;
       document.getElementById('vEffVal_txt').innerText = `${effWindLive.toFixed(2)} m/s`;
@@ -1638,7 +1674,6 @@
       // Zemin sıcaklığı: ilin yıllık ortalama hava sıcaklığı (rakım düzeltmeli). Şebeke suyu da bu sıcaklıkta kabul edilir.
       const tGround = city.months.reduce((sum, mo) => sum + (mo.tDay + mo.tNight) / 2.0, 0) / 12.0 + deltaT;
       const tFresh = tGround;
-      const pWs = getSatVaporPressure(tWater);
       const aWet = area + (4.0 * Math.sqrt(area) * depth);
       const qCond = (0.85 * aWet * Math.max(0, tWater - tGround)) / 1000.0;
 
@@ -1666,23 +1701,22 @@
           td = m.td;
         }
 
-        const effWind = baseWind * kWind;
+        const theoryWind = baseWind * WIND_HEIGHT_FACTOR;
+        const effWind = theoryWind * kWind;
         const dayH = getDayLengthHours(lat, i);
         const nightH = 24.0 - dayH;
         const thermalBufferKw = bufferKwh / nightH;
 
-        // 1. Teori Gece Kaybı (VDI standardı: sıfır koruma, tam rüzgar, örtüsüz)
+        // 1. Teori Gece Kaybı (sıfır koruma, su yüzeyine indirilmiş tam rüzgar, örtüsüz)
         // Dış havanın buhar basıncı çiy noktasından bulunur; gün içinde sabit kabul edilir
         const pVapor = getSatVaporPressure(td);
-        const pWaNight = getVaporPressureAt(tNight, pVapor);
-        const dpNight = Math.max(0, (pWs - pWaNight) / 10.0);
-        const evapTheory = getEvapHeatKw(0.09, 0.09, baseWind, dpNight, area);
-        const convTheory = getOutdoorConvKw(area, baseWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
+        const evapTheory = getOutdoorEvapHeatKw(area, tWater, tNight, pVapor, theoryWind);
+        const convTheory = getOutdoorConvKw(area, theoryWind, tWater, tNight) + getSkyRadiationKw(area, tWater, tNight, pVapor);
         const freshTheory = getMakeupHeatKw(evapTheory, freshFlow, tWater, tFresh);
         const totalTheoryNight = Math.max(0, evapTheory + convTheory + qCond + freshTheory);
 
         // 2. Saha Gerçekliği Gece Kaybı (Hibrit rüzgar katsayısı + örtü)
-        let evapRealNight = getEvapHeatKw(0.09, 0.09, effWind, dpNight, area);
+        let evapRealNight = getOutdoorEvapHeatKw(area, tWater, tNight, pVapor, effWind);
         let convRealNight;
         if (hasCover) {
           evapRealNight *= COVER_EVAP_FACTOR;
@@ -1695,9 +1729,7 @@
         const totalRealNight = Math.max(0, evapRealNight + convRealNight + qCond + freshNight);
 
         // 3. Gündüz Kaybı ve Güneş Kazancı
-        const pWaDay = getVaporPressureAt(tDay, pVapor);
-        const dpDay = Math.max(0, (pWs - pWaDay) / 10.0);
-        const evapDay = getEvapHeatKw(0.09, 0.09, effWind, dpDay, area);
+        const evapDay = getOutdoorEvapHeatKw(area, tWater, tDay, pVapor, effWind);
         const convDay = getOutdoorConvKw(area, effWind, tWater, tDay) + getSkyRadiationKw(area, tWater, tDay, pVapor);
         const freshDay = getMakeupHeatKw(evapDay, freshFlow, tWater, tFresh);
         const totalDayLoss = Math.max(0, evapDay + convDay + qCond + freshDay);
@@ -1776,10 +1808,8 @@
       const curTd = parseFloat(document.getElementById('curTd').value);
 
       const curVapor = getSatVaporPressure(curTd);
-      const pWa1 = getVaporPressureAt(curTDay, curVapor);
-      const pWa2 = getVaporPressureAt(curTNight, curVapor);
-      const qEvD = getEvapHeatKw(0.09, 0.09, curWind, Math.max(0, pWs - pWa1) / 10.0, area);
-      let qEvN = getEvapHeatKw(0.09, 0.09, curWind, Math.max(0, pWs - pWa2) / 10.0, area);
+      const qEvD = getOutdoorEvapHeatKw(area, tWater, curTDay, curVapor, curWind);
+      let qEvN = getOutdoorEvapHeatKw(area, tWater, curTNight, curVapor, curWind);
       if (hasCover) qEvN *= COVER_EVAP_FACTOR;
       const dailyEvapKg = (evapKwToKgPerHour(qEvD) * activeDayH) + (evapKwToKgPerHour(qEvN) * activeNightH);
 

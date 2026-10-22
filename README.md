@@ -36,6 +36,7 @@ GitHub Pages sitesi, depo gizli olsa bile herkese açıktır. Pages'in gizli dep
 | `manifest.webmanifest`, `icons/` | Uygulama adı, rengi ve simgeleri (PWA) |
 | `sw.js` | Çevrimdışı çalışma için önbellek (service worker) |
 | `tools/iklim_verisi_guncelle.py` | İklim verisini kaynaklardan yeniden üreten betik |
+| `tools/dogrulama/` | Açık havuz modelinin saha ölçümüyle karşılaştırılması (`node tools/dogrulama/acik_havuz_gece_dengesi.js`) |
 
 ## Girdiler
 
@@ -126,13 +127,21 @@ python3 tools/iklim_verisi_guncelle.py --cache <önbellek klasörü>
 
 ## Hesap kabulleri
 
+- **Açık havuz buharlaşması:** Shah (2014) yöntemiyle hesaplanır: doğal taşınım, durgun hava ve rüzgârla zorlanmış taşınım bağıntılarından en büyüğü alınır. Rüzgâr terimi, Smith ve ark. (1999) tarafından gerçek bir açık havuzda su yüzeyinin 0,3 m üstünde ölçülen rüzgârla elde edilmiş veriye dayanır. Kapalı havuzda Carrier/ASHRAE tipi bağıntı kullanılmaya devam eder.
+- **Rüzgâr yüksekliği:** İklim verisindeki 10 m rüzgârı, açık su yüzeyi için logaritmik rüzgâr profiliyle (z0 = 0,0002 m) 0,3 m yüksekliğe indirilir (çarpan ≈ 0,68). Çevre rüzgâr koruması katsayısı bunun üzerine uygulanır. Buharlaşma ve rüzgârla taşınım bu su yüzeyi rüzgârıyla hesaplanır. "Klasik teorik pik yük" çevre korumasını içermez, ancak yükseklik düzeltmesini içerir.
 - **Zemin sıcaklığı (açık havuz):** İlin yıllık ortalama hava sıcaklığıdır (rakım düzeltmeli). Taban ve duvar iletimi bu sıcaklığa göre hesaplanır. Kapalı havuzda 15 °C alınır.
 - **Tamamlama suyu:** Buharlaşan su, ek taze su debisiyle birlikte şebeke sıcaklığından havuz sıcaklığına ısıtılır. Açık havuzda şebeke suyu zemin sıcaklığında kabul edilir; kapalı havuzda "Doldurma / Şebeke Suyu" girdisi kullanılır.
 - **Gece havuz örtüsü:** Buharlaşmanın %85'ini keser. Taşınım ve ışınım, örtünün ısıl direncinden geçer: hava kabarcıklı örtü için R = 0,10 m²K/W, köpük yalıtımlı örtü için R = 0,30 m²K/W kabul edilir. Örtünün dış yüzey sıcaklığı enerji dengesinden bulunur.
 
 ## Not
 
-Hesap yöntemleri ve kabuller henüz bağımsız bir doğrulamadan geçmemiştir. Sonuçlar, proje kararlarında mühendislik değerlendirmesiyle birlikte kullanılmalıdır.
+Açık havuz modeli, Tekirova'daki 2000 m²'lik bir açık havuzda iki gecelik saha ölçümüyle karşılaştırılmıştır (`tools/dogrulama/`). Open-Meteo rüzgâr verisi ve çevre koruması uygulanmadan, model ölçülen kaybı %3 içinde vermiştir. Bu tek bir havuz ve iki geceye dayanan sınırlı bir doğrulamadır. Tesiste rüzgâr ölçümü yoktur ve sonuç kullanılan rüzgâr verisine duyarlıdır: Antalya Havalimanı rüzgârıyla model kaybı %30–45 yüksek bulunmaktadır. Kapalı havuz hesabı bağımsız bir doğrulamadan geçmemiştir. Sonuçlar, proje kararlarında mühendislik değerlendirmesiyle birlikte kullanılmalıdır.
+
+### Kaynaklar
+
+- Shah, M. M. (2014). Methods for calculation of evaporation from swimming pools and other water surfaces. *ASHRAE Transactions* 120(2), SE-14-001.
+- Smith, C. C., Löf, G. O. G., Jones, R. W. (1999). Rates of evaporation from swimming pools in active use. *ASHRAE Transactions* 104(1):514–523.
+- Saatlik hava verisi: Open-Meteo arşiv API'si (ERA5 tabanlı), CC BY 4.0.
 
 ## Lisans
 
